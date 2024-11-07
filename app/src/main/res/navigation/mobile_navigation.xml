@@ -12,6 +12,11 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/navigation_beercategories"
+        android:name="com.example.beeriq.ui.BeerCategories.BeerCategoriesFragment"
+        android:label="@string/title_beercategories"
+        tools:layout="@layout/fragment_beer_categories" />
+    <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.example.beeriq.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
