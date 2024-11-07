@@ -25,4 +25,5 @@
         android:icon="@drawable/beer_icon"
         android:title="@string/title_beercategories" />
 
+
 </menu>

@@ -5,6 +5,8 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_profile">Profile</string>
     <string name="title_beercategories">Catergories</string>
+    <string name="title_locator">BeerMap</string>
+    <string name="title_friends">Friends List</string>
 
     <string name="EnterName">Jon Doe</string>
     <string name="ProfileImage">Profile Image</string>
