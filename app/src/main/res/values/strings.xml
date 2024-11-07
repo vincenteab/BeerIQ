@@ -13,8 +13,8 @@
     <string name="CancelBtn">Cancel</string>
     <string name="removePhoto">Remove Photo</string>
 
-    <string name="NameInputField">Full Name</string>
-    <string name="EmailInputField">John@gmail.com</string>
+    <string name="NameUsernameField">JohnDoe</string>
+    <string name="EmailInputField">JohnDoe@gmail.com</string>
     <string name="PhoneNumberInputField">604&#8211;999&#8211;999</string>
     <string name="RadioBtnMale">Male</string>
     <string name="RadioBtnFemale">Female</string>
