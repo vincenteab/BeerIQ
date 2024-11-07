@@ -3,4 +3,24 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="EnterName">Jon Doe</string>
+    <string name="ProfileImage">Profile Image</string>
+    <string name="ChangePhotoBtn">Change</string>
+
+    <string name="SaveBtn">Save</string>
+    <string name="CancelBtn">Cancel</string>
+    <string name="removePhoto">Remove Photo</string>
+
+    <string name="NameUsernameField">JohnDoe</string>
+    <string name="EmailInputField">JohnDoe@gmail.com</string>
+    <string name="PhoneNumberInputField">604&#8211;999&#8211;999</string>
+    <string name="RadioBtnMale">Male</string>
+    <string name="RadioBtnFemale">Female</string>
+
+    <string name="Textview_gender">Gender</string>
+    <string name="Textview_username">Username</string>
+    <string name="Textview_email">Email</string>
+    <string name="Textview_phone">Phone</string>
 </resources>
