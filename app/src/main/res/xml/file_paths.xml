@@ -1,0 +1,5 @@
+<paths>
+    <external-path
+        name="tmp_photos"
+        path="."/>
+</paths>
