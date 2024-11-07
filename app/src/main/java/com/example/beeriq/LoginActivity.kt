@@ -1,5 +1,6 @@
 package com.example.beeriq
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,21 +17,44 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var firebaseRef: DatabaseReference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityLoginBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
+        firebaseRef = FirebaseDatabase.getInstance().getReference("users")
 
-        firebaseRef = FirebaseDatabase.getInstance().getReference("test")
-
+        //when user hits create button it will create an account
         binding.createAccountButton.setOnClickListener{
+            //get the username and password from the edit text
             val username = binding.usernameEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
-            firebaseRef.child("username").setValue(username)
-            firebaseRef.child("password").setValue(password)
-                .addOnCompleteListener{
-                    Toast.makeText(this, "Account created", Toast.LENGTH_SHORT).show()
-                }
+            val tempUser = User(username, password)
+
+            //check if the user has entered a username and password
+            if (checkCredentials(tempUser) == 0){
+                //create a unique id for the user
+                val uniqueID = firebaseRef.push().key!!
+                //store the user in the database and let user know account was created
+                firebaseRef.child(uniqueID).setValue(tempUser)
+                    .addOnCompleteListener{
+                        Toast.makeText(this, "Account created", Toast.LENGTH_SHORT).show()
+                    }
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }
         }
+    }
+
+    private fun checkCredentials(user: User) : Int{
+        if (user.username?.isEmpty() != false && user.password?.isEmpty() != false){
+            binding.usernameEditText.error = "Please enter a username"
+            binding.passwordEditText.error = "Please enter a password"
+            return 1
+        }else if(user.username?.isEmpty() != false){
+            binding.usernameEditText.error = "Please enter a username"
+            return 1
+        }else if (user.password?.isEmpty() != false){
+            binding.passwordEditText.error = "Please enter a password"
+            return 1
+        }
+        return 0
     }
 }
