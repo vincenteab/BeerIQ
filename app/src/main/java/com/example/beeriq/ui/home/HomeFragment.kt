@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +24,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 class HomeFragment : Fragment() {
     private lateinit var cameraResult: ActivityResultLauncher<Void?>
     private lateinit var viewModel: HomeViewModel
+    private lateinit var capturedImageView: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +39,7 @@ class HomeFragment : Fragment() {
 
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
+        // Request camera permission if not granted
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED
         ) {
@@ -47,21 +50,30 @@ class HomeFragment : Fragment() {
             )
         }
 
+        // Initialize ViewModel
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+
+        // Initialize ImageView
+        capturedImageView = view.findViewById(R.id.capturedImageView)
+
+        // Register the camera result callback
         cameraResult = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
             bitmap?.let {
-                // Update the ViewModel with the captured bitmap
+                // Update ViewModel with the captured bitmap
                 viewModel.userImage.value = it
+                // Display the image on the screen
+                capturedImageView.setImageBitmap(it)
+                capturedImageView.visibility = View.VISIBLE
             }
         }
 
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        // Observe the ViewModel to handle recognized text and display the image
         viewModel.userImage.observe(viewLifecycleOwner) { it ->
-
             val image = InputImage.fromBitmap(it, 0)
 
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
-                    // Process the recognized text (top-level Text object)
+                    // Process the recognized text
                     val resultText = visionText.text
                     Log.d("TextRecognition", "Full Text: $resultText")
                     val fullText: TextView = view.findViewById(R.id.full_text)
@@ -90,8 +102,9 @@ class HomeFragment : Fragment() {
                 }
         }
 
+        // Set up button click listener to launch the camera
         val changeButton: Button = view.findViewById(R.id.button)
-        changeButton.setOnClickListener{
+        changeButton.setOnClickListener {
             try {
                 cameraResult.launch(null)
             } catch (e: Exception) {
@@ -100,6 +113,7 @@ class HomeFragment : Fragment() {
         }
     }
 }
+
 
 
 
