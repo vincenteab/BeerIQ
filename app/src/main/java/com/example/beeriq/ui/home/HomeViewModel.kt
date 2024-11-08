@@ -1,5 +1,6 @@
 package com.example.beeriq.ui.home
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,4 +11,6 @@ class HomeViewModel : ViewModel() {
         value = "This is home Fragment"
     }
     val text: LiveData<String> = _text
+
+    val userImage = MutableLiveData<Bitmap>()
 }
