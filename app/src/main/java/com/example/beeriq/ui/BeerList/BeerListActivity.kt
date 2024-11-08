@@ -1,6 +1,7 @@
 package com.example.beeriq.ui.BeerList
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -30,6 +31,12 @@ class BeerListActivity : AppCompatActivity() {
 
         beerListAdapter = BeerListAdapter(beerList)
         recyclerView.adapter = beerListAdapter
+
+        val backButton: Button = findViewById(R.id.btnBack)
+        backButton.setOnClickListener {
+            // Navigate back to BeerCategoriesFragment
+            onBackPressed()
+        }
     }
 
     // Fetch beers by category (dummy data for now)
