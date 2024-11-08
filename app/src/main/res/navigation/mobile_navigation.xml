@@ -12,23 +12,22 @@
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
-
     <fragment
         android:id="@+id/navigation_beercategories"
         android:name="com.example.beeriq.ui.BeerCategories.BeerCategoriesFragment"
         android:label="@string/title_beercategories"
         tools:layout="@layout/fragment_beer_categories" />
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.beeriq.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_friendslist"
+        android:name="com.example.beeriq.ui.FriendsList.FriendsList"
+        android:label="@string/title_friends"
+        tools:layout="@layout/fragment_friends_list" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.beeriq.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_location"
+        android:name="com.example.beeriq.ui.Location.BeerLocatorFragment"
+        android:label="@string/title_locator"
+        tools:layout="@layout/fragment_beer_locator" />
 
     <fragment
         android:id="@+id/navigation_profile"
