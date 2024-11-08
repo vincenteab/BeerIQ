@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "110634513523",
+    "project_id": "beeriq-7e65d",
+    "storage_bucket": "beeriq-7e65d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110634513523:android:279a6526ff94084f9d6606",
+        "android_client_info": {
+          "package_name": "com.example.beeriq"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFKJqykOhLmgPi9IYSAr9AswtWwkTTRHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
