@@ -43,22 +43,21 @@ class FriendsList : Fragment() {
         return binding.root
     }
 
-
+    //show custom dialog to add a friend
     private fun showCustomDialog(){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_add_friend)
-
-
-
         val userNameTextEdit = dialog.findViewById<EditText>(R.id.addFriendInput)
         val addButton = dialog.findViewById<Button>(R.id.addFriendDialogButton)
 
+        //listener for when user hits add button
         addButton.setOnClickListener{
             val username = userNameTextEdit.text.toString()
-            //
+
+            //calls function to check if the username exists
             checkUsernameExists(username){ exists ->
                 if (exists){
-                    Toast.makeText(requireContext(), "User exists", Toast.LENGTH_SHORT).show()
+
                 }else{
                     Toast.makeText(requireContext(), "User does not exist", Toast.LENGTH_SHORT).show()
                 }
@@ -71,6 +70,7 @@ class FriendsList : Fragment() {
         dialog.show()
 
     }
+
     //check if the username exists in the database
     private fun checkUsernameExists(username: String, callback: (Boolean) -> Unit){
 
@@ -95,6 +95,11 @@ class FriendsList : Fragment() {
                     callback(false)
                 }
             })
+    }
+
+    private fun addFriend(username: String){
+        //add friend to user's friend list
+
     }
 
 }

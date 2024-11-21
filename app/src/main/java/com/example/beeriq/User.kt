@@ -5,5 +5,5 @@ data class User(
     val password: String? = null,
     val email: String? = null,
     val phone: Int? = null,
-
+    val friends: List<String>? = null
 )
