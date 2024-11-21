@@ -115,6 +115,7 @@ class FriendsList : Fragment() {
                             userFriends?.add(friend?.username.toString())
                             firebaseRef.child(currentUser.key.toString()).child("friends").setValue(userFriends)
                             println("debug: friends list: $userFriends")
+                            Toast.makeText(requireContext(), "Added ${friend?.username}", Toast.LENGTH_SHORT).show()
                         }
                     }
 
