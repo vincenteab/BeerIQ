@@ -1,6 +1,7 @@
 package com.example.beeriq.ui.FriendsList
 
 import android.app.Dialog
+import android.content.Context
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -82,6 +83,7 @@ class FriendsList : Fragment() {
                     //if username exists in db
                     if (snapshot.exists()) {
                         println("debug: username exists")
+                        addFriend(snapshot)
                         callback(true)
 
                     //if username does not exist in db
@@ -97,8 +99,31 @@ class FriendsList : Fragment() {
             })
     }
 
-    private fun addFriend(username: String){
-        //add friend to user's friend list
+    private fun addFriend(snapshot: DataSnapshot){
+        for (friendUser in snapshot.children){
+            val friend = friendUser.getValue(User::class.java)
+            val sharedPreferences = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+            val localUser = sharedPreferences.getString("username", null)
+
+            //adds friend to the current user's friend list
+            firebaseRef.orderByChild("username").equalTo(localUser)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (currentUser in snapshot.children){
+                            val userFriends = currentUser.getValue(User::class.java)?.friends
+                            userFriends?.add(friend?.username.toString())
+                            firebaseRef.child(currentUser.key.toString()).child("friends").setValue(userFriends)
+                            println("debug: friends list: $userFriends")
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        println("debug: error adding friend")
+                    }
+                })
+
+        }
 
     }
 
