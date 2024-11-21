@@ -4,6 +4,6 @@ data class User(
     val username: String? = null,
     val password: String? = null,
     val email: String? = null,
-    val phone: Int? = null,
+    val phone: String? = null,
     val friends: List<String>? = null
 )

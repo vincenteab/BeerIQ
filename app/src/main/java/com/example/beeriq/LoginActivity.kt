@@ -164,13 +164,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     //store user data locally
-    fun storeUserDataLocally(username: String?, password: String?, email: String?, phone: Int?, friends: List<String>?) {
+    fun storeUserDataLocally(username: String?, password: String?, email: String?, phone: String?, friends: List<String>?) {
         val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("username", username)
         editor.putString("password", password)
         editor.putString("email", email)
-        editor.putString("phone", phone.toString())
+        editor.putString("phone", phone)
         editor.putStringSet("friends", friends?.toSet())
         editor.apply()
     }
