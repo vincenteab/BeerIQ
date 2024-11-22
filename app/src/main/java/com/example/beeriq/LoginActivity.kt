@@ -75,7 +75,6 @@ class LoginActivity : AppCompatActivity() {
                                 val email = userData.email
                                 val phone = userData.phone
                                 val friends = userData.friends
-                                println("debug: user: $username, password: $password, email: $email, phone: $phone, friends: $friends")
                                 storeUserDataLocally(username, password, email, phone, friends)
                             }
 
@@ -186,7 +185,7 @@ class LoginActivity : AppCompatActivity() {
                         for (child in snapshot.children) {
                             val userData = child.getValue(User::class.java) // Convert to User class
 
-                            println("debug: User found: ${userData?.username}")
+
                             onComplete(userData) // Pass the fetched data to the callback
 
                         }

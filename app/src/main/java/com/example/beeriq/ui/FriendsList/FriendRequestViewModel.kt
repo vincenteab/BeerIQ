@@ -16,7 +16,9 @@ class FriendRequestViewModel(private val repo: FirebaseRepo) : ViewModel(){
     val data: LiveData<List<String>> = repo.incomingFriendsList
 
     init {
-        repo.fetchData()
+            println("Debug: Fetching data from viewmodel")
+            repo.fetchData()
+
     }
 
 }

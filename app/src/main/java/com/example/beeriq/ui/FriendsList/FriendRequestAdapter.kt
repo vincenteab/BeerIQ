@@ -1,33 +1,43 @@
 package com.example.beeriq.ui.FriendsList
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
 
-class FriendRequestAdapter(private val requestList: List<String>) : RecyclerView.Adapter<FriendRequestAdapter.FriendRequestViewHolder>() {
+class FriendRequestAdapter(private val context: Context, private var requestList: List<String>) : BaseAdapter() {
 
-    class FriendRequestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val friendName: TextView = itemView.findViewById(R.id.friendRequestID)
-
-        fun bind(friend: String) {
-            friendName.text = friend
-        }
-}
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendRequestViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.friend_request, parent, false)
-        return FriendRequestViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: FriendRequestViewHolder, position: Int) {
-        val request = requestList[position]
-        holder.bind(request)
-    }
-
-    override fun getItemCount(): Int {
+    override fun getCount(): Int {
         return requestList.size
     }
+
+    override fun getItem(position: Int): Any {
+        return requestList[position]
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        val view: View = View.inflate(context, R.layout.friend_request, null)
+
+        val friendRequestID = view.findViewById(R.id.friendRequestID) as TextView
+
+
+        val request = requestList[position]
+        friendRequestID.text = request
+
+        return view
+    }
+
+    fun replace(requests: List<String>) {
+        requestList = requests
+        notifyDataSetChanged()
+    }
+
 }
