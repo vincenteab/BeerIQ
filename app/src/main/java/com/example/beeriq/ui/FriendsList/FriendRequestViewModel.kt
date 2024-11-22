@@ -13,12 +13,26 @@ import kotlinx.coroutines.launch
 
 class FriendRequestViewModel(private val repo: FirebaseRepo) : ViewModel(){
 
-    val data: LiveData<List<String>> = repo.incomingFriendsList
+    val data: LiveData<MutableList<String>> = repo.incomingFriendsList
 
     init {
             println("Debug: Fetching data from viewmodel")
-            repo.fetchData()
+            repo.fetchIncomingFriendsListData()
 
+    }
+
+    fun deleteFriendRequest(friendID: String, onComplete: (Boolean) -> Unit){
+        viewModelScope.launch {
+            repo.deleteFriendRequest(friendID) { success ->
+                if (success) {
+                    println("Debug: Friend request ${friendID} deleted")
+                    onComplete(true)
+                } else {
+                    println("Debug: Friend request ${friendID} not deleted")
+                    onComplete(false)
+                }
+            }
+        }
     }
 
 }

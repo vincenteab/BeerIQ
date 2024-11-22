@@ -13,7 +13,7 @@ class FriendRequestActivity : AppCompatActivity() {
     private lateinit var viewModel: FriendRequestViewModel
     private lateinit var factory: FriendRequestFactory
     private lateinit var friendRequestAdapter: FriendRequestAdapter
-    private lateinit var friendRequestList: List<String>
+    private lateinit var friendRequestList: MutableList<String>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,9 +27,9 @@ class FriendRequestActivity : AppCompatActivity() {
         factory = FriendRequestFactory(repo)
         viewModel = ViewModelProvider(this, factory).get(FriendRequestViewModel::class.java)
 
-        friendRequestList = emptyList()
+        friendRequestList = mutableListOf()
 
-        friendRequestAdapter = FriendRequestAdapter(this, friendRequestList)
+        friendRequestAdapter = FriendRequestAdapter(this, friendRequestList, repo)
 
         listView.adapter = friendRequestAdapter
 
@@ -39,7 +39,6 @@ class FriendRequestActivity : AppCompatActivity() {
                 friendRequestAdapter.replace(data)
                 listView.invalidateViews()
             }
-
         }
 
     }

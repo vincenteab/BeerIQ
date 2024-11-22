@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
 
-class FriendRequestAdapter(private val context: Context, private var requestList: List<String>) : BaseAdapter() {
+class FriendRequestAdapter(private val context: Context, private var requestList: MutableList<String>, private val repo: FirebaseRepo) : BaseAdapter() {
 
     override fun getCount(): Int {
         return requestList.size
@@ -27,15 +28,39 @@ class FriendRequestAdapter(private val context: Context, private var requestList
         val view: View = View.inflate(context, R.layout.friend_request, null)
 
         val friendRequestID = view.findViewById(R.id.friendRequestID) as TextView
+        val declineButton = view.findViewById<Button>(R.id.declineFriendButton)
+        val acceptButton = view.findViewById<Button>(R.id.acceptFriendButton)
 
 
         val request = requestList[position]
         friendRequestID.text = request
 
+        acceptButton.setOnClickListener {
+            repo.deleteFriendRequest(request) {
+                if (it) {
+                    println("Debug: Friend request $request deleted")
+                } else {
+                    println("Debug: Friend request $request not deleted")
+                }
+            }
+            notifyDataSetChanged()
+        }
+
+        declineButton.setOnClickListener {
+            repo.deleteFriendRequest(request) {
+                if (it) {
+                    println("Debug: Friend request $request deleted")
+                } else {
+                    println("Debug: Friend request $request not deleted")
+                }
+            }
+            notifyDataSetChanged()
+        }
+
         return view
     }
 
-    fun replace(requests: List<String>) {
+    fun replace(requests: MutableList<String>) {
         requestList = requests
         notifyDataSetChanged()
     }
