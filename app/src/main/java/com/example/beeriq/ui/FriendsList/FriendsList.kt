@@ -58,7 +58,7 @@ class FriendsList : Fragment() {
             //calls function to check if the username exists
             checkUsernameExists(username){ exists ->
                 if (exists){
-
+                    println("debug: user exists")
                 }else{
                     Toast.makeText(requireContext(), "User does not exist", Toast.LENGTH_SHORT).show()
                 }
@@ -111,11 +111,15 @@ class FriendsList : Fragment() {
 
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (currentUser in snapshot.children){
-                            val userFriends = currentUser.getValue(User::class.java)?.friends
+                            val userFriends = currentUser.getValue(User::class.java)?.outgoingFriends
                             userFriends?.add(friend?.username.toString())
-                            firebaseRef.child(currentUser.key.toString()).child("friends").setValue(userFriends)
-                            println("debug: friends list: $userFriends")
-                            Toast.makeText(requireContext(), "Added ${friend?.username}", Toast.LENGTH_SHORT).show()
+                            firebaseRef.child(currentUser.key.toString()).child("outgoingFriends").setValue(userFriends)
+                            println("debug: current user outgoingFriendsList: $userFriends")
+                            val friendIncomingList = friend?.incomingFriends
+                            friendIncomingList?.add(localUser.toString())
+                            firebaseRef.child(friendUser.key.toString()).child("incomingFriends").setValue(friendIncomingList)
+                            println("debug: friend incomingFriendsList: $friendIncomingList")
+                            Toast.makeText(requireContext(), "Sent friend request to ${friend?.username}", Toast.LENGTH_SHORT).show()
                         }
                     }
 
