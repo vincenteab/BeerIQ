@@ -2,6 +2,7 @@ package com.example.beeriq.ui.FriendsList
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -39,6 +40,11 @@ class FriendsList : Fragment() {
 
         binding.addFriendButton.setOnClickListener{
             showCustomDialog()
+        }
+
+        binding.friendRequestButton.setOnClickListener{
+            val intent = Intent(requireContext(), FriendRequestActivity::class.java)
+            startActivity(intent)
         }
 
         return binding.root
