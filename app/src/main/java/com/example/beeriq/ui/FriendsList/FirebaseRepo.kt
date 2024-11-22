@@ -10,6 +10,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
@@ -112,6 +113,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                         incomingFriendsRef.runTransaction(object : Transaction.Handler{
                             override fun doTransaction(currentData: MutableData): Transaction.Result{
                                 val currentList = currentData.getValue() as MutableList<String>
+                                println("debug: current list: $currentList")
                                 if (currentList.contains(friendID)){
                                     currentData.value = currentList.filter { it != friendID }
                                 }
@@ -175,28 +177,98 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         })
     }
 
-//    fun addFriendRequest(friendID: String, onComplete: (Boolean) ->  Unit){
-//        databaseReference.orderByChild("username").equalTo(friendID).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (postSnapshot in snapshot.children) {
-//                    val outgoingFriendsList = postSnapshot.getValue(User::class.java)?.outgoingFriends
-//                    if (outgoingFriendsList != null) {
-//
-//                        outgoingFriendsList.add(localUser.toString())
-//                        databaseReference.child(postSnapshot.key!!).child("outgoingFriends").setValue(outgoingFriendsList)
-//                        println("debug: friend request ${friendID} added to outgoing friends list")
-//                        addIncomingFriendRequest(friendID, onComplete)
-//                        onComplete(true)
-//                    }else{
-//                        println("debug: friend request ${friendID} not added to outgoing friends list")
-//                        onComplete(false)
-//                    }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                onComplete(false)
-//            }
-//        })
-//    }
+    fun addFriendRequest(friendID: String){
+        addCurrentUserFriend(friendID) {
+            if (it) {
+                println("Debug: Current user friend $friendID added")
+            } else {
+                println("Debug: Current user friend $friendID not added")
+            }
+        }
+        addFriendUserFriend(friendID) {
+            if (it) {
+                println("Debug: Friend user friend $localUser added")
+            } else {
+                println("Debug: Friend user friend $localUser not added")
+            }
+        }
+
+    }
+
+    fun addCurrentUserFriend(friendID: String, onComplete: (Boolean) ->  Unit){
+        databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (postSnapshot in snapshot.children) {
+                    val userKey = postSnapshot.key
+                    if (userKey != null) {
+                        val friendsListRef = databaseReference.child(userKey).child("friends")
+                        friendsListRef.runTransaction(object : Transaction.Handler{
+                            override fun doTransaction(currentData: MutableData): Transaction.Result{
+
+                                val currentList = currentData.getValue(object: GenericTypeIndicator<MutableList<String>>() {}) ?: mutableListOf()
+                                if (!currentList.contains(friendID)){
+                                    currentList.add(friendID)
+                                    currentData.value = currentList
+                                }
+                                return Transaction.success(currentData)
+                            }
+                            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                                if (committed){
+                                    println("debug: friend ${friendID} added to friends list")
+                                    onComplete(true)
+                                }else{
+                                    println("debug: friend ${friendID} not added to friends list")
+                                    onComplete(false)
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                println("debug: error - ${error.message}")
+                onComplete(false)
+            }
+        })
+    }
+
+    fun addFriendUserFriend(friendID: String, onComplete: (Boolean) -> Unit){
+        databaseReference.orderByChild("username").equalTo(friendID).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (postSnapshot in snapshot.children) {
+                    val friendKey = postSnapshot.key
+                    if (friendKey != null) {
+                        val friendsListRef = databaseReference.child(friendKey).child("friends")
+                        friendsListRef.runTransaction(object : Transaction.Handler{
+                            override fun doTransaction(currentData: MutableData): Transaction.Result{
+                                val currentList = currentData.getValue(object: GenericTypeIndicator<MutableList<String>>() {}) ?: mutableListOf()
+                                if (!currentList.contains(localUser)){
+
+                                    if (localUser != null) {
+                                        currentList.add(localUser)
+                                    }
+
+                                    currentData.value = currentList
+                                }
+                                return Transaction.success(currentData)
+                            }
+                            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                                if (committed){
+                                    println("debug: friend added ${localUser} to friends list")
+                                    onComplete(true)
+                                }else{
+                                    println("debug: friend not added ${localUser} to friends list")
+                                    onComplete(false)
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                println("debug: error - ${error.message}")
+                onComplete(false)
+            }
+        })
+    }
 }

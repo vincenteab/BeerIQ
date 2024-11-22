@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
                             if (userData != null) {
                                 val email = userData.email
                                 val phone = userData.phone
-                                val friends = userData.friends
+                                val friends = userData.friends as List<String>?
                                 storeUserDataLocally(username, password, email, phone, friends)
                             }
 
