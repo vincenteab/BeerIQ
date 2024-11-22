@@ -21,18 +21,6 @@ class FriendRequestViewModel(private val repo: FirebaseRepo) : ViewModel(){
 
     }
 
-    fun deleteFriendRequest(friendID: String, onComplete: (Boolean) -> Unit){
-        viewModelScope.launch {
-            repo.deleteFriendRequest(friendID) { success ->
-                if (success) {
-                    println("Debug: Friend request ${friendID} deleted")
-                    onComplete(true)
-                } else {
-                    println("Debug: Friend request ${friendID} not deleted")
-                    onComplete(false)
-                }
-            }
-        }
-    }
+
 
 }

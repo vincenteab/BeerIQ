@@ -36,27 +36,14 @@ class FriendRequestAdapter(private val context: Context, private var requestList
         friendRequestID.text = request
 
         acceptButton.setOnClickListener {
-            repo.deleteFriendRequest(request) {
-                if (it) {
-                    println("Debug: Friend request $request deleted")
-                } else {
-                    println("Debug: Friend request $request not deleted")
-                }
-            }
+            repo.deleteFriendRequest(request)
             notifyDataSetChanged()
         }
 
         declineButton.setOnClickListener {
-            repo.deleteFriendRequest(request) {
-                if (it) {
-                    println("Debug: Friend request $request deleted")
-                } else {
-                    println("Debug: Friend request $request not deleted")
-                }
-            }
+            repo.deleteFriendRequest(request)
             notifyDataSetChanged()
         }
-
         return view
     }
 
