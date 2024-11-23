@@ -3,7 +3,6 @@ package com.example.beeriq.ui.FriendsList
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,10 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ListView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
+import androidx.lifecycle.ViewModelProvider
 import com.example.beeriq.R
 import com.example.beeriq.User
-import com.example.beeriq.databinding.ActivityLoginBinding
 import com.example.beeriq.databinding.FragmentFriendsListBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -24,19 +25,41 @@ import com.google.firebase.database.ValueEventListener
 
 class FriendsList : Fragment() {
 
-
-
-    private val viewModel: FriendsListViewModel by viewModels()
     private lateinit var binding: FragmentFriendsListBinding
     private lateinit var firebaseRef: DatabaseReference
-
-
-
+    private lateinit var listView: ListView
+    private lateinit var viewModel: FriendListViewModel
+    private lateinit var friendsListAdapter: FriendListAdapter
+    private lateinit var friendsList: MutableList<String>
+    private lateinit var factory: FriendListViewModel.FriendListViewModelFactory
+    private lateinit var repo: FirebaseRepo
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
         binding = FragmentFriendsListBinding.inflate(inflater, container, false)
         firebaseRef = FirebaseDatabase.getInstance().getReference("users")
+        val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
+
+        listView = binding.friendsList
+
+        repo = FirebaseRepo(sharedPreferences)
+        factory = FriendListViewModel.FriendListViewModelFactory(repo)
+        viewModel = ViewModelProvider(requireActivity(), factory).get(FriendListViewModel::class.java)
+
+        friendsList = mutableListOf()
+
+        friendsListAdapter = FriendListAdapter(requireContext(), friendsList)
+
+        listView.adapter = friendsListAdapter
+
+
+        viewModel.data.observe(viewLifecycleOwner) {data ->
+            if (data != null){
+                friendsListAdapter.replace(data)
+                listView.invalidateViews()
+            }
+        }
+
 
         binding.addFriendButton.setOnClickListener{
             showCustomDialog()
@@ -46,6 +69,8 @@ class FriendsList : Fragment() {
             val intent = Intent(requireContext(), FriendRequestActivity::class.java)
             startActivity(intent)
         }
+
+
 
         return binding.root
     }
