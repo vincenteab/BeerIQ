@@ -1,5 +1,6 @@
 package com.example.beeriq
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -50,6 +51,7 @@ class LoginActivity : AppCompatActivity() {
                                 Toast.makeText(this, "Account created", Toast.LENGTH_SHORT).show()
                             }
                         //continue to the main activity
+                        storeUserDataLocally(username, password, null, null, null)
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     }
@@ -67,6 +69,16 @@ class LoginActivity : AppCompatActivity() {
                 checkUserExists(tempLoggedUser){ exists ->
                     //if the user exists, continue to the main activity
                     if (exists){
+
+                        fetchUserData(username){ userData ->
+                            if (userData != null) {
+                                val email = userData.email
+                                val phone = userData.phone
+                                val friends = userData.friends as List<String>?
+                                storeUserDataLocally(username, password, email, phone, friends)
+                            }
+
+                        }
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     }
@@ -149,4 +161,43 @@ class LoginActivity : AppCompatActivity() {
                 }
             })
     }
+
+    //store user data locally
+    fun storeUserDataLocally(username: String?, password: String?, email: String?, phone: String?, friends: List<String>?) {
+        val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("username", username)
+        editor.putString("password", password)
+        editor.putString("email", email)
+        editor.putString("phone", phone)
+        editor.putStringSet("friends", friends?.toSet())
+        editor.apply()
+    }
+
+    //fetch user data from the database
+    //Pass through username as string and get back User object
+    fun fetchUserData(user: String, onComplete: (User?) -> Unit) {
+        firebaseRef.orderByChild("username").equalTo(user)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            val userData = child.getValue(User::class.java) // Convert to User class
+
+
+                            onComplete(userData) // Pass the fetched data to the callback
+
+                        }
+                    } else {
+                        println("debug: No user found with username: $user")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Query cancelled: ${error.message}")
+                }
+            })
+    }
+
 }

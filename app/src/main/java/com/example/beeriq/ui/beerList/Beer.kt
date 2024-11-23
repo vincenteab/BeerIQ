@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.BeerList
+package com.example.beeriq.ui.beerList
 
 data class Beer(
     val name: String,

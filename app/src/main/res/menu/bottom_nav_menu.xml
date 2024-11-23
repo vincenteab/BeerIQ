@@ -2,27 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_home" />
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/map_pin"
+        android:menuCategory="secondary"
+        android:title="@string/title_map" />
 
     <item
-        android:id="@+id/navigation_beercategories"
+        android:id="@+id/navigation_search"
         android:icon="@drawable/beer_icon"
-        android:title="@string/title_beercategories" />
+        android:menuCategory="secondary"
+        android:title="@string/title_search" />
+
     <item
-        android:id="@+id/navigation_location"
-        android:icon="@drawable/map_pin"
-        android:title="@string/title_locator" />
+        android:id="@+id/navigation_camera"
+        android:icon="@drawable/camera_icon"
+        android:menuCategory="secondary"
+        android:title="@string/title_camera" />
 
     <item
         android:id="@+id/navigation_friendslist"
         android:icon="@drawable/friends_talking"
+        android:menuCategory="secondary"
         android:title="@string/title_friends" />
 
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/baseline_person_24"
+        android:menuCategory="secondary"
         android:title="@string/title_profile" />
 
 

@@ -3,35 +3,120 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_map">
 
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.beeriq.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_camera"
+        android:name="com.example.beeriq.ui.camera.CameraFragment"
+        android:label="@string/title_camera"
+        tools:layout="@layout/fragment_camera" >
+        <action
+            android:id="@+id/action_navigation_camera_to_navigation_search"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_search" />
+        <action
+            android:id="@+id/action_navigation_camera_to_navigation_profile"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_camera_to_navigation_friendslist"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_friendslist" />
+        <action
+            android:id="@+id/action_navigation_camera_to_navigation_map"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_map" />
+    </fragment>
 
     <fragment
-        android:id="@+id/navigation_beercategories"
-        android:name="com.example.beeriq.ui.BeerCategories.BeerCategoriesFragment"
-        android:label="@string/title_beercategories"
-        tools:layout="@layout/fragment_beer_categories" />
+        android:id="@+id/navigation_search"
+        android:name="com.example.beeriq.ui.beerCategories.BeerCategoriesFragment"
+        android:label="@string/title_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_navigation_search_to_navigation_camera"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_camera" />
+        <action
+            android:id="@+id/action_navigation_search_to_navigation_friendslist"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_friendslist" />
+        <action
+            android:id="@+id/action_navigation_search_to_navigation_profile"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_search_to_navigation_map"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_map" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_friendslist"
         android:name="com.example.beeriq.ui.FriendsList.FriendsList"
         android:label="@string/title_friends"
-        tools:layout="@layout/fragment_friends_list" />
+        tools:layout="@layout/fragment_friends_list" >
+        <action
+            android:id="@+id/action_navigation_friendslist_to_navigation_camera"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_camera" />
+        <action
+            android:id="@+id/action_navigation_friendslist_to_navigation_search"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_search" />
+        <action
+            android:id="@+id/action_navigation_friendslist_to_navigation_profile"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_friendslist_to_navigation_map"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_map" />
+    </fragment>
 
     <fragment
-        android:id="@+id/navigation_location"
-        android:name="com.example.beeriq.ui.Location.BeerLocatorFragment"
-        android:label="@string/title_locator"
-        tools:layout="@layout/fragment_beer_locator" />
+        android:id="@+id/navigation_map"
+        android:name="com.example.beeriq.ui.map.MapFragment"
+        android:label="@string/title_map"
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_camera"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_camera" />
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_profile"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_search"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_search" />
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_friendslist"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_friendslist" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.example.beeriq.ui.userprofile.UserProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_userprofile" />
+        tools:layout="@layout/fragment_userprofile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_camera"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_camera" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_map"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_map" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_search"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_search" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_friendslist"
+            app:launchSingleTop="true"
+            app:destination="@id/navigation_friendslist" />
+    </fragment>
 </navigation>

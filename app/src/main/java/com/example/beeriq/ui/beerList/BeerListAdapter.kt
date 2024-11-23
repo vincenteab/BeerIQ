@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.BeerList
+package com.example.beeriq.ui.beerList
 
 import android.view.LayoutInflater
 import android.view.View

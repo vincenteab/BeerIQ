@@ -247,9 +247,9 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
 
     // Load saved form data from SharedPreferences
     private fun loadFormData() {
-        val sharedPref = requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE)
+        val sharedPref = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
 
-        username.setText(sharedPref.getString("name", ""))
+        username.setText(sharedPref.getString("username", ""))
         inputEmail.setText(sharedPref.getString("email", ""))
         inputPhone.setText(sharedPref.getString("phone", ""))
 

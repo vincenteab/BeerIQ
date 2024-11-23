@@ -10,6 +10,18 @@
         android:padding="16dp">
 
         <!-- Friend 1 -->
+        <Button
+            android:id="@+id/friendRequestButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Friend Requests" />
+
+        <Button
+            android:id="@+id/addFriendButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Friend" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
