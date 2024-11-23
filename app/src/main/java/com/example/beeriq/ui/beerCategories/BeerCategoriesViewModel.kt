@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.BeerCategories
+package com.example.beeriq.ui.beerCategories
 
 import androidx.lifecycle.ViewModel
 

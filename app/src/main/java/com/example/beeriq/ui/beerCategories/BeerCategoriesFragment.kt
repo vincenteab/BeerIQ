@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.BeerCategories
+package com.example.beeriq.ui.beerCategories
 
 import android.content.Intent
 import androidx.fragment.app.viewModels
@@ -7,11 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
-import com.example.beeriq.ui.BeerList.BeerListActivity
+import com.example.beeriq.ui.beerList.BeerListActivity
 
 class BeerCategoriesFragment : Fragment() {
 
@@ -23,7 +22,7 @@ class BeerCategoriesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_beer_categories, container, false)
+        val view = inflater.inflate(R.layout.fragment_search, container, false)
 
         // Find the RecyclerView by ID
         recyclerView = view.findViewById(R.id.beerGridView)

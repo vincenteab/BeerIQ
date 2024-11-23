@@ -1,6 +1,7 @@
 package com.example.beeriq
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -20,7 +21,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Set up the Toolbar as the ActionBar
-        setSupportActionBar(binding.toolbar)
+        val toolbar = binding.toolbar
+        setSupportActionBar(toolbar)
 
         val navView: BottomNavigationView = binding.navView
 
@@ -29,10 +31,27 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_beercategories, R.id.navigation_location, R.id.navigation_friendslist, R.id.navigation_profile
+                R.id.navigation_map, R.id.navigation_search, R.id.navigation_camera, R.id.navigation_friendslist, R.id.navigation_profile
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener {_, destination, _ ->
+            Log.d("Navigation", "Current destination: ${destination.id}")
+            when(destination.id) {
+                R.id.navigation_camera -> {
+                    navView.visibility = android.view.View.GONE
+                    toolbar.visibility = android.view.View.GONE
+                } else -> {
+                    navView.visibility = android.view.View.VISIBLE
+                    toolbar.visibility = android.view.View.VISIBLE
+                }
+            }
+        }
+    }
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 }

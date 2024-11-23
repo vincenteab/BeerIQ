@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">BeerIQ</string>
-    <string name="title_home">Home</string>
+    <string name="title_camera">Camera</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_profile">Profile</string>
-    <string name="title_beercategories">Catergories</string>
-    <string name="title_locator">BeerMap</string>
+    <string name="title_search">Search</string>
+    <string name="title_map">Map</string>
     <string name="title_friends">Friends List</string>
 
     <string name="EnterName">Jon Doe</string>

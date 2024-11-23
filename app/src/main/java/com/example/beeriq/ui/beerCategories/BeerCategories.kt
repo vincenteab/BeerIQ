@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.BeerCategories
+package com.example.beeriq.ui.beerCategories
 
 data class BeerCategories(
     val imageResId: Int,  // Image resource ID (e.g., drawable resource)

@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.Location
+package com.example.beeriq.ui.map
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -8,13 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.beeriq.R
 
-class BeerLocatorFragment : Fragment() {
+class MapFragment : Fragment() {
 
     companion object {
-        fun newInstance() = BeerLocatorFragment()
+        fun newInstance() = MapFragment()
     }
 
-    private val viewModel: BeerLocatorViewModel by viewModels()
+    private val viewModel: MapViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +26,6 @@ class BeerLocatorFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_beer_locator, container, false)
+        return inflater.inflate(R.layout.fragment_map, container, false)
     }
 }
