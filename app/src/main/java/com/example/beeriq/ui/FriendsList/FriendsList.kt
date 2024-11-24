@@ -31,6 +31,8 @@ class FriendsList : Fragment() {
     private lateinit var viewModel: FriendListViewModel
     private lateinit var friendsListAdapter: FriendListAdapter
     private lateinit var friendsList: MutableList<String>
+    private lateinit var outgoingFriendsList: MutableList<String>
+    private lateinit var incomingFriendsList: MutableList<String>
     private lateinit var factory: FriendListViewModel.FriendListViewModelFactory
     private lateinit var repo: FirebaseRepo
 
@@ -40,6 +42,7 @@ class FriendsList : Fragment() {
         firebaseRef = FirebaseDatabase.getInstance().getReference("users")
         val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
 
+
         listView = binding.friendsList
 
         repo = FirebaseRepo(sharedPreferences)
@@ -47,19 +50,30 @@ class FriendsList : Fragment() {
         viewModel = ViewModelProvider(requireActivity(), factory).get(FriendListViewModel::class.java)
 
         friendsList = mutableListOf()
+        outgoingFriendsList = mutableListOf()
+        incomingFriendsList = mutableListOf()
 
         friendsListAdapter = FriendListAdapter(requireContext(), friendsList)
 
         listView.adapter = friendsListAdapter
 
 
-        viewModel.data.observe(viewLifecycleOwner) {data ->
+        viewModel.friendsListData.observe(viewLifecycleOwner) {data ->
             if (data != null){
                 friendsListAdapter.replace(data)
                 listView.invalidateViews()
             }
         }
-
+        viewModel.outgoingFriendsListData.observe(viewLifecycleOwner) {data ->
+            if (data != null){
+                outgoingFriendsList = data
+            }
+        }
+        viewModel.incomingFriendsListData.observe(viewLifecycleOwner) {data ->
+            if (data != null){
+                incomingFriendsList = data
+            }
+        }
 
         binding.addFriendButton.setOnClickListener{
             showCustomDialog()
@@ -85,15 +99,40 @@ class FriendsList : Fragment() {
         //listener for when user hits add button
         addButton.setOnClickListener{
             val username = userNameTextEdit.text.toString()
+            val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
+            val localUser = sharedPreferences.getString("username", null)
+            println("debug: friends list $friendsList in FriendsList.kt")
+
+            if(username == localUser){
+                Toast.makeText(requireContext(), "Cannot add yourself as a friend", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (friendsList.contains(username)){
+                Toast.makeText(requireContext(), "User is already a friend", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            println("debug: incoming friends list $incomingFriendsList in FriendsList.kt")
+            if (incomingFriendsList.contains(username)){
+                Toast.makeText(requireContext(), "Check friend requests", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            println("debug: outgoing friends list $outgoingFriendsList in FriendsList.kt")
+            if (outgoingFriendsList.contains(username)){
+                Toast.makeText(requireContext(), "Friend request already sent", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
             //calls function to check if the username exists
-            checkUsernameExists(username){ exists ->
-                if (exists){
-                    println("debug: user exists")
+            repo.checkIfUserExists(username){
+                if (it){
+                    addFriend(it)
                 }else{
                     Toast.makeText(requireContext(), "User does not exist", Toast.LENGTH_SHORT).show()
                 }
             }
+
 
 
             dialog.dismiss()
@@ -101,33 +140,6 @@ class FriendsList : Fragment() {
 
         dialog.show()
 
-    }
-
-    //check if the username exists in the database
-    private fun checkUsernameExists(username: String, callback: (Boolean) -> Unit){
-
-        //adds listener to database if there is a username that matches the input
-        firebaseRef.orderByChild("username").equalTo(username)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    //if username exists in db
-                    if (snapshot.exists()) {
-                        println("debug: username exists")
-                        addFriend(snapshot)
-                        callback(true)
-
-                    //if username does not exist in db
-                    }else{
-                        println("debug: username does not exist")
-                        callback(false)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    callback(false)
-                }
-            })
     }
 
     private fun addFriend(snapshot: DataSnapshot){

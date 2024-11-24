@@ -37,11 +37,13 @@ class FriendRequestAdapter(private val context: Context, private var requestList
             repo.deleteFriendRequest(request)
             notifyDataSetChanged()
             repo.addFriendRequest(request)
+            requestList.removeAt(position)
             notifyDataSetChanged()
         }
 
         declineButton.setOnClickListener {
             repo.deleteFriendRequest(request)
+            requestList.removeAt(position)
             notifyDataSetChanged()
         }
         return view

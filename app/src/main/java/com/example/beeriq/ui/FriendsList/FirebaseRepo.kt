@@ -14,10 +14,20 @@ import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
     private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("users")
     val localUser = sharedPreferences.getString("username", null)
+
+    private val fetchScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val _incomingFriendsList = MutableLiveData<MutableList<String>>()
     val incomingFriendsList: LiveData<MutableList<String>> get() = _incomingFriendsList
@@ -25,66 +35,80 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
     private val _friendsList = MutableLiveData<MutableList<String>>()
     val friendsList: LiveData<MutableList<String>> get() = _friendsList
 
-    fun fetchIncomingFriendsListData() {
-        println("Debug: Fetching data")
+    private val _outgoingFriendsList = MutableLiveData<MutableList<String>>()
+    val outgoingFriendsList: LiveData<MutableList<String>> get() = _outgoingFriendsList
 
-        databaseReference.orderByChild("username").equalTo(localUser).addValueEventListener(object : ValueEventListener {
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val dataList = mutableListOf<String>()
-                for (postSnapshot in snapshot.children) {
-
-                    val user = postSnapshot.getValue(User::class.java)
-                    if (user != null) {
-                        for (id in user.incomingFriends) {
-                            println("debug: incoming friend id: $id")
-                            dataList.add(id)
-                        }
-                    }else{
-                        println("Debug: User not found")
-                    }
-
-
-                }
-                _incomingFriendsList.postValue(dataList)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error
-                println("debug: error - ${error.message}")
-            }
-        })
+    fun fetchAllLists() {
+        startRealTimeListeners()
     }
 
-    fun fetchFriendsListData(){
-        databaseReference.orderByChild("username").equalTo(localUser).addValueEventListener(object : ValueEventListener {
+    fun startRealTimeListeners() {
+        if (localUser == null) return
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val dataList = mutableListOf<String>()
-                for (postSnapshot in snapshot.children) {
-
-                    val user = postSnapshot.getValue(User::class.java)
-                    if (user != null) {
-                        for (id in user.friends) {
-                            println("debug: friend in friends list: $id")
-                            dataList.add(id)
+        // Listen for incoming friends
+        databaseReference.orderByChild("username").equalTo(localUser)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val dataList = mutableListOf<String>()
+                    for (postSnapshot in snapshot.children) {
+                        val user = postSnapshot.getValue(User::class.java)
+                        if (user != null) {
+                            dataList.addAll(user.incomingFriends)
                         }
-                    }else{
-                        println("Debug: User not found")
                     }
-
-
+                    _incomingFriendsList.postValue(dataList)
                 }
-                _friendsList.postValue(dataList)
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error
-                println("debug: error - ${error.message}")
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching incoming friends: ${error.message}")
+                }
+            })
+
+        // Listen for friends list
+        databaseReference.orderByChild("username").equalTo(localUser)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val dataList = mutableListOf<String>()
+                    for (postSnapshot in snapshot.children) {
+                        val user = postSnapshot.getValue(User::class.java)
+                        if (user != null) {
+                            dataList.addAll(user.friends)
+                        }
+                    }
+                    _friendsList.postValue(dataList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching friends list: ${error.message}")
+                }
+            })
+
+        // Listen for outgoing friends
+        databaseReference.orderByChild("username").equalTo(localUser)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val dataList = mutableListOf<String>()
+                    for (postSnapshot in snapshot.children) {
+                        val user = postSnapshot.getValue(User::class.java)
+                        if (user != null) {
+                            dataList.addAll(user.outgoingFriends)
+                        }
+                    }
+                    _outgoingFriendsList.postValue(dataList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching outgoing friends: ${error.message}")
+                }
+            })
     }
 
+    fun clear() {
+        fetchScope.cancel() // Cancel all ongoing coroutines to prevent memory leaks
+    }
+
+
+    // deleteFriendRequest function is used when rejecting a friend request and calls deleteIncomingFriendRequest and deleteOutgoingFriendRequest
     fun deleteFriendRequest(friendID: String){
         deleteIncomingFriendRequest(friendID) {
             if (it) {
@@ -102,7 +126,6 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         }
 
     }
-
     fun deleteIncomingFriendRequest(friendID: String, onComplete: (Boolean) ->  Unit){
         databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -112,7 +135,9 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                         val incomingFriendsRef = databaseReference.child(userKey).child("incomingFriends")
                         incomingFriendsRef.runTransaction(object : Transaction.Handler{
                             override fun doTransaction(currentData: MutableData): Transaction.Result{
-                                val currentList = currentData.getValue() as MutableList<String>
+
+                                val currentList = currentData.getValue(object : GenericTypeIndicator<List<String>>() {})
+                                    ?.toMutableList() ?: mutableListOf()
                                 println("debug: current list: $currentList")
                                 if (currentList.contains(friendID)){
                                     currentData.value = currentList.filter { it != friendID }
@@ -138,7 +163,6 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             }
         })
     }
-
     fun deleteOutgoingFriendRequest(friendID: String, onComplete: (Boolean) ->  Unit){
         databaseReference.orderByChild("username").equalTo(friendID).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -148,7 +172,8 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                         val outgoingFriendsRef = databaseReference.child(friendKey).child("outgoingFriends")
                         outgoingFriendsRef.runTransaction(object : Transaction.Handler{
                             override fun doTransaction(currentData: MutableData): Transaction.Result{
-                                val currentList = currentData.getValue() as MutableList<String>
+                                val currentList = currentData.getValue(object : GenericTypeIndicator<List<String>>() {})
+                                    ?.toMutableList() ?: mutableListOf()
                                 if (currentList.contains(localUser)){
                                     currentData.value = currentList.filter { it != localUser }
                                 }
@@ -177,6 +202,8 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         })
     }
 
+
+    // addFriendRequest function is used when accepting a friend request and calls addCurrentUserFriend and addFriendUserFriend
     fun addFriendRequest(friendID: String){
         addCurrentUserFriend(friendID) {
             if (it) {
@@ -194,7 +221,6 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         }
 
     }
-
     fun addCurrentUserFriend(friendID: String, onComplete: (Boolean) ->  Unit){
         databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -231,7 +257,6 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             }
         })
     }
-
     fun addFriendUserFriend(friendID: String, onComplete: (Boolean) -> Unit){
         databaseReference.orderByChild("username").equalTo(friendID).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -270,5 +295,33 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                 onComplete(false)
             }
         })
+    }
+
+    // function that checks if a user exists in firebase
+    fun checkIfUserExists(userId: String, onComplete: (Boolean) -> Unit) {
+        // Query the database for the specific user ID
+        databaseReference.orderByChild("username").equalTo(userId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    // Check if the snapshot contains any data
+                    val exists = snapshot.exists()
+                    if (exists) {
+                        println("Debug: User $userId exists.")
+                    } else {
+                        println("Debug: User $userId does not exist.")
+                    }
+                    onComplete(exists) // Pass result to callback
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to check user - ${error.message}")
+                    onComplete(false) // Treat as "does not exist" on error
+                }
+            })
+    }
+
+
+    fun sendFriendRequest(friendID: String) {
+
     }
 }
