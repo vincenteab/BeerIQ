@@ -1,6 +1,7 @@
 package com.example.beeriq.ui.FriendsList
 
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -40,6 +41,9 @@ class FriendRequestActivity : AppCompatActivity() {
                 listView.invalidateViews()
             }
         }
-
+        val backButton: Button = findViewById(R.id.btnBack)
+        backButton.setOnClickListener {
+            finish()
+        }
     }
 }
