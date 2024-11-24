@@ -11,8 +11,8 @@ import com.example.beeriq.R
 class FriendRequestActivity : AppCompatActivity() {
     private lateinit var repo: FirebaseRepo
     private lateinit var listView: ListView
-    private lateinit var viewModel: FriendRequestViewModel
-    private lateinit var factory: FriendRequestFactory
+    private lateinit var viewModel: FriendListViewModel
+    private lateinit var factory: FriendListViewModel.FriendRequestFactory
     private lateinit var friendRequestAdapter: FriendRequestAdapter
     private lateinit var friendRequestList: MutableList<String>
 
@@ -25,8 +25,8 @@ class FriendRequestActivity : AppCompatActivity() {
         listView = findViewById(R.id.friendRequestList)
 
         repo = FirebaseRepo(sharedPreferences)
-        factory = FriendRequestFactory(repo)
-        viewModel = ViewModelProvider(this, factory).get(FriendRequestViewModel::class.java)
+        factory = FriendListViewModel.FriendRequestFactory(repo)
+        viewModel = ViewModelProvider(this, factory).get(FriendListViewModel::class.java)
 
         friendRequestList = mutableListOf()
 
@@ -35,7 +35,7 @@ class FriendRequestActivity : AppCompatActivity() {
         listView.adapter = friendRequestAdapter
 
 
-        viewModel.data.observe(this) {data ->
+        viewModel.incomingFriendsListData.observe(this) {data ->
             if (data != null){
                 friendRequestAdapter.replace(data)
                 listView.invalidateViews()
