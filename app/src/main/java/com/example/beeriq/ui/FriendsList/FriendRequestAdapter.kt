@@ -36,7 +36,7 @@ class FriendRequestAdapter(private val context: Context, private var requestList
         acceptButton.setOnClickListener {
             repo.deleteFriendRequest(request)
             notifyDataSetChanged()
-            repo.addFriendRequest(request)
+            repo.acceptFriendRequest(request)
             requestList.removeAt(position)
             notifyDataSetChanged()
         }
