@@ -6,9 +6,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#EEEEEE"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="8dp"
+        >
 
         <ImageView
             android:layout_width="60dp"
@@ -43,6 +43,7 @@
                     android:layout_height="40dp"
                     android:layout_weight="1"
                     android:background="@drawable/green_checkmark"
+                    android:backgroundTint="@color/black"
                     android:layout_marginRight="10dp"/>
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -50,6 +51,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
+                    android:backgroundTint="@color/black"
                     android:background="@drawable/red_x" />
             </LinearLayout>
         </FrameLayout>

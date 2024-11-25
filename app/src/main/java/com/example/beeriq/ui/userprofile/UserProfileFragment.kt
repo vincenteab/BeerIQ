@@ -8,6 +8,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.beeriq.R
+import com.example.beeriq.ui.FriendsList.FriendsList
+import com.example.beeriq.ui.FriendsList.FriendsListActivity
 import com.example.beeriq.ui.editprofile.EditProfileFragment
 
 class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
@@ -26,6 +28,12 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
         view.findViewById<View>(R.id.option_account_details).setOnClickListener {
             // Start EditProfileActivity
             val intent = Intent(requireContext(), EditProfileFragment::class.java)
+            startActivity(intent)
+        }
+
+        view.findViewById<View>(R.id.option_friends).setOnClickListener {
+            // Start FriendsActivity
+            val intent = Intent(requireContext(), FriendsListActivity::class.java)
             startActivity(intent)
         }
 
