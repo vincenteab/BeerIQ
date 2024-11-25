@@ -121,18 +121,16 @@ class FriendsListActivity : AppCompatActivity() {
             }
 
             //calls function to check if the username exists
-            var userExists = false
+
             repo.checkIfUserExists(username){
                 if (it){
-                    userExists = true
                     repo.sendFriendRequest(username)
                     Toast.makeText(this, "Friend request sent to ${username}", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
                 }
             }
-            if (!userExists){
-                bindingDialog.addFriendInput.error = "User does not exist"
-                return@setOnClickListener
-            }
+
 
 
 
