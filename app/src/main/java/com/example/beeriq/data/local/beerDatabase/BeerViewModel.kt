@@ -14,13 +14,6 @@ class BeerViewModel(private val repository: BeerRepository): ViewModel() {
     fun insert(beer: Beer) {
         repository.insert(beer)
     }
-
-    fun getBeerFullName(fullName: String): LiveData<Beer?> = liveData {
-        viewModelScope.launch {
-            val beer = repository.getBeerFullName(fullName)
-            beerResult.value = beer
-        }
-    }
 }
 
 class BeerViewModelFactory(private val repository: BeerRepository): ViewModelProvider.Factory {

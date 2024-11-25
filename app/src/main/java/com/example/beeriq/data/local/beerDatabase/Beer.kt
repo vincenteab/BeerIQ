@@ -2,8 +2,19 @@ package com.example.beeriq.data.local.beerDatabase
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Fts4
 import androidx.room.PrimaryKey
 import java.io.Serializable
+
+@Entity(tableName = "beer_table_fts")
+@Fts4(contentEntity = Beer::class)
+class BeerFts (
+    @ColumnInfo(name = "rowid")
+    @PrimaryKey val id: Long,
+
+    @ColumnInfo(name = "beer_full_name")
+    var beerFullName: String = ""
+)
 
 @Entity(tableName = "beer_table")
 class Beer (
@@ -84,4 +95,15 @@ class Beer (
 
     @ColumnInfo(name = "num_of_reviews")
     var numOfReviews: Int = 0,
-) : Serializable
+) : Serializable {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Beer) return false
+
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+}

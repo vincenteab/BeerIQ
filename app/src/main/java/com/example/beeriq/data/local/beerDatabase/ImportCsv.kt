@@ -13,7 +13,7 @@ import java.io.InputStreamReader
 class ImportCsv : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //importCsv(applicationContext)
+        importCsv(applicationContext)
     }
     fun importCsv(context: Context) {
 

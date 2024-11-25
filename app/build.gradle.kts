@@ -69,4 +69,6 @@ dependencies {
 
     //for csv import
     implementation("org.apache.commons:commons-csv:1.10.0")
+
+    implementation("com.google.android.material:material:1.12.0")
 }

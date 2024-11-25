@@ -13,7 +13,7 @@ class BeerRepository(private val beerDatabaseDao: BeerDatabaseDao) {
         }
     }
 
-    suspend fun getBeerFullName(fullName: String): Beer? {
+    suspend fun getBeerFullName(fullName: String): List<Beer> {
         return beerDatabaseDao.getBeerFullName(fullName)
     }
 }

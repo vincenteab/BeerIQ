@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.BeerDatabase
@@ -43,6 +44,7 @@ class CameraFragment : Fragment() {
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var viewModel: CameraViewModel
+    private lateinit var cameraViewModel: CameraViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,7 +81,6 @@ class CameraFragment : Fragment() {
 
         }, ContextCompat.getMainExecutor(requireActivity()))
 
-        val cameraViewModel: CameraViewModel
         val database = BeerDatabase.getInstance(requireContext())
         val repository = BeerRepository(database.beerDatabaseDao)
         val cameraViewModelFactory = CameraViewModelFactory(repository)
@@ -92,10 +93,13 @@ class CameraFragment : Fragment() {
                 cameraViewModel.recognizeTextFromImage(image)
                 cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
                     val bundle = Bundle().apply {
-                        putSerializable("beer_object", beer)
-
+                        putSerializable("beer_object", ArrayList(beer))
                     }
-                    findNavController().navigate(R.id.navigation_camera_result, bundle)
+                    Log.d("testing", "FRAGMENT: $beer")
+                    if (beer.isNotEmpty()) {
+                        findNavController().navigate(R.id.navigation_camera_result, bundle)
+                    }
+
                 }
             }
         }

@@ -10,56 +10,88 @@ import com.example.beeriq.data.local.beerDatabase.BeerRepository
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-    var beerResult = MutableLiveData<Beer?>()
+    var beerResult = MutableLiveData<List<Beer>>()
 
-    fun getBeerFullName(fullName: String): MutableLiveData<Beer?> {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                Log.d("testing", "Searching for beer: $fullName")
-                val beer = repository.getBeerFullName(fullName)
-                beerResult.postValue(beer)
-            } catch (e: Exception) {
-                Log.e("Error", "Failed to fetch beer: ${e.message}", e)
-            }
+    private val beerCountMap: MutableMap<Beer, Int> = mutableMapOf()
+
+    suspend fun getBeerFullName(fullName: String): List<Beer> {
+        var beerList: List<Beer> = arrayListOf()
+        try {
+            Log.d("testing", "Searching for beer: $fullName")
+            beerList = repository.getBeerFullName(fullName)
+            Log.d("testing", "LIST FOR ${fullName}: ${beerList}")
+            //beerResult.postValue(beerList)
+        } catch (e: Exception) {
+            Log.e("Error", "Failed to fetch beer: ${e.message}", e)
         }
-        return beerResult
+        return beerList
     }
 
     fun recognizeTextFromImage(image: InputImage) {
+        beerResult.value = emptyList()
+        beerCountMap.clear()
         viewModelScope.launch {
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
-                    // Process the recognized text
-                    val resultText = visionText.text
-                    beerResult = getBeerFullName("Asahi Breweries Ltd Asahi Premium")
-                    Log.d("TextRecognition", "Full Text: $resultText")
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val deferredResults = mutableListOf<Deferred<List<Beer>>>()
 
-                    // Iterate through each TextBlock (paragraph or larger block)
-                    for (textBlock in visionText.textBlocks) {
+                        // Process the recognized text
+                        val resultText = visionText.text
+                        //getBeerFullName("*$resultText*")
+                        Log.d("TextRecognition", "Full Text: $resultText")
 
-                        val blockText = textBlock.text
-                        //Log.d("TextRecognition", "TextBlock: $blockText")
+                        // Iterate through each TextBlock (paragraph or larger block)
+                        for (textBlock in visionText.textBlocks) {
+                            val blockText = textBlock.text
+                            //Log.d("TextRecognition", "TextBlock: $blockText")
 
-                        // Iterate through each Line in this TextBlock
-                        for (line in textBlock.lines) {
-                            val lineText = line.text
-                            //Log.d("TextRecognition", "Line: $lineText")
+                            // Iterate through each Line in this TextBlock
+                            for (line in textBlock.lines) {
+                                val lineText = line.text
+                                Log.d("TextRecognition", "Line: $lineText")
 
-                            // Iterate through each Element (word or word-like entity) in this Line
-                            for (element in line.elements) {
-                                val elementText = element.text
-                                //Log.d("TextRecognition", "Element: $elementText")
+                                // Iterate through each Element (word or word-like entity) in this Line
+                                for (element in line.elements) {
+                                    val elementText = element.text
+                                    deferredResults.add(async {
+                                        getBeerFullName("*$elementText*")
+                                    })
+                                    Log.d("TextRecognition", "Element: $elementText")
+                                }
                             }
+                        }
+                        val resultList = deferredResults.awaitAll().flatten()
+                        synchronized(beerCountMap) {
+                            resultList.forEach { beer ->
+                                beerCountMap[beer] = (beerCountMap[beer] ?: 0) + 1
+                            }
+                        }
+
+                        val sortedList = synchronized(beerCountMap) {
+                            beerCountMap.entries.sortedByDescending { it.value }.map { it.key }
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            beerResult.value = sortedList
                         }
                     }
                 }
         }
+    }
+
+    fun clearBeerResult() {
+        beerResult.value = emptyList()
     }
 }
 
