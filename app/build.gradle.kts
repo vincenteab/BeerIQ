@@ -68,6 +68,7 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation ("com.github.timonknispel:KTLoadingButton:1.2.0")
+    implementation("com.google.android.material:material:1.12.0")
 
 
 
