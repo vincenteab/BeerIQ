@@ -69,4 +69,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("org.apache.commons:commons-csv:1.10.0")
     implementation(libs.play.services.maps)
+    implementation("com.google.android.material:material:1.12.0")
 }
