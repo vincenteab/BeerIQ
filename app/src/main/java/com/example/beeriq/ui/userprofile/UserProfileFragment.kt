@@ -4,13 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.beeriq.R
 import com.example.beeriq.ui.FriendsList.FriendsList
 import com.example.beeriq.ui.FriendsList.FriendsListActivity
 import com.example.beeriq.ui.editprofile.EditProfileFragment
+import com.example.beeriq.ui.favorites.FavoritesActivity
+
 
 class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
 
@@ -34,6 +35,12 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
         view.findViewById<View>(R.id.option_friends).setOnClickListener {
             // Start FriendsActivity
             val intent = Intent(requireContext(), FriendsListActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Navigate to FavoritesFragment when the "Favorites" option is clicked
+        view.findViewById<View>(R.id.option_favorites).setOnClickListener {
+            val intent = Intent(requireContext(), FavoritesActivity::class.java)
             startActivity(intent)
         }
 
