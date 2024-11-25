@@ -43,32 +43,5 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/acceptFriendButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-
-                    android:text="Accept" />
-
-                <Button
-                    android:id="@+id/declineFriendButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Decline" />
-            </LinearLayout>
-        </FrameLayout>
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
