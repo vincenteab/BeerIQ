@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.beeriq.R
+import com.example.beeriq.databinding.DialogAddFriendBinding
 import com.example.beeriq.databinding.FragmentFriendsListBinding
 
 class FriendsListActivity : AppCompatActivity() {
@@ -88,45 +89,49 @@ class FriendsListActivity : AppCompatActivity() {
     //show custom dialog to add a friend
     private fun showCustomDialog(){
         val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_add_friend)
-        val userNameTextEdit = dialog.findViewById<EditText>(R.id.addFriendInput)
-        val addButton = dialog.findViewById<Button>(R.id.addFriendDialogButton)
+        val bindingDialog = DialogAddFriendBinding.inflate(layoutInflater)
+        dialog.setContentView(bindingDialog.root)
 
         //listener for when user hits add button
-        addButton.setOnClickListener{
-            val username = userNameTextEdit.text.toString()
+        bindingDialog.addFriendDialogButton.setOnClickListener{
+            val username = bindingDialog.addFriendInput.editText?.text.toString()
             val sharedPreferences = this.getSharedPreferences("UserData", MODE_PRIVATE)
             val localUser = sharedPreferences.getString("username", null)
             println("debug: friends list $friendsList in FriendsList.kt")
 
             if(username == localUser){
-                Toast.makeText(this, "Cannot add yourself as a friend", Toast.LENGTH_SHORT).show()
+                bindingDialog.addFriendInput.error = "Cannot add yourself as a friend"
                 return@setOnClickListener
             }
 
             if (friendsList.contains(username)){
-                Toast.makeText(this, "User is already a friend", Toast.LENGTH_SHORT).show()
+                bindingDialog.addFriendInput.error = "User is already a friend"
                 return@setOnClickListener
             }
             println("debug: incoming friends list $incomingFriendsList in FriendsList.kt")
             if (incomingFriendsList.contains(username)){
-                Toast.makeText(this, "Check friend requests", Toast.LENGTH_SHORT).show()
+                bindingDialog.addFriendInput.error = "Friend request already received"
                 return@setOnClickListener
             }
 
             println("debug: outgoing friends list $outgoingFriendsList in FriendsList.kt")
             if (outgoingFriendsList.contains(username)){
-                Toast.makeText(this, "Friend request already sent", Toast.LENGTH_SHORT).show()
+                bindingDialog.addFriendInput.error = "Friend request already sent"
                 return@setOnClickListener
             }
 
             //calls function to check if the username exists
-            //TODO
+            var userExists = false
             repo.checkIfUserExists(username){
                 if (it){
+                    userExists = true
                     repo.sendFriendRequest(username)
                     Toast.makeText(this, "Friend request sent to ${username}", Toast.LENGTH_SHORT).show()
                 }
+            }
+            if (!userExists){
+                bindingDialog.addFriendInput.error = "User does not exist"
+                return@setOnClickListener
             }
 
 

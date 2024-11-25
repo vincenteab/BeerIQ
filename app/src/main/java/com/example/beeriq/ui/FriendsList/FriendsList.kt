@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.lifecycle.ViewModelProvider
 import com.example.beeriq.R
+import com.example.beeriq.databinding.DialogAddFriendBinding
 import com.example.beeriq.databinding.FragmentFriendsListBinding
 
 class FriendsList : Fragment() {
@@ -86,13 +87,12 @@ class FriendsList : Fragment() {
     //show custom dialog to add a friend
     private fun showCustomDialog(){
         val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_add_friend)
-        val userNameTextEdit = dialog.findViewById<EditText>(R.id.addFriendInput)
-        val addButton = dialog.findViewById<Button>(R.id.addFriendDialogButton)
+        val bindingDialog = DialogAddFriendBinding.inflate(layoutInflater)
+        dialog.setContentView(bindingDialog.root)
 
         //listener for when user hits add button
-        addButton.setOnClickListener{
-            val username = userNameTextEdit.text.toString()
+        bindingDialog.addFriendDialogButton.setOnClickListener{
+            val username = bindingDialog.addFriendInput.editText?.text.toString()
             val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
             val localUser = sharedPreferences.getString("username", null)
             println("debug: friends list $friendsList in FriendsList.kt")

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,17 +35,28 @@
 
         </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
+            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
             android:id="@+id/addFriendButton"
-            style="@null"
-            android:layout_width="170dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/white_button"
-            android:backgroundTint="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Add Friend"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            app:icon="@drawable/plus_icon"
+            />
+
+<!--        <androidx.appcompat.widget.AppCompatButton-->
+<!--            android:id="@+id/addFriendButton"-->
+<!--            style="@null"-->
+<!--            android:layout_width="170dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            android:layout_marginBottom="20dp"-->
+<!--            android:background="@drawable/white_button"-->
+<!--            android:backgroundTint="@null"-->
+<!--            android:text="Add Friend"-->
+<!--            android:textAppearance="@style/TextAppearance.AppCompat.Small" />-->
 
         <ListView
             android:id="@+id/friendsList"

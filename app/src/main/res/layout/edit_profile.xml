@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.userprofile.UserProfileFragment">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/layout"
@@ -20,17 +22,21 @@
                 android:id="@+id/profile_image"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/ic_launcher_foreground"
                 android:layout_gravity="center"
-                android:contentDescription="@string/ProfileImage" />
+                android:contentDescription="@string/ProfileImage"
+                android:src="@drawable/ic_launcher_foreground" />
 
             <!-- Change Button -->
             <Button
                 android:id="@+id/btn_change_photo"
+                style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ChangePhotoBtn"
-                android:layout_gravity="center" />
+                android:layout_gravity="center_horizontal"
+                android:text="Change"
+                android:textColor="@color/black"
+                app:backgroundTint="#AEB0B2" />
+
 
             <TextView
                 android:layout_width="match_parent"
@@ -43,11 +49,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
-                android:hint="@string/NameUsernameField"
                 android:autofillHints="username"
                 android:inputType="text" />
 
 
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:text="Password" />
+
+            <EditText
+                android:id="@+id/Input_Password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:autofillHints="username"
+                android:inputType="text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -61,18 +80,20 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 android:orientation="horizontal">
+
                 <RadioButton
                     android:id="@+id/Radio_Male"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/RadioBtnMale"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:text="@string/RadioBtnMale" />
+
                 <RadioButton
                     android:id="@+id/Radio_Female"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/RadioBtnFemale"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:text="@string/RadioBtnFemale" />
             </RadioGroup>
 
             <TextView
@@ -86,8 +107,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
-                android:hint="@string/EmailInputField"
                 android:autofillHints="emailAddress"
+                android:hint="@string/EmailInputField"
                 android:inputType="textEmailAddress" />
 
             <TextView
@@ -101,28 +122,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
+                android:autofillHints="phone"
                 android:hint="@string/PhoneNumberInputField"
-                android:inputType="phone"
-                android:autofillHints="phone" />
-
+                android:inputType="phone" />
 
 
             <Button
                 android:id="@+id/btn_save"
+                style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="3dp"
-                android:text="@string/SaveBtn"
-                android:backgroundTint="@color/green"
-                android:layout_gravity="center" />
+                android:text="Save"
+                android:textColor="@color/white"
+                app:backgroundTint="#539058" />
 
             <Button
                 android:id="@+id/btn_cancel"
+                style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="3dp"
-                android:text="@string/CancelBtn"
-                android:layout_gravity="center" />
+                android:text="Cancel"
+                android:textColor="@color/black"
+                app:backgroundTint="#FCF5FD"
+                app:strokeWidth="1dp" />
+
 
             <View
                 android:layout_width="match_parent"

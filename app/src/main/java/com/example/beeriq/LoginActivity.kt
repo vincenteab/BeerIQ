@@ -48,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
                 checkUniqueUsername(tempUser){ exists ->
                     if (exists){
                         binding.usernameTextField.error = "Username already exists"
-                        binding.usernameTextField.error = null
+                        binding.passwordTextField.error = null
                     }else{
                         //create a unique id for the user
                         val uniqueID = firebaseRef.push().key!!
@@ -59,6 +59,8 @@ class LoginActivity : AppCompatActivity() {
                             }
                         //continue to the main activity
                         storeUserDataLocally(username, password, null, null, null)
+                        binding.usernameTextField.error = null
+                        binding.passwordTextField.error = null
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     }
@@ -90,6 +92,8 @@ class LoginActivity : AppCompatActivity() {
 
 
                             }
+                            binding.usernameTextField.error = null
+                            binding.passwordTextField.error = null
                             binding.loginButton.doResult(true)
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
