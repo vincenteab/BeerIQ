@@ -67,4 +67,6 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
 
+    //for csv import
+    implementation("org.apache.commons:commons-csv:1.10.0")
 }

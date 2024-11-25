@@ -26,12 +26,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.beeriq.R
+import com.example.beeriq.data.local.beerDatabase.BeerDatabase
+import com.example.beeriq.data.local.beerDatabase.BeerRepository
 import com.example.beeriq.tools.Util
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.TextRecognizer
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+
 
 class CameraFragment : Fragment() {
     private lateinit var previewView: PreviewView
@@ -43,7 +43,6 @@ class CameraFragment : Fragment() {
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var viewModel: CameraViewModel
-    private lateinit var recognizer: TextRecognizer
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,17 +77,26 @@ class CameraFragment : Fragment() {
                 .build()
             bindPreview(cameraProvider)
 
-
         }, ContextCompat.getMainExecutor(requireActivity()))
 
-        recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-        viewModel = ViewModelProvider(this).get(CameraViewModel::class.java)
+        val cameraViewModel: CameraViewModel
+        val database = BeerDatabase.getInstance(requireContext())
+        val repository = BeerRepository(database.beerDatabaseDao)
+        val cameraViewModelFactory = CameraViewModelFactory(repository)
+        cameraViewModel = ViewModelProvider(requireActivity(), cameraViewModelFactory).get(CameraViewModel::class.java)
 
         captureButton = view.findViewById(R.id.capture)
         captureButton.setOnClickListener {
             capturePhoto { bitmap ->
                 val image = InputImage.fromBitmap(bitmap, 0)
-                viewModel.recognizeTextFromImage(image)
+                cameraViewModel.recognizeTextFromImage(image)
+                cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
+                    val bundle = Bundle().apply {
+                        putSerializable("beer_object", beer)
+
+                    }
+                    findNavController().navigate(R.id.navigation_camera_result, bundle)
+                }
             }
         }
     }

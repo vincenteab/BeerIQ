@@ -21,6 +21,9 @@
         android:theme="@style/Theme.BeerIQ"
         tools:targetApi="31">
         <activity
+            android:name=".data.local.beerDatabase.ImportCsv"
+            android:exported="true" />
+        <activity
             android:name=".ui.beerList.BeerListActivity"
             android:exported="false"
             android:theme="@style/Theme.BeerIQ" />
