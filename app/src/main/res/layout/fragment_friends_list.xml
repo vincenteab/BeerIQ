@@ -21,18 +21,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add Friend" />
+        <Button
+            android:id="@+id/friendActivityButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Friend Acitivty" />
+
 
         <ListView
             android:id="@+id/friendsList"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Repeat for additional friends -->
-
-        <!-- Friend 2 -->
-
-
-        <!-- Friend 4 -->
 
     </LinearLayout>
 </FrameLayout>

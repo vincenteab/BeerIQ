@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.lifecycle.ViewModelProvider
 import com.example.beeriq.R
 import com.example.beeriq.databinding.FragmentFriendsListBinding
+import com.example.beeriq.ui.activity.ActivityActivity
 
 class FriendsList : Fragment() {
 
@@ -77,6 +78,10 @@ class FriendsList : Fragment() {
             val intent = Intent(requireContext(), FriendRequestActivity::class.java)
             startActivity(intent)
         }
+        binding.friendActivityButton.setOnClickListener({
+            val intent = Intent(requireContext(), ActivityActivity::class.java)
+            startActivity(intent)
+        })
 
 
 
