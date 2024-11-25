@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.beeriq.R
@@ -42,6 +43,7 @@ class EditProfileFragment : AppCompatActivity() {
     private lateinit var inputEmail: EditText
     private lateinit var inputPhone: EditText
     private lateinit var radioGenres: RadioGroup
+    private lateinit var password: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +58,7 @@ class EditProfileFragment : AppCompatActivity() {
         username = findViewById(R.id.Input_Username)
         inputEmail =findViewById(R.id.Input_Email)
         inputPhone =findViewById(R.id.Input_Phone)
+        password = findViewById(R.id.Input_Password)
 
 
         radioGenres =findViewById(R.id.Radio_Gender_Option)
@@ -92,11 +95,9 @@ class EditProfileFragment : AppCompatActivity() {
         btnSave.setOnClickListener{
             if(isValidForm()){
                 saveFormData()
-//                snackBarMessage("Successfully Saved", R.color.green)
-//                Handler(requireActivity().mainLooper).postDelayed({
-//                    finish()
-//                }, 1000)
+                finish()
             }
+
 
         }
 
@@ -104,7 +105,7 @@ class EditProfileFragment : AppCompatActivity() {
         btnCancel.setOnClickListener{
             loadImage()
             loadFormData()
-//            finish()
+            finish()
         }
 
         // Register for camera result to handle the photo capture and display
@@ -140,8 +141,7 @@ class EditProfileFragment : AppCompatActivity() {
 
         // check if input fields aren't empty
         if (getTextVal(username).isEmpty() ||
-            getTextVal(inputEmail).isEmpty() ||
-            getTextVal(inputPhone).isEmpty()){
+            getTextVal(password).isEmpty()){
 //            snackBarMessage("All fields must be complete", R.color.red)
             return false
         }
@@ -232,6 +232,7 @@ class EditProfileFragment : AppCompatActivity() {
         editor.putString("name", username.text.toString())
         editor.putString("email", inputEmail.text.toString())
         editor.putString("phone", inputPhone.text.toString())
+        editor.putString("password", password.text.toString())
 
         // Save the selected gender
         val gender = when {
@@ -251,6 +252,7 @@ class EditProfileFragment : AppCompatActivity() {
         username.setText(sharedPref.getString("username", ""))
         inputEmail.setText(sharedPref.getString("email", ""))
         inputPhone.setText(sharedPref.getString("phone", ""))
+        password.setText(sharedPref.getString("password", ""))
 
         val gender = sharedPref.getString("gender", "")
         when (gender) {

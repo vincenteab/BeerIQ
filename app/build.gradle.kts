@@ -36,6 +36,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         viewBinding = true
     }
@@ -67,7 +68,8 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.0")
     kapt("androidx.room:room-compiler:2.6.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation ("com.github.timonknispel:KTLoadingButton:1.2.0")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("org.apache.commons:commons-csv:1.10.0")
     implementation(libs.play.services.maps)
-    implementation("com.google.android.material:material:1.12.0")
 }
