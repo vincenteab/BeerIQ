@@ -486,7 +486,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                         // Fetch activities for each friend
                         for (friend in friendsList) {
                             // Query Firebase for friend's activities
-                            databaseReference.child(friend).child("activities")
+                            databaseReference.child("users").child(friend).child("activities")
                                 .addListenerForSingleValueEvent(object : ValueEventListener {
                                     override fun onDataChange(activitySnapshot: DataSnapshot) {
                                         activitySnapshot.children.mapNotNull { activitySnapshot ->
