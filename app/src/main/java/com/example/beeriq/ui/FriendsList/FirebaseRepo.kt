@@ -433,7 +433,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                     for (postSnapshot in snapshot.children) {
                         val userKey = postSnapshot.key
                         if (userKey != null) {
-                            val activitiesRef = databaseReference.child("users").child(userKey).child("activities")
+                            val activitiesRef = databaseReference.child(userKey).child("activities")
                             activitiesRef.runTransaction(object : Transaction.Handler {
                                 override fun doTransaction(currentData: MutableData): Transaction.Result {
                                     val currentList = currentData.getValue(object : GenericTypeIndicator<MutableList<Activity>>() {})?.toMutableList() ?: mutableListOf()
@@ -486,7 +486,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                         // Fetch activities for each friend
                         for (friend in friendsList) {
                             // Query Firebase for friend's activities
-                            databaseReference.child("users").child(friend).child("activities")
+                            databaseReference.child(friend).child("activities")
                                 .addListenerForSingleValueEvent(object : ValueEventListener {
                                     override fun onDataChange(activitySnapshot: DataSnapshot) {
                                         activitySnapshot.children.mapNotNull { activitySnapshot ->

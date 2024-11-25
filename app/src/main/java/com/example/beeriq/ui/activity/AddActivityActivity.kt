@@ -62,6 +62,7 @@ class AddActivityActivity : AppCompatActivity() {
                 // Show a toast or error message for empty fields
                 Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
             }
+            finish()
         }
     }
 
