@@ -1,0 +1,38 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name" />
+
+    <EditText
+        android:id="@+id/etTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Beer Title" />
+
+    <EditText
+        android:id="@+id/etSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Beer Type" />
+
+    <EditText
+        android:id="@+id/etComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Comment" />
+
+    <Button
+        android:id="@+id/btnSaveActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Activity" />
+
+</LinearLayout>

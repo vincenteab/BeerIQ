@@ -9,3 +9,4 @@ data class User(
     val outgoingFriends: MutableList<String> = mutableListOf(),
     val incomingFriends: MutableList<String> = mutableListOf()
 )
+
