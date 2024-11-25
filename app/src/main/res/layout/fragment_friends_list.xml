@@ -36,14 +36,15 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/addFriendButton"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
-            android:text="Add Friend"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/border_drawable"
+            style="@null"
+            android:layout_width="170dp"
+            android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/white_button"
             android:backgroundTint="@null"
-            />
+            android:text="Add Friend"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
         <ListView
             android:id="@+id/friendsList"
