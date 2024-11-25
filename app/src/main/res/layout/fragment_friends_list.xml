@@ -26,7 +26,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Friend Acitivty" />
-
+        <Button
+            android:id="@+id/addActivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Log an Activity" />
 
         <ListView
             android:id="@+id/friendsList"

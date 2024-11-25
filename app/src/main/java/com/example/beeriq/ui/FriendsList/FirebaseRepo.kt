@@ -5,7 +5,10 @@ import android.content.SharedPreferences
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.beeriq.Activity
+import com.example.beeriq.R
 import com.example.beeriq.User
+import com.example.beeriq.ui.activity.ActivityItem
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -412,6 +415,119 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             }
         })
 
+    }
+
+    fun addActivity(activity: Activity, onComplete: (Boolean) -> Unit) {
+        // Ensure localUser is correctly initialized
+        if (localUser.isNullOrEmpty()) {
+            println("Error: localUser is null or empty")
+            onComplete(false)
+            return
+        }
+
+        // Fetch the current user's information from Firebase
+        databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Check if user exists
+                if (snapshot.exists()) {
+                    for (postSnapshot in snapshot.children) {
+                        val userKey = postSnapshot.key
+                        if (userKey != null) {
+                            val activitiesRef = databaseReference.child("users").child(userKey).child("activities")
+                            activitiesRef.runTransaction(object : Transaction.Handler {
+                                override fun doTransaction(currentData: MutableData): Transaction.Result {
+                                    val currentList = currentData.getValue(object : GenericTypeIndicator<MutableList<Activity>>() {})?.toMutableList() ?: mutableListOf()
+                                    currentList.add(activity)
+                                    currentData.value = currentList
+                                    return Transaction.success(currentData)
+                                }
+
+                                override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                                    if (committed) {
+                                        println("Debug: Activity added successfully")
+                                        onComplete(true)
+                                    } else {
+                                        println("Debug: Failed to add activity. Error: ${error?.message}")
+                                        onComplete(false)
+                                    }
+                                }
+                            })
+                        } else {
+                            println("Error: User key is null")
+                            onComplete(false)
+                        }
+                    }
+                } else {
+                    println("Error: No data found for the user")
+                    onComplete(false)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Error fetching data: ${error.message}")
+                onComplete(false)
+            }
+        })
+    }
+
+    fun fetchActivities(onComplete: (List<ActivityItem>?) -> Unit) {
+        val username = localUser ?: return onComplete(null)
+
+        // Fetch user details first
+        databaseReference.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (userSnapshot in snapshot.children) {
+                        // Get the list of friends and cast it to MutableList<String>
+                        val friendsList = userSnapshot.child("friends").getValue(object : GenericTypeIndicator<List<String>>() {}) ?: mutableListOf()
+
+                        val activityItems = mutableListOf<ActivityItem>()
+
+                        // Fetch activities for each friend
+                        for (friend in friendsList) {
+                            // Query Firebase for friend's activities
+                            databaseReference.child("users").child(friend).child("activities")
+                                .addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(activitySnapshot: DataSnapshot) {
+                                        activitySnapshot.children.mapNotNull { activitySnapshot ->
+                                            val activity = activitySnapshot.getValue(Activity::class.java)
+                                            if (activity != null) {
+                                                // Add friend activity as ActivityItem
+                                                activityItems.add(
+                                                    ActivityItem(
+                                                        name = friend,  // Assuming friend's username is used for name
+                                                        date = activity.date,
+                                                        profileImage = R.drawable.baseline_person_24, // Default profile image
+                                                        beerImage = R.drawable.ic_dashboard_black_24dp, // Default beer image
+                                                        title = activity.Beer,
+                                                        subtitle = activity.type,
+                                                        comment = activity.comment
+                                                    )
+                                                )
+                                            }
+                                        }
+                                        // After all activities are fetched, complete with the list
+                                        if (activityItems.isNotEmpty()) {
+                                            onComplete(activityItems)
+                                        } else {
+                                            onComplete(null)  // No activities found for friends
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        println("Error fetching friend's activities: ${error.message}")
+                                        onComplete(null)
+                                    }
+                                })
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching user data: ${error.message}")
+                    onComplete(null)
+                }
+            })
     }
 
 
