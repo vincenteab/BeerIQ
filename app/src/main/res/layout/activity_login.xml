@@ -38,19 +38,24 @@
         android:background="@android:drawable/edit_text"
         android:layout_marginBottom="24dp"/>
 
-    <!-- Login Button -->
-    <Button
+
+    <de.timonknispel.ktloadingbutton.KTLoadingButton
         android:id="@+id/loginButton"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:textColor="#FFF"
-        android:padding="12dp"/>
-    <Button
+        app:buttonName="Login"
+        app:allCaps="false"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/createAccountButton"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
         android:text="Create Account"
-        android:textColor="#FFF"
-        android:padding="12dp"/>
+        app:backgroundTint="#FCF5FD" />
+
 </LinearLayout>

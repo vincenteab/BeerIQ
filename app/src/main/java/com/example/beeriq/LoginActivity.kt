@@ -3,6 +3,8 @@ package com.example.beeriq
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
@@ -13,6 +15,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
@@ -60,32 +67,42 @@ class LoginActivity : AppCompatActivity() {
         }
 
         //when user hits login button it will check if the user exists
-        binding.loginButton.setOnClickListener{
-            username = binding.usernameEditText.text.toString()
-            password = binding.passwordEditText.text.toString()
-            val tempLoggedUser = User(username, password)
-            //check if the user has entered a username and password
-            if (checkCredentials(tempLoggedUser) == 0){
-                checkUserExists(tempLoggedUser){ exists ->
-                    //if the user exists, continue to the main activity
-                    if (exists){
+        binding.loginButton.setOnClickListener {
+            binding.loginButton.startLoading()
 
-                        fetchUserData(username){ userData ->
-                            if (userData != null) {
-                                val email = userData.email
-                                val phone = userData.phone
-                                val friends = userData.friends as List<String>?
-                                storeUserDataLocally(username, password, email, phone, friends)
+            Handler(Looper.getMainLooper()).postDelayed({
+                username = binding.usernameEditText.text.toString()
+                password = binding.passwordEditText.text.toString()
+                val tempLoggedUser = User(username, password)
+                //check if the user has entered a username and password
+                if (checkCredentials(tempLoggedUser) == 0){
+                    checkUserExists(tempLoggedUser){ exists ->
+                        //if the user exists, continue to the main activity
+                        if (exists){
+
+                            fetchUserData(username){ userData ->
+                                if (userData != null) {
+                                    val email = userData.email
+                                    val phone = userData.phone
+                                    val friends = userData.friends as List<String>?
+                                    storeUserDataLocally(username, password, email, phone, friends)
+                                }
+
+
                             }
-
+                            binding.loginButton.doResult(true)
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+                        }else{
+                            binding.loginButton.doResult(false)
                         }
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
                     }
+                }else{
+                    binding.loginButton.doResult(false)
                 }
-            }
 
 
+            }, 2000) // 3 seconds delay
         }
     }
 
