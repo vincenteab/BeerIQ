@@ -27,6 +27,21 @@
             android:id="@+id/action_navigation_camera_to_navigation_map"
             app:launchSingleTop="true"
             app:destination="@id/navigation_map" />
+        <action
+            android:id="@+id/action_navigation_camera_to_navigation_camera_result"
+            app:destination="@id/navigation_camera_result"
+            app:popUpTo="@id/navigation_camera"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_camera_result"
+        android:name="com.example.beeriq.ui.camera.CameraResultFragment"
+        android:label=""
+        tools:layout="@layout/fragment_camera_result">
+        <argument
+            android:name="beerFullName"
+            app:argType="string" />
     </fragment>
 
     <fragment
