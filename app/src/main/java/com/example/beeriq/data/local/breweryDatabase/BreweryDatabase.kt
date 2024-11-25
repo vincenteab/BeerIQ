@@ -20,6 +20,7 @@ abstract class BreweryDatabase: RoomDatabase() {
                     instance = Room.databaseBuilder(context.applicationContext,
                         BreweryDatabase::class.java, "brewery_db_instance"
                     )
+                        .createFromAsset("brewery_db_instance")
                         .fallbackToDestructiveMigration()
                         .build()
                     INSTANCE = instance
