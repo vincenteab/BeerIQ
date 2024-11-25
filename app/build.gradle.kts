@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     id("kotlin-kapt")
 }
 
@@ -66,5 +67,6 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.0")
     kapt("androidx.room:room-compiler:2.6.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
-
+    implementation("org.apache.commons:commons-csv:1.10.0")
+    implementation(libs.play.services.maps)
 }

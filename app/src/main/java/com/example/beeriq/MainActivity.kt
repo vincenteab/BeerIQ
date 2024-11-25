@@ -1,5 +1,6 @@
 package com.example.beeriq
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -9,6 +10,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.beeriq.databinding.ActivityMainBinding
+import com.example.beeriq.data.local.breweryDatabase.ImportBreweries
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_map, R.id.navigation_search, R.id.navigation_camera, R.id.navigation_friendslist, R.id.navigation_profile
             )
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
