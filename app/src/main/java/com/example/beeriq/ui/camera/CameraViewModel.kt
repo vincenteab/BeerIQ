@@ -19,10 +19,8 @@ import kotlinx.coroutines.withContext
 
 class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-
-    var beerResult = MutableLiveData<List<Beer>>()
-
     private val beerCountMap: MutableMap<Beer, Int> = mutableMapOf()
+    var beerResult = MutableLiveData<List<Beer>>()
 
     suspend fun getBeerFullName(fullName: String): List<Beer> {
         var beerList: List<Beer> = arrayListOf()
@@ -48,7 +46,6 @@ class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
 
                         // Process the recognized text
                         val resultText = visionText.text
-                        //getBeerFullName("*$resultText*")
                         Log.d("TextRecognition", "Full Text: $resultText")
 
                         // Iterate through each TextBlock (paragraph or larger block)
@@ -64,9 +61,11 @@ class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
                                 // Iterate through each Element (word or word-like entity) in this Line
                                 for (element in line.elements) {
                                     val elementText = element.text
-                                    deferredResults.add(async {
-                                        getBeerFullName("*$elementText*")
-                                    })
+                                    if (elementText.length >= 2) {
+                                        deferredResults.add(async {
+                                            getBeerFullName("*$elementText*")
+                                        })
+                                    }
                                     Log.d("TextRecognition", "Element: $elementText")
                                 }
                             }
@@ -77,21 +76,15 @@ class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
                                 beerCountMap[beer] = (beerCountMap[beer] ?: 0) + 1
                             }
                         }
-
                         val sortedList = synchronized(beerCountMap) {
                             beerCountMap.entries.sortedByDescending { it.value }.map { it.key }
                         }
-
                         withContext(Dispatchers.Main) {
                             beerResult.value = sortedList
                         }
                     }
                 }
         }
-    }
-
-    fun clearBeerResult() {
-        beerResult.value = emptyList()
     }
 }
 
