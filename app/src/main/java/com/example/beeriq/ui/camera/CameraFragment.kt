@@ -24,7 +24,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.BeerDatabase
@@ -43,7 +42,6 @@ class CameraFragment : Fragment() {
     private lateinit var cameraSelector: CameraSelector
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
-    private lateinit var viewModel: CameraViewModel
     private lateinit var cameraViewModel: CameraViewModel
 
     override fun onCreateView(
@@ -99,7 +97,6 @@ class CameraFragment : Fragment() {
                     if (beer.isNotEmpty()) {
                         findNavController().navigate(R.id.navigation_camera_result, bundle)
                     }
-
                 }
             }
         }
@@ -142,7 +139,15 @@ class CameraFragment : Fragment() {
             selectedImageUri?.let {
                 val bitmap = Util.getBitmap(requireContext(), it)
                 val image = InputImage.fromBitmap(bitmap, 0)
-                viewModel.recognizeTextFromImage(image)
+                cameraViewModel.recognizeTextFromImage(image)
+                cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
+                    val bundle = Bundle().apply {
+                        putSerializable("beer_object", ArrayList(beer))
+                    }
+                    if (beer.isNotEmpty()) {
+                        findNavController().navigate(R.id.navigation_camera_result, bundle)
+                    }
+                }
             }
         }
     }
