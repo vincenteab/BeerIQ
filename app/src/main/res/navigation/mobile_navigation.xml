@@ -45,6 +45,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/navigation_beer_details"
+        android:name="com.example.beeriq.ui.camera.BeerDetailsFragment"
+        android:label=""
+        tools:layout="@layout/fragment_beer_details">
+        <argument
+            android:name="beerFullName"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
         android:id="@+id/navigation_search"
         android:name="com.example.beeriq.ui.beerCategories.BeerCategoriesFragment"
         android:label="@string/title_search"
