@@ -136,71 +136,46 @@ class EditProfileFragment : AppCompatActivity() {
     }
 
     // Check to see if form is valid
-    private fun isValidForm(): Boolean{
+    private fun isValidForm(): Boolean {
+        // Helper function to show popup message
+        fun showPopupMessage(message: String) {
+            AlertDialog.Builder(this)
+                .setTitle("Invalid Input")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show()
+        }
 
-        // check if input fields aren't empty
-        if (getTextVal(username).isEmpty() ||
-            getTextVal(password).isEmpty()){
-//            snackBarMessage("All fields must be complete", R.color.red)
+        // Check if input fields are empty
+        if (getTextVal(username).isEmpty() || getTextVal(password).isEmpty()) {
+            showPopupMessage("All fields must be completed.")
             return false
         }
 
-        // check if email is valid
-        //https://chatgpt.com/share/66edf43c-ee40-8002-900a-a93fb6389d72
+        // Check if email is valid
         val TLDs = listOf(
-            ".com",
-            ".org",
-            ".net",
-            ".edu",
-            ".gov",
-            ".mil",
-            ".info",
-            ".biz",
-            ".name",
-            ".pro",
-            ".xyz",
-            ".io",
-            ".tech",
-            ".online",
-            ".app",
-            ".store",
-            ".blog",
-            ".shop",
-            ".club",
-            ".guru",
-            ".design",
-            ".photography",
-            ".music",
-            ".news"
+            ".com", ".org", ".net", ".edu", ".gov", ".mil", ".info", ".biz", ".name",
+            ".pro", ".xyz", ".io", ".tech", ".online", ".app", ".store", ".blog",
+            ".shop", ".club", ".guru", ".design", ".photography", ".music", ".news"
         )
 
-
-        if (!getTextVal(inputEmail).contains('@') || !containsValidTLD(getTextVal((inputEmail)) ,TLDs)){
-//            snackBarMessage("Invalid email", R.color.red)
+        val email = getTextVal(inputEmail)
+        if (!email.contains('@') || !containsValidTLD(email, TLDs)) {
+            showPopupMessage("Invalid email address. Please provide a valid email.")
             return false
         }
 
+        // Check if a gender radio button is selected
         val selectedRadioButtonId = radioGenres.checkedRadioButtonId
-
-        // Check if a radio postButton has been selected
-        if (selectedRadioButtonId != -1) {
-            // Find the selected RadioButton by id
-            val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
-
-            // Ensure the selectedRadioButton is not null before accessing its text property
-            if (selectedRadioButton != null) {
-                val selectedRadioText = selectedRadioButton.text.toString() // Get the text of the selected radio postButton
-                // Do something with the selected radio postButton value
-                println("Selected Gender: $selectedRadioText")
-            }
-        } else {
-            // No radio postButton is selected
-            println("No gender selected")
-//            snackBarMessage("Gender not selected", R.color.red)
+        if (selectedRadioButtonId == -1) {
+            showPopupMessage("Please select a gender.")
             return false
         }
+
+        // If all validations pass
         return true
     }
+
 
     private fun openCamera() {
         val imageFile = File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), tempImgFileName)
