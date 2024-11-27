@@ -474,4 +474,77 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             }
         })
     }
+
+    // Update users profile
+    fun updateUser(user: User, onComplete: (Boolean) -> Unit) {
+        if (user.username.isEmpty()) {
+            println("Debug: Username cannot be empty for updating user data.")
+            onComplete(false)
+            return
+        }
+
+        // Locate the user record by username
+        databaseReference.orderByChild("username").equalTo(user.username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            // Get the Firebase key for the user
+                            val userKey = child.key
+                            if (userKey != null) {
+                                // Update the user's data in Firebase
+                                databaseReference.child(userKey).setValue(user)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            println("Debug: User ${user.username} updated successfully.")
+                                            onComplete(true)
+                                        } else {
+                                            println("Debug: Failed to update user ${user.username}: ${task.exception?.message}")
+                                            onComplete(false)
+                                        }
+                                    }
+                                return // Exit after the first match
+                            }
+                        }
+                    } else {
+                        println("Debug: No user found with username: ${user.username}")
+                        onComplete(false)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to locate user ${user.username}: ${error.message}")
+                    onComplete(false)
+                }
+            })
+    }
+
+
+    // Get users data
+    fun fetchUserData(user: String, onComplete: (User?) -> Unit) {
+        databaseReference.orderByChild("username").equalTo(user)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            val userData = child.getValue(User::class.java)
+                            onComplete(userData)
+                            return // Exit after finding the first matching user
+                        }
+                    } else {
+                        println("Debug: No user found with username: $user")
+                        onComplete(null)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Query cancelled: ${error.message}")
+                    onComplete(null)
+                }
+            })
+    }
+
+
+
 }
