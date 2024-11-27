@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
         firebaseRef = FirebaseDatabase.getInstance().getReference("users")
 
 
-        //when user hits create button it will create an account
+        //when user hits create postButton it will create an account
         binding.createAccountButton.setOnClickListener{
             //get the username and password from the edit text
             username = binding.usernameTextField.editText?.text.toString()
@@ -68,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        //when user hits login button it will check if the user exists
+        //when user hits login postButton it will check if the user exists
         binding.loginButton.setOnClickListener {
             binding.loginButton.startLoading()
 

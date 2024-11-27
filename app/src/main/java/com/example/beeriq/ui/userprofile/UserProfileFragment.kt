@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.beeriq.R
-import com.example.beeriq.ui.FriendsList.FriendsList
 import com.example.beeriq.ui.FriendsList.FriendsListActivity
 import com.example.beeriq.ui.editprofile.EditProfileFragment
 import com.example.beeriq.ui.favorites.FavoritesActivity

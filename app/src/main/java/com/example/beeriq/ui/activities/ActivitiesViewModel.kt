@@ -3,11 +3,16 @@ package com.example.beeriq.ui.activities
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.beeriq.ui.FriendsList.FirebaseRepo
+import com.example.beeriq.FirebaseRepo
 
 
 class ActivitiesViewModel(private val repo: FirebaseRepo) : ViewModel() {
     val friendsListData: LiveData<MutableList<String>> = repo.friendsList
+    val activitiesListData: LiveData<MutableList<Post>> = repo.activitiesList
+
+    init {
+        repo.fetchAllLists()
+    }
 
 
     class ActivitiesViewModelFactory(private val repo: FirebaseRepo) : ViewModelProvider.Factory {

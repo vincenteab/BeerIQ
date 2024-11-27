@@ -69,7 +69,7 @@
     <fragment
         android:id="@+id/navigation_activities"
         android:name="com.example.beeriq.ui.activities.ActivitiesFragment"
-        android:label="@string/title_activities"
+        android:label="Activity Feed"
         tools:layout="@layout/fragment_activities" >
         <action
             android:id="@+id/action_navigation_activities_to_navigation_camera"

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
 import com.example.beeriq.databinding.ItemActivitiesBinding
 
-class ActivitiesAdapter (private val context: Context, private val postsList: MutableList<Post>) : BaseAdapter() {
+class ActivitiesAdapter (private val context: Context, private var postsList: MutableList<Post>) : BaseAdapter() {
 
     override fun getCount(): Int {
         return postsList.size
@@ -48,7 +49,7 @@ class ActivitiesAdapter (private val context: Context, private val postsList: Mu
         binding.subtitlePost.text = post.subtitle
         binding.beernamePost.text = post.beername
 
-        var image: Bitmap? = byteArrayToImage(post.image)
+        var image: Bitmap? = base64ToBitmap(post.image)
         binding.imagePost.setImageBitmap(image)
 
 
@@ -57,8 +58,14 @@ class ActivitiesAdapter (private val context: Context, private val postsList: Mu
 
     }
 
+    fun replace(data: MutableList<Post>) {
+        postsList = data
+        notifyDataSetChanged()
+    }
+
     // Takes byte array and converts it to an image
-    fun byteArrayToImage(byteArray: ByteArray): Bitmap? {
+    fun base64ToBitmap(base64String: String): Bitmap? {
+        val byteArray = Base64.decode(base64String, Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 }
