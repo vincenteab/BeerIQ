@@ -4,6 +4,8 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -35,8 +37,16 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
         val hoppyText: TextView = view.findViewById(R.id.hoppy_text)
         val fruitsText: TextView = view.findViewById(R.id.fruits_text)
         val bitterText: TextView = view.findViewById(R.id.bitter_text)
+        val moreButton: FrameLayout = view.findViewById(R.id.more_button)
+        val moreButtonText: TextView = view.findViewById(R.id.more_button_text)
+        val hiddenContent: LinearLayout = view.findViewById(R.id.hidden_content)
         val alcoholText: TextView = view.findViewById(R.id.alcohol_text)
-
+        val spicesText: TextView = view.findViewById(R.id.spices_text)
+        val maltyText: TextView = view.findViewById(R.id.malty_text)
+        val sweetText: TextView = view.findViewById(R.id.sweet_text)
+        val saltyText: TextView = view.findViewById(R.id.salty_text)
+        val astringencyText: TextView = view.findViewById(R.id.astringency_text)
+        val sourText: TextView = view.findViewById(R.id.sour_text)
 
         val beer = arguments?.getSerializable("beer_object") as? Beer
         val byteArray = arguments?.getByteArray("bitmap") as ByteArray
@@ -71,8 +81,22 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
             fruitsText.text = beer.fruits.toString() + " mentions of fruity notes"
             bitterText.text = beer.bitter.toString() + " mentions of bitter notes"
             alcoholText.text = beer.alcohol.toString() + " mentions of alcohol notes"
+            spicesText.text = beer.spices.toString() + " mentions of spicy notes"
+            maltyText.text = beer.malty.toString() + " mentions of malty notes"
+            sweetText.text = beer.sweet.toString() + " mentions of sweet notes"
+            saltyText.text = beer.salty.toString() + " mentions of salty notes"
+            astringencyText.text = beer.astringency.toString() + " mentions of astringent notes"
+            sourText.text = beer.sour.toString() + " mentions of sour notes"
 
+            moreButton.setOnClickListener {
+                if (hiddenContent.visibility == View.GONE) {
+                    hiddenContent.visibility = View.VISIBLE
+                    moreButtonText.text = "Show less"
+                } else {
+                    hiddenContent.visibility = View.GONE
+                    moreButtonText.text = "Show More"
+                }
+            }
         }
     }
-
 }

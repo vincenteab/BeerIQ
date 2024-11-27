@@ -356,7 +356,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginTop="9dp"
-                    android:src="@drawable/hop"/>
+                    android:src="@drawable/hoppy"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -381,12 +381,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="10dp"
-                app:dividerColor="#9999"/>
+                app:dividerInsetStart="52dp"
+                app:dividerColor="#e0e0e0"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:orientation="horizontal" >
+
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
@@ -416,7 +418,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="10dp"
-                app:dividerColor="#9999"/>
+                app:dividerInsetStart="52dp"
+                app:dividerColor="#e0e0e0"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -426,7 +429,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginTop="9dp"
-                    android:src="@drawable/bitter_gourd"/>
+                    android:src="@drawable/bitter"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -447,41 +450,288 @@
                         android:textColor="#888" />
                 </LinearLayout>
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/hidden_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginLeft="16dp" >
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    app:dividerInsetStart="36dp"
+                    app:dividerColor="#e0e0e0"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="9dp"
+                        android:src="@drawable/liquor_24px"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="vertical" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Alcohol"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/alcohol_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="300 mentions of _ notes"
+                            android:textSize="13sp"
+                            android:textColor="#888" />
+                    </LinearLayout>
+                </LinearLayout>
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    app:dividerInsetStart="36dp"
+                    app:dividerColor="#e0e0e0"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="9dp"
+                        android:src="@drawable/spices"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="vertical" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Spices"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/spices_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="300 mentions of _ notes"
+                            android:textSize="13sp"
+                            android:textColor="#888" />
+                    </LinearLayout>
+                </LinearLayout>
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    app:dividerInsetStart="36dp"
+                    app:dividerColor="#e0e0e0"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="9dp"
+                        android:src="@drawable/malty"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="vertical" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Malty"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/malty_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="300 mentions of _ notes"
+                            android:textSize="13sp"
+                            android:textColor="#888" />
+                    </LinearLayout>
+                </LinearLayout>
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    app:dividerInsetStart="36dp"
+                    app:dividerColor="#e0e0e0"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="9dp"
+                        android:src="@drawable/sweet"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="vertical" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sweet"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/sweet_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="300 mentions of _ notes"
+                            android:textSize="13sp"
+                            android:textColor="#888" />
+                    </LinearLayout>
+                </LinearLayout>
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    app:dividerInsetStart="36dp"
+                    app:dividerColor="#e0e0e0"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="9dp"
+                        android:src="@drawable/salty"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="vertical" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Salty"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/salty_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="300 mentions of _ notes"
+                            android:textSize="13sp"
+                            android:textColor="#888" />
+                    </LinearLayout>
+                </LinearLayout>
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    app:dividerInsetStart="36dp"
+                    app:dividerColor="#e0e0e0"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="9dp"
+                        android:src="@drawable/astringency"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="vertical" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Astringency"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/astringency_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="300 mentions of _ notes"
+                            android:textSize="13sp"
+                            android:textColor="#888" />
+                    </LinearLayout>
+                </LinearLayout>
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    app:dividerInsetStart="36dp"
+                    app:dividerColor="#e0e0e0"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="9dp"
+                        android:src="@drawable/sour"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="vertical" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sour"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/sour_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="300 mentions of _ notes"
+                            android:textSize="13sp"
+                            android:textColor="#888" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginVertical="10dp"
-                app:dividerColor="#9999"/>
-            <LinearLayout
+                android:layout_marginTop="10dp"
+                app:dividerColor="#e0e0e0"/>
+            <FrameLayout
+                android:id="@+id/more_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:orientation="horizontal" >
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginTop="9dp"
-                    android:src="@drawable/liquor_24px"/>
-                <LinearLayout
+                android:layout_gravity="center_horizontal"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <TextView
+                    android:id="@+id/more_button_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:orientation="vertical" >
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Alcohol"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:id="@+id/alcohol_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="300 mentions of _ notes"
-                        android:textSize="13sp"
-                        android:textColor="#888" />
-                </LinearLayout>
-            </LinearLayout>
+                    android:padding="10dp"
+                    android:layout_gravity="center"
+                    android:text="Show more"
+                    android:textSize="13sp"
+                    android:textColor="#f0c542" />
+            </FrameLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                app:dividerColor="#30f0c542"/>
 
             </LinearLayout>
         </LinearLayout>
