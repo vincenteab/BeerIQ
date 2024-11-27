@@ -61,7 +61,7 @@ class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
                                 // Iterate through each Element (word or word-like entity) in this Line
                                 for (element in line.elements) {
                                     val elementText = element.text
-                                    if (elementText.length >= 2) {
+                                    if (elementText.length > 2) {
                                         deferredResults.add(async {
                                             getBeerFullName("*$elementText*")
                                         })

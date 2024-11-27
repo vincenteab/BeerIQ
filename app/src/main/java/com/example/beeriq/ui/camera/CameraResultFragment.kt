@@ -22,17 +22,19 @@ class CameraResultFragment: Fragment(R.layout.fragment_camera_result) {
         beerRecyclerView.clipToPadding = false
 
         val beerList = arguments?.getSerializable("beer_object") as List<Beer>
+        val byteArray = arguments?.getByteArray("bitmap") as ByteArray
 
         beerSuggestionAdapter = BeerSuggestionAdapter(beerList) { beer ->
-            navigateToBeerDetails(beer)
+            navigateToBeerDetails(beer, byteArray)
         }
         beerRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         beerRecyclerView.adapter = beerSuggestionAdapter
     }
 
-    private fun navigateToBeerDetails(beer: Beer) {
+    private fun navigateToBeerDetails(beer: Beer, byteArray: ByteArray) {
         val bundle = Bundle().apply {
             putSerializable("beer_object", beer)
+            putByteArray("bitmap", byteArray)
         }
         findNavController().navigate(R.id.navigation_beer_details, bundle)
     }

@@ -1,6 +1,488 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/beer_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_launcher_foreground"
+                android:paddingLeft="20dp"
+                app:shapeAppearanceOverlay="@style/RoundedCornerImage">
+            </com.google.android.material.imageview.ShapeableImageView>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/baseline_sports_bar_24"
+                        app:tint="#40f0c542" />
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/sports_bar_24px"
+                        app:tint="#30f0c542" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="vertical"
+                    android:paddingTop="40dp">
+                    <TextView
+                        android:id="@+id/rating_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25dp"
+                        android:textStyle="bold"
+                        android:text="4.5" />
+                    <RatingBar
+                        android:id="@+id/rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:numStars="5"
+                        android:isIndicator="true"
+                        android:progressTint="#f0c542"
+                        android:secondaryProgressTint="#30dadada"
+                        android:progressBackgroundTint="@color/grey" />
+                    <TextView
+                        android:id="@+id/rating_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:text="142 ratings" />
+                </LinearLayout>
+                </FrameLayout>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Brewery -->
+            <TextView
+                android:id="@+id/brewery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Brewery"
+                android:textSize="16sp"
+                android:textColor="#555" />
+
+            <!-- Beer Name -->
+            <TextView
+                android:id="@+id/beerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beer Name"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- ABV -->
+            <TextView
+                android:id="@+id/abv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ABV: 5.0%"
+                android:textSize="14sp"
+                android:textColor="#777" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="50dp"
+                android:text="Brewer's notes"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#777" />
+            <TextView
+                android:id="@+id/brewers_notes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:text="Lorem ipsum"
+                android:textSize="12sp"
+                android:textColor="#777" />
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginTop="30dp"
+            app:dividerColor="#30f0c542"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="35dp"
+                android:paddingBottom="20dp"
+                android:gravity="center_horizontal"
+                android:text="Style"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="#777" />
+            <TextView
+                android:id="@+id/style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Lager"
+                android:textSize="17sp"
+                android:textColor="#777" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="30dp"
+                android:gravity="center_horizontal"
+                android:text="IBU (Min-Max)"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="#777" />
+            <TextView
+                android:id="@+id/ibu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="20dp"
+                android:gravity="center_horizontal"
+                android:text="20-40"
+                android:textSize="17sp"
+                android:textColor="#777" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginTop="25dp"
+                app:dividerColor="#30f0c542"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="20dp"
+                android:paddingLeft="16dp"
+                android:text="Characteristic scores"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#777" />
+            <TextView
+                android:id="@+id/num_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingBottom="10dp"
+                android:text="Lorem ipsum"
+                android:textSize="11sp"
+                android:textColor="#999" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="13dp"
+                    android:paddingRight="33dp"
+                    android:text="Aroma"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="#777" />
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/aroma_slider"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:value="2.5"
+                    android:valueFrom="0"
+                    android:valueTo="5"
+                    android:stepSize="0.000001"
+                    android:enabled="false"
+                    app:thumbHeight="20dp"
+                    app:trackColorActive="#f0c542"
+                    app:tickVisible="false"
+                    app:thumbColor="#f0c542" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:orientation="horizontal" >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="13dp"
+                    android:text="Appearance"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="#777" />
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/appearance_slider"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity=""
+                    android:value="2.5"
+                    android:valueFrom="0"
+                    android:valueTo="5"
+                    android:stepSize="0.000001"
+                    android:enabled="false"
+                    app:thumbHeight="20dp"
+                    app:trackColorActive="#f0c542"
+                    app:tickVisible="false"
+                    app:haloColor="#f0c542"
+                    app:thumbColor="#f0c542" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:orientation="horizontal" >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="13dp"
+                    android:text="Palate"
+                    android:paddingRight="35dp"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="#777" />
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/palate_slider"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity=""
+                    android:value="2.5"
+                    android:valueFrom="0"
+                    android:valueTo="5"
+                    android:stepSize="0.000001"
+                    android:enabled="false"
+                    app:thumbHeight="20dp"
+                    app:tickVisible="false"
+                    app:trackColorActive="#f0c542"
+                    app:haloColor="#f0c542"
+                    app:thumbColor="#f0c542" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:orientation="horizontal" >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="13dp"
+                    android:text="Taste"
+                    android:paddingRight="40dp"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="#777" />
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/taste_slider"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity=""
+                    android:value="2.5"
+                    android:valueFrom="0"
+                    android:valueTo="5"
+                    app:tickVisible="false"
+                    app:thumbHeight="20dp"
+                    android:stepSize="0.000001"
+                    android:enabled="false"
+                    app:trackColorActive="#f0c542"
+                    app:haloColor="#f0c542"
+                    app:thumbColor="#f0c542" />
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginTop="15dp"
+                app:dividerColor="#30f0c542"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="20dp"
+                android:paddingLeft="16dp"
+                android:paddingBottom="20dp"
+                android:text="What beer critics talk about"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#777" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:orientation="horizontal" >
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="9dp"
+                    android:src="@drawable/hop"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="vertical" >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hoppy"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/hoppy_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="300 mentions of _ notes"
+                        android:textSize="13sp"
+                        android:textColor="#888" />
+                </LinearLayout>
+            </LinearLayout>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                app:dividerColor="#9999"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:orientation="horizontal" >
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="9dp"
+                    android:src="@drawable/nutrition_24px"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="vertical" >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fruits"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/fruits_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="300 mentions of _ notes"
+                        android:textSize="13sp"
+                        android:textColor="#888" />
+                </LinearLayout>
+            </LinearLayout>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                app:dividerColor="#9999"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:orientation="horizontal" >
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="9dp"
+                    android:src="@drawable/bitter_gourd"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="vertical" >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bitter"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/bitter_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="300 mentions of _ notes"
+                        android:textSize="13sp"
+                        android:textColor="#888" />
+                </LinearLayout>
+            </LinearLayout>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                app:dividerColor="#9999"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:orientation="horizontal" >
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="9dp"
+                    android:src="@drawable/liquor_24px"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="vertical" >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Alcohol"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/alcohol_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="300 mentions of _ notes"
+                        android:textSize="13sp"
+                        android:textColor="#888" />
+                </LinearLayout>
+            </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+</ScrollView>
