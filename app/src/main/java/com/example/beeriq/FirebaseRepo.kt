@@ -413,16 +413,24 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
 
     fun fetchActivities(friend: String) {
         databaseReference.orderByChild("username").equalTo(friend)
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val dataList = mutableListOf<Post>()
                     for (postSnapshot in snapshot.children) {
-                        val user = postSnapshot.getValue(User::class.java)
-                        if (user != null) {
-                            dataList.addAll(user.posts)
+                        val postsPath = postSnapshot.child("posts")
+                        if (postsPath.exists()){
+                            for (post in postsPath.children){
+                                val postObject = post.getValue(Post::class.java)
+                                if (postObject != null) {
+                                    if (!_activitiesList.value.orEmpty().contains(postObject)) { // Ensure uniqueness
+                                        dataList.add(postObject)
+                                    }
+                                }
+                            }
                         }
+
                     }
-                    val currentActivities = _activitiesList.value ?: mutableListOf()
+                    val currentActivities = _activitiesList.value?.toMutableList() ?: mutableListOf()
                     currentActivities.addAll(dataList)
                     _activitiesList.postValue(currentActivities)
                 }

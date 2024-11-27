@@ -30,6 +30,11 @@ class ActivitiesFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentActivitiesBinding.inflate(inflater, container, false)
+
+
+        showLoadingScreen()
+
+
         val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
 
         repo = FirebaseRepo(sharedPreferences)
@@ -46,26 +51,46 @@ class ActivitiesFragment : Fragment() {
         activitiesAdapter = ActivitiesAdapter(requireContext(), activitiesList)
         listView.adapter = activitiesAdapter
 
-        viewModel.friendsListData.observe(viewLifecycleOwner, {
-            friendsList.clear()
-            friendsList.addAll(it)
-            println("debug: activities fragment friends list: $friendsList")
-            for (friend in friendsList) {
-                repo.fetchActivities(friend)
+        viewModel.friendsListData.observe(viewLifecycleOwner, { friends ->
+            if (friends != null){
+                for (friend in friends) {
+                    repo.fetchActivities(friend)
+                }
+            }
+
+        })
+
+        viewModel.activitiesListData.observe(viewLifecycleOwner, {
+            if (it != null){
+                activitiesList.clear()
+                activitiesList.addAll(it)
+                activitiesAdapter.replace(activitiesList)
+                activitiesAdapter.notifyDataSetChanged()
             }
         })
 
 
-        viewModel.activitiesListData.observe(viewLifecycleOwner, {
-            activitiesList.clear()
-            activitiesList.addAll(it)
-            activitiesAdapter.replace(activitiesList)
-            activitiesAdapter.notifyDataSetChanged()
-            val post = activitiesList[0].username
-            println("debug: activities fragment activities list: $post")
-        })
+
+        loadData()
+
 
         return binding.root
+    }
+
+    private fun showLoadingScreen(){
+        binding.progressBar.visibility = View.VISIBLE
+        binding.activitiesList.visibility = View.GONE
+    }
+
+    private fun loadData(){
+        Thread{
+
+            Thread.sleep(2000)
+            requireActivity().runOnUiThread{
+                binding.progressBar.visibility = View.GONE
+                binding.activitiesList.visibility = View.VISIBLE
+            }
+        }.start()
     }
 
     fun bitmapToBase64(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG, quality: Int = 100): String {
