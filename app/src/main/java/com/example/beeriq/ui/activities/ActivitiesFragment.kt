@@ -61,6 +61,8 @@ class ActivitiesFragment : Fragment() {
             activitiesList.addAll(it)
             activitiesAdapter.replace(activitiesList)
             activitiesAdapter.notifyDataSetChanged()
+            val post = activitiesList[0].username
+            println("debug: activities fragment activities list: $post")
         })
 
         return binding.root
