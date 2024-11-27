@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.content.Intent
+import android.graphics.Matrix
 import android.net.Uri
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +32,7 @@ import com.example.beeriq.data.local.beerDatabase.BeerRepository
 import com.example.beeriq.tools.Util
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
+import java.io.ByteArrayOutputStream
 
 
 class CameraFragment : Fragment() {
@@ -88,10 +90,17 @@ class CameraFragment : Fragment() {
         captureButton.setOnClickListener {
             capturePhoto { bitmap ->
                 val image = InputImage.fromBitmap(bitmap, 0)
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                val rotatedBitmap = rotateBitMap(bitmap, 90f)
+                val scaledBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 600, 1000, true)
+                scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                val byteArray = byteArrayOutputStream.toByteArray()
+
                 cameraViewModel.recognizeTextFromImage(image)
                 cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
                     val bundle = Bundle().apply {
                         putSerializable("beer_object", ArrayList(beer))
+                        putByteArray("bitmap", byteArray)
                     }
                     Log.d("testing", "FRAGMENT: $beer")
                     if (beer.isNotEmpty()) {
@@ -127,6 +136,12 @@ class CameraFragment : Fragment() {
         })
     }
 
+    private fun rotateBitMap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
     private fun openPhotoLibrary() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, 1)
@@ -139,10 +154,16 @@ class CameraFragment : Fragment() {
             selectedImageUri?.let {
                 val bitmap = Util.getBitmap(requireContext(), it)
                 val image = InputImage.fromBitmap(bitmap, 0)
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 600, 1000, true)
+                scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                val byteArray = byteArrayOutputStream.toByteArray()
+
                 cameraViewModel.recognizeTextFromImage(image)
                 cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
                     val bundle = Bundle().apply {
                         putSerializable("beer_object", ArrayList(beer))
+                        putByteArray("bitmap", byteArray)
                     }
                     if (beer.isNotEmpty()) {
                         findNavController().navigate(R.id.navigation_camera_result, bundle)
