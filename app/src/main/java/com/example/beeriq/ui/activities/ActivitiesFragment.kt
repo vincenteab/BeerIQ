@@ -63,23 +63,6 @@ class ActivitiesFragment : Fragment() {
             activitiesAdapter.notifyDataSetChanged()
         })
 
-
-
-
-        val image = bitmapToBase64(BitmapFactory.decodeResource(resources, R.drawable.beer_image_lager))
-
-        binding.postButton.setOnClickListener {
-            val post = Post(
-                sharedPreferences.getString("username", "") ?: "Username",
-                "Date",
-                image,
-                "Beer Name",
-                "Subtitle",
-                "Comment"
-            )
-            repo.addPost(post)
-        }
-
         return binding.root
     }
 
