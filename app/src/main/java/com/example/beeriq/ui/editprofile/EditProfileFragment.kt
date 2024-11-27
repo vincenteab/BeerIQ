@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -18,10 +17,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.FileProvider
-import androidx.fragment.app.Fragment
+import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.R
+import com.example.beeriq.User
 import com.example.beeriq.tools.Util
 import java.io.File
 
@@ -223,43 +222,77 @@ class EditProfileFragment : AppCompatActivity() {
         return inputField.text.toString()
     }
 
-    // Save form data to SharedPreferences
     private fun saveFormData() {
-        val sharedPref = this.getSharedPreferences("UserDetails", Context.MODE_PRIVATE)
-        val editor = sharedPref.edit()
+        val firebaseRepo = FirebaseRepo(this.getSharedPreferences("UserDetails", Context.MODE_PRIVATE))
 
-        // Save the text input data
-        editor.putString("name", username.text.toString())
-        editor.putString("email", inputEmail.text.toString())
-        editor.putString("phone", inputPhone.text.toString())
-        editor.putString("password", password.text.toString())
-
-        // Save the selected gender
-        val gender = when {
+        // Determine selected gender
+        val selectedGender = when {
             findViewById<RadioButton>(R.id.Radio_Male)?.isChecked == true -> "Male"
             findViewById<RadioButton>(R.id.Radio_Female)?.isChecked == true -> "Female"
             else -> ""
         }
-        editor.putString("gender", gender)
 
-        editor.apply() // Commit the changes
+        // Create a User object with updated information
+        val updatedUser = User(
+            username = username.text.toString(),
+            password = password.text.toString(),
+            email = inputEmail.text.toString(),
+            phone = inputPhone.text.toString(),
+            gender = selectedGender, // Include gender
+            friends = mutableListOf(),
+            outgoingFriends = mutableListOf(),
+            incomingFriends = mutableListOf(),
+            posts = mutableListOf()
+        )
+
+        // Call FirebaseRepo to update user data
+        firebaseRepo.updateUser(updatedUser) { success ->
+            if (success) {
+                println("Debug: Profile saved successfully in Firebase.")
+            } else {
+                println("Debug: Failed to save profile in Firebase.")
+            }
+        }
     }
 
     // Load saved form data from SharedPreferences
     private fun loadFormData() {
-        val sharedPref = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val firebaseRepo = FirebaseRepo(sharedPreferences)
 
-        username.setText(sharedPref.getString("username", ""))
-        inputEmail.setText(sharedPref.getString("email", ""))
-        inputPhone.setText(sharedPref.getString("phone", ""))
-        password.setText(sharedPref.getString("password", ""))
+        val usernameKey = sharedPreferences.getString("username", "")
 
-        val gender = sharedPref.getString("gender", "")
-        when (gender) {
-            "Male" -> findViewById<RadioButton>(R.id.Radio_Male)?.isChecked = true
-            "Female" -> findViewById<RadioButton>(R.id.Radio_Female)?.isChecked = true
+        println("TEST:")
+        println(usernameKey.toString())
+        if (usernameKey.toString().isEmpty()) {
+            println("Debug: Username field is empty. Please enter your username to load data.")
+            return
+        }
+
+        firebaseRepo.fetchUserData(usernameKey.toString()) { user ->
+            if (user != null) {
+                username.setText(user.username)
+                inputEmail.setText(user.email)
+                inputPhone.setText(user.phone)
+                password.setText(user.password)
+
+                println("${user.username}, ${user.email}")
+
+                when (user.gender) {
+                    "Male" -> findViewById<RadioButton>(R.id.Radio_Male)?.isChecked = true
+                    "Female" -> findViewById<RadioButton>(R.id.Radio_Female)?.isChecked = true
+                    else -> println("Debug: Gender not set.")
+                }
+
+                println("Debug: User data loaded successfully.")
+            } else {
+                println("Debug: Failed to load user data for username: $usernameKey")
+            }
         }
     }
+
+
+
 
 
     // Load profile image from external storage
@@ -270,21 +303,6 @@ class EditProfileFragment : AppCompatActivity() {
         }
     }
 
-
-
-    // Display a snackbar message with custom color
-    // Reference: https://medium.com/@somiaantony/customising-android-snackbar-d76f7b111a81
-//    private fun snackBarMessage(message:String, color:Int){
-//        val snackbar = Snackbar.make(findViewById(R.id.main), message, Snackbar.LENGTH_SHORT).setBackgroundTint(ContextCompat.getColor(this, color))
-//        val view = snackbar.view
-//
-//        val params =layoutParams as FrameLayout.LayoutParams
-//
-//        params.gravity = Gravity.TOP
-//       layoutParams = params
-//
-//        snackbar.show()
-//    }
 
     // Validate if the email has a valid top-level domain (TLD)
     private fun containsValidTLD(email: String, validTLDs: List<String>): Boolean {
