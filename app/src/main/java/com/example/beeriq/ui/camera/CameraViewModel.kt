@@ -35,8 +35,11 @@ class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
         return beerList
     }
 
-    fun recognizeTextFromImage(image: InputImage) {
+    fun resetBuffer() {
         beerResult.value = emptyList()
+    }
+
+    fun recognizeTextFromImage(image: InputImage) {
         beerCountMap.clear()
         viewModelScope.launch {
             recognizer.process(image)

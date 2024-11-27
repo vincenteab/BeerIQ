@@ -21,10 +21,12 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.BeerDatabase
@@ -32,14 +34,18 @@ import com.example.beeriq.data.local.beerDatabase.BeerRepository
 import com.example.beeriq.tools.Util
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-
 
 class CameraFragment : Fragment() {
     private lateinit var previewView: PreviewView
     private lateinit var captureButton: ImageButton
     private lateinit var backButton: ImageButton
     private lateinit var libraryButton: ImageButton
+    private lateinit var loadingScreen: View
+    private lateinit var cameraUI: ConstraintLayout
 
     private lateinit var cameraSelector: CameraSelector
     private lateinit var imageCapture: ImageCapture
@@ -86,18 +92,32 @@ class CameraFragment : Fragment() {
         val cameraViewModelFactory = CameraViewModelFactory(repository)
         cameraViewModel = ViewModelProvider(requireActivity(), cameraViewModelFactory).get(CameraViewModel::class.java)
 
+        cameraUI = view.findViewById(R.id.cameraUI)
+        loadingScreen = view.findViewById(R.id.loading_screen)
+
         captureButton = view.findViewById(R.id.capture)
         captureButton.setOnClickListener {
-            capturePhoto { bitmap ->
-                val image = InputImage.fromBitmap(bitmap, 0)
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                val rotatedBitmap = rotateBitMap(bitmap, 90f)
-                val scaledBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 600, 1000, true)
-                scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-                val byteArray = byteArrayOutputStream.toByteArray()
+            cameraUI.visibility = View.GONE
+            cameraViewModel.resetBuffer()
+            var byteArray = ByteArray(10)
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    capturePhoto { bitmap ->
+                        val image = InputImage.fromBitmap(bitmap, 0)
+                        val byteArrayOutputStream = ByteArrayOutputStream()
+                        val rotatedBitmap = rotateBitMap(bitmap, 90f)
+                        val scaledBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 600, 1000, true)
+                        scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                        byteArray = byteArrayOutputStream.toByteArray()
 
-                cameraViewModel.recognizeTextFromImage(image)
+                        cameraViewModel.recognizeTextFromImage(image)
+                    }
+                }
+                loadingScreen.visibility = View.VISIBLE
                 cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
+                    if (beer.isNotEmpty()) {
+                        loadingScreen.visibility = View.GONE
+                    }
                     val bundle = Bundle().apply {
                         putSerializable("beer_object", ArrayList(beer))
                         putByteArray("bitmap", byteArray)
@@ -150,17 +170,28 @@ class CameraFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == AppCompatActivity.RESULT_OK && requestCode == 1) {
-            val selectedImageUri: Uri? = data?.data
-            selectedImageUri?.let {
-                val bitmap = Util.getBitmap(requireContext(), it)
-                val image = InputImage.fromBitmap(bitmap, 0)
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 600, 1000, true)
-                scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-                val byteArray = byteArrayOutputStream.toByteArray()
+            cameraUI.visibility = View.GONE
+            cameraViewModel.resetBuffer()
+            var byteArray = ByteArray(10)
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    val selectedImageUri: Uri? = data?.data
+                    selectedImageUri?.let {
+                        val bitmap = Util.getBitmap(requireContext(), it)
+                        val image = InputImage.fromBitmap(bitmap, 0)
+                        val byteArrayOutputStream = ByteArrayOutputStream()
+                        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 600, 1000, true)
+                        scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                        byteArray = byteArrayOutputStream.toByteArray()
 
-                cameraViewModel.recognizeTextFromImage(image)
+                        cameraViewModel.recognizeTextFromImage(image)
+                }
+            }
+                loadingScreen.visibility = View.VISIBLE
                 cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
+                    if (beer.isNotEmpty()) {
+                        loadingScreen.visibility = View.GONE
+                    }
                     val bundle = Bundle().apply {
                         putSerializable("beer_object", ArrayList(beer))
                         putByteArray("bitmap", byteArray)
