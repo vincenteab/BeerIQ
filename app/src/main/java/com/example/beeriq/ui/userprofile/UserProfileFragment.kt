@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.beeriq.LoginActivity
 import com.example.beeriq.R
-import com.example.beeriq.ui.FriendsList.FriendsList
 import com.example.beeriq.ui.FriendsList.FriendsListActivity
 import com.example.beeriq.ui.editprofile.EditProfileFragment
 import com.example.beeriq.ui.favorites.FavoritesActivity
@@ -42,6 +42,13 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
         view.findViewById<View>(R.id.option_favorites).setOnClickListener {
             val intent = Intent(requireContext(), FavoritesActivity::class.java)
             startActivity(intent)
+        }
+
+        view.findViewById<View>(R.id.sign_out).setOnClickListener{
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+
         }
 
 

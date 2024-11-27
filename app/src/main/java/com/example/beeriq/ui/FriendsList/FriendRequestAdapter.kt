@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.TextView
+import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.R
 
 class FriendRequestAdapter(private val context: Context, private var requestList: MutableList<String>, private val repo: FirebaseRepo) : BaseAdapter() {

@@ -1,20 +1,19 @@
 package com.example.beeriq.ui.FriendsList
 
-import android.app.Activity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.beeriq.R
+import com.example.beeriq.FirebaseRepo
+import com.example.beeriq.SharedViewModel
 import com.example.beeriq.databinding.ActivityFriendRequestBinding
 
 
 class FriendRequestActivity : AppCompatActivity() {
     private lateinit var repo: FirebaseRepo
     private lateinit var listView: ListView
-    private lateinit var viewModel: FriendListViewModel
-    private lateinit var factory: FriendListViewModel.FriendRequestFactory
+    private lateinit var viewModel: SharedViewModel
+    private lateinit var factory: SharedViewModel.SharedViewModelFactory
     private lateinit var friendRequestAdapter: FriendRequestAdapter
     private lateinit var friendRequestList: MutableList<String>
     private lateinit var binding: ActivityFriendRequestBinding
@@ -30,8 +29,8 @@ class FriendRequestActivity : AppCompatActivity() {
         listView = binding.friendRequestList
 
         repo = FirebaseRepo(sharedPreferences)
-        factory = FriendListViewModel.FriendRequestFactory(repo)
-        viewModel = ViewModelProvider(this, factory).get(FriendListViewModel::class.java)
+        factory = SharedViewModel.SharedViewModelFactory(repo)
+        viewModel = ViewModelProvider(this, factory).get(SharedViewModel::class.java)
 
         friendRequestList = mutableListOf()
 

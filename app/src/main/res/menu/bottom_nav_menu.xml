@@ -20,10 +20,10 @@
         android:title="@string/title_camera" />
 
     <item
-        android:id="@+id/navigation_friendslist"
+        android:id="@+id/navigation_activities"
         android:icon="@drawable/friends_talking"
         android:menuCategory="secondary"
-        android:title="@string/title_friends" />
+        android:title="Activity Feed" />
 
     <item
         android:id="@+id/navigation_profile"
