@@ -22,7 +22,7 @@
         <action
             android:id="@+id/action_navigation_camera_to_navigation_friendslist"
             app:launchSingleTop="true"
-            app:destination="@id/navigation_friendslist" />
+            app:destination="@id/navigation_activities" />
         <action
             android:id="@+id/action_navigation_camera_to_navigation_map"
             app:launchSingleTop="true"
@@ -56,7 +56,7 @@
         <action
             android:id="@+id/action_navigation_search_to_navigation_friendslist"
             app:launchSingleTop="true"
-            app:destination="@id/navigation_friendslist" />
+            app:destination="@id/navigation_activities" />
         <action
             android:id="@+id/action_navigation_search_to_navigation_profile"
             app:launchSingleTop="true"
@@ -67,24 +67,24 @@
             app:destination="@id/navigation_map" />
     </fragment>
     <fragment
-        android:id="@+id/navigation_friendslist"
-        android:name="com.example.beeriq.ui.FriendsList.FriendsList"
-        android:label="@string/title_friends"
-        tools:layout="@layout/fragment_friends_list" >
+        android:id="@+id/navigation_activities"
+        android:name="com.example.beeriq.ui.activities.ActivitiesFragment"
+        android:label="Activity Feed"
+        tools:layout="@layout/fragment_activities" >
         <action
-            android:id="@+id/action_navigation_friendslist_to_navigation_camera"
+            android:id="@+id/action_navigation_activities_to_navigation_camera"
             app:launchSingleTop="true"
             app:destination="@id/navigation_camera" />
         <action
-            android:id="@+id/action_navigation_friendslist_to_navigation_search"
+            android:id="@+id/action_navigation_activities_to_navigation_search"
             app:launchSingleTop="true"
             app:destination="@id/navigation_search" />
         <action
-            android:id="@+id/action_navigation_friendslist_to_navigation_profile"
+            android:id="@+id/action_navigation_activities_to_navigation_profile"
             app:launchSingleTop="true"
             app:destination="@id/navigation_profile" />
         <action
-            android:id="@+id/action_navigation_friendslist_to_navigation_map"
+            android:id="@+id/action_navigation_activities_to_navigation_map"
             app:launchSingleTop="true"
             app:destination="@id/navigation_map" />
     </fragment>
@@ -109,7 +109,7 @@
         <action
             android:id="@+id/action_navigation_map_to_navigation_friendslist"
             app:launchSingleTop="true"
-            app:destination="@id/navigation_friendslist" />
+            app:destination="@id/navigation_activities" />
     </fragment>
 
     <fragment
@@ -132,6 +132,6 @@
         <action
             android:id="@+id/action_navigation_profile_to_navigation_friendslist"
             app:launchSingleTop="true"
-            app:destination="@id/navigation_friendslist" />
+            app:destination="@id/navigation_activities" />
     </fragment>
 </navigation>

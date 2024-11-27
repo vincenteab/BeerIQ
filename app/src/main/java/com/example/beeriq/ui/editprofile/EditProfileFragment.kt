@@ -183,19 +183,19 @@ class EditProfileFragment : AppCompatActivity() {
 
         val selectedRadioButtonId = radioGenres.checkedRadioButtonId
 
-        // Check if a radio button has been selected
+        // Check if a radio postButton has been selected
         if (selectedRadioButtonId != -1) {
             // Find the selected RadioButton by id
             val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
 
             // Ensure the selectedRadioButton is not null before accessing its text property
             if (selectedRadioButton != null) {
-                val selectedRadioText = selectedRadioButton.text.toString() // Get the text of the selected radio button
-                // Do something with the selected radio button value
+                val selectedRadioText = selectedRadioButton.text.toString() // Get the text of the selected radio postButton
+                // Do something with the selected radio postButton value
                 println("Selected Gender: $selectedRadioText")
             }
         } else {
-            // No radio button is selected
+            // No radio postButton is selected
             println("No gender selected")
 //            snackBarMessage("Gender not selected", R.color.red)
             return false

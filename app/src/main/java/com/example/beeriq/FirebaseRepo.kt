@@ -1,11 +1,9 @@
-package com.example.beeriq.ui.FriendsList
+package com.example.beeriq
 
-import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.beeriq.User
+import com.example.beeriq.ui.activities.Post
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -17,11 +15,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
     private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("users")
@@ -37,6 +31,9 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
 
     private val _outgoingFriendsList = MutableLiveData<MutableList<String>>()
     val outgoingFriendsList: LiveData<MutableList<String>> get() = _outgoingFriendsList
+
+    private val _activitiesList = MutableLiveData<MutableList<Post>>()
+    val activitiesList: LiveData<MutableList<Post>> get() = _activitiesList
 
     fun fetchAllLists() {
         startRealTimeListeners()
@@ -412,5 +409,69 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             }
         })
 
+    }
+
+    fun fetchActivities(friend: String) {
+        databaseReference.orderByChild("username").equalTo(friend)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val dataList = mutableListOf<Post>()
+                    for (postSnapshot in snapshot.children) {
+                        val postsPath = postSnapshot.child("posts")
+                        if (postsPath.exists()){
+                            for (post in postsPath.children){
+                                val postObject = post.getValue(Post::class.java)
+                                if (postObject != null) {
+                                    if (!_activitiesList.value.orEmpty().contains(postObject)) { // Ensure uniqueness
+                                        dataList.add(postObject)
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    val currentActivities = _activitiesList.value?.toMutableList() ?: mutableListOf()
+                    currentActivities.addAll(dataList)
+                    _activitiesList.postValue(currentActivities)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching activities: ${error.message}")
+                }
+            })
+    }
+
+    fun addPost(post: Post) {
+        databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (postSnapshot in snapshot.children) {
+                    val userKey = postSnapshot.key
+                    if (userKey != null) {
+                        val postsRef = databaseReference.child(userKey).child("posts")
+                        postsRef.runTransaction(object : Transaction.Handler {
+                            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                                val currentList = currentData.getValue(object : GenericTypeIndicator<MutableList<Post>>() {}) ?: mutableListOf()
+
+                                currentList.add(post)
+                                currentData.value = currentList
+                                return Transaction.success(currentData)
+                            }
+
+                            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                                if (committed) {
+                                    println("debug: post added")
+                                } else {
+                                    println("debug: post not added")
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("debug: error - ${error.message}")
+            }
+        })
     }
 }

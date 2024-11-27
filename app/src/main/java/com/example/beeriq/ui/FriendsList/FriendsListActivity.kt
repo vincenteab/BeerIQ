@@ -1,31 +1,26 @@
 package com.example.beeriq.ui.FriendsList
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.beeriq.R
+import com.example.beeriq.FirebaseRepo
+import com.example.beeriq.SharedViewModel
 import com.example.beeriq.databinding.DialogAddFriendBinding
 import com.example.beeriq.databinding.FragmentFriendsListBinding
 
 class FriendsListActivity : AppCompatActivity() {
     private lateinit var binding: FragmentFriendsListBinding
     private lateinit var listView: ListView
-    private lateinit var viewModel: FriendListViewModel
+    private lateinit var viewModel: SharedViewModel
     private lateinit var friendsListAdapter: FriendListAdapter
     private lateinit var friendsList: MutableList<String>
     private lateinit var outgoingFriendsList: MutableList<String>
     private lateinit var incomingFriendsList: MutableList<String>
-    private lateinit var factory: FriendListViewModel.FriendListViewModelFactory
+    private lateinit var factory: SharedViewModel.SharedViewModelFactory
     private lateinit var repo: FirebaseRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,8 +34,8 @@ class FriendsListActivity : AppCompatActivity() {
         listView = binding.friendsList
 
         repo = FirebaseRepo(sharedPreferences)
-        factory = FriendListViewModel.FriendListViewModelFactory(repo)
-        viewModel = ViewModelProvider(this, factory).get(FriendListViewModel::class.java)
+        factory = SharedViewModel.SharedViewModelFactory(repo)
+        viewModel = ViewModelProvider(this, factory).get(SharedViewModel::class.java)
 
         friendsList = mutableListOf()
         outgoingFriendsList = mutableListOf()
@@ -92,7 +87,7 @@ class FriendsListActivity : AppCompatActivity() {
         val bindingDialog = DialogAddFriendBinding.inflate(layoutInflater)
         dialog.setContentView(bindingDialog.root)
 
-        //listener for when user hits add button
+        //listener for when user hits add postButton
         bindingDialog.addFriendDialogButton.setOnClickListener{
             val username = bindingDialog.addFriendInput.editText?.text.toString()
             val sharedPreferences = this.getSharedPreferences("UserData", MODE_PRIVATE)

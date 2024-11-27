@@ -6,6 +6,7 @@
     <string name="title_profile">Profile</string>
     <string name="title_search">Search</string>
     <string name="title_map">Map</string>
+    <string name="title_activities">Activities</string>
     <string name="title_friends">Friends List</string>
 
     <string name="EnterName">Jon Doe</string>

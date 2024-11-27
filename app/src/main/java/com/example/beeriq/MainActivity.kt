@@ -1,17 +1,16 @@
 package com.example.beeriq
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavOptions
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.beeriq.databinding.ActivityMainBinding
-import com.example.beeriq.data.local.breweryDatabase.ImportBreweries
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +21,14 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Disable back button
+            }
+        })
 
         // Set up the Toolbar as the ActionBar
         val toolbar = binding.toolbar
@@ -34,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_map, R.id.navigation_search, R.id.navigation_camera, R.id.navigation_friendslist, R.id.navigation_profile
+                R.id.navigation_map, R.id.navigation_search, R.id.navigation_camera, R.id.navigation_activities, R.id.navigation_profile
             )
         )
 
@@ -53,6 +60,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
     }
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
