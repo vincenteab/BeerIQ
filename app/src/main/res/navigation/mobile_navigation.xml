@@ -45,6 +45,13 @@
     </fragment>
 
     <fragment
+        android:id="@+id/navigation_camera_no_result"
+        android:name="com.example.beeriq.ui.camera.CameraNoResultFragment"
+        android:label=""
+        tools:layout="@layout/fragment_camera_no_result">
+    </fragment>
+
+    <fragment
         android:id="@+id/navigation_beer_details"
         android:name="com.example.beeriq.ui.camera.BeerDetailsFragment"
         android:label=""
