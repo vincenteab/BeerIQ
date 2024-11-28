@@ -21,6 +21,7 @@ class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     private val beerCountMap: MutableMap<Beer, Int> = mutableMapOf()
     var beerResult = MutableLiveData<List<Beer>>()
+    var noResult = MutableLiveData<Int>()
 
     suspend fun getBeerFullName(fullName: String): List<Beer> {
         var beerList: List<Beer> = arrayListOf()
@@ -41,6 +42,7 @@ class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
 
     fun recognizeTextFromImage(image: InputImage) {
         beerCountMap.clear()
+        noResult.postValue(1)
         viewModelScope.launch {
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
@@ -83,7 +85,10 @@ class CameraViewModel(private val repository: BeerRepository) : ViewModel() {
                             beerCountMap.entries.sortedByDescending { it.value }.map { it.key }
                         }
                         withContext(Dispatchers.Main) {
-                            beerResult.value = sortedList
+                            if (sortedList.isEmpty()) {
+                                noResult.postValue(-1)
+                            }
+                            beerResult.postValue(sortedList)
                         }
                     }
                 }

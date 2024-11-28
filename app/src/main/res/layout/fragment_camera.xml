@@ -58,8 +58,6 @@
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
     <FrameLayout
         android:id="@+id/loading_screen"
         android:layout_width="match_parent"
@@ -69,21 +67,21 @@
         android:orientation="vertical"
         android:layout_gravity="center">
 
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="70dp"
+            android:layout_gravity="center"
+            android:src="@drawable/loading" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="60dp"
+            android:layout_marginTop="10dp"
             android:textStyle="bold"
             android:textSize="20dp"
             android:text="We are looking for your beer!"/>
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            app:trackColor="#f0c542"
-            app:indicatorColor="#f0c542"/>
+
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

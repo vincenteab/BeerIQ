@@ -98,8 +98,8 @@ class CameraFragment : Fragment() {
         captureButton = view.findViewById(R.id.capture)
         captureButton.setOnClickListener {
             cameraUI.visibility = View.GONE
+            loadingScreen.visibility = View.VISIBLE
             cameraViewModel.resetBuffer()
-            var byteArray = ByteArray(10)
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     capturePhoto { bitmap ->
@@ -108,38 +108,41 @@ class CameraFragment : Fragment() {
                         val rotatedBitmap = rotateBitMap(bitmap, 90f)
                         val scaledBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 600, 1000, true)
                         scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-                        byteArray = byteArrayOutputStream.toByteArray()
+                        val byteArray = byteArrayOutputStream.toByteArray()
 
                         cameraViewModel.recognizeTextFromImage(image)
-                    }
-                }
-                loadingScreen.visibility = View.VISIBLE
-                cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
-                    if (beer.isNotEmpty()) {
-                        loadingScreen.visibility = View.GONE
-                    }
-                    val bundle = Bundle().apply {
-                        putSerializable("beer_object", ArrayList(beer))
-                        putByteArray("bitmap", byteArray)
-                    }
-                    Log.d("testing", "FRAGMENT: $beer")
-                    if (beer.isNotEmpty()) {
-                        findNavController().navigate(R.id.navigation_camera_result, bundle)
+                        handleQueryResult(byteArray)
                     }
                 }
             }
         }
     }
 
-    private fun bindPreview(cameraProvider: ProcessCameraProvider) {
-        var preview: Preview = Preview.Builder().build()
+    private fun handleQueryResult(byteArray: ByteArray) {
+        cameraViewModel.noResult.observe(viewLifecycleOwner) { result ->
+            if (result == -1) {
+                findNavController().navigate(R.id.navigation_camera_no_result)
+            }
+        }
+        cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
+            if (beer.isNotEmpty()) {
+                loadingScreen.visibility = View.GONE
+            }
+            val bundle = Bundle().apply {
+                putSerializable("beer_object", ArrayList(beer))
+                putByteArray("bitmap", byteArray)
+            }
+            Log.d("testing", "FRAGMENT: $beer")
+            if (beer.isNotEmpty()) {
+                findNavController().navigate(R.id.navigation_camera_result, bundle)
+            }
+        }
+    }
 
-        preview.setSurfaceProvider(previewView.getSurfaceProvider())
-
-        try {
-            cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(viewLifecycleOwner, cameraSelector, preview, imageCapture)
-        } catch (e: Exception) { }
+    private fun rotateBitMap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     private fun capturePhoto(onBitmapReady: (Bitmap) -> Unit) {
@@ -156,21 +159,11 @@ class CameraFragment : Fragment() {
         })
     }
 
-    private fun rotateBitMap(bitmap: Bitmap, degrees: Float): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(degrees)
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-
-    private fun openPhotoLibrary() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, 1)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == AppCompatActivity.RESULT_OK && requestCode == 1) {
             cameraUI.visibility = View.GONE
+            loadingScreen.visibility = View.VISIBLE
             cameraViewModel.resetBuffer()
             var byteArray = ByteArray(10)
             lifecycleScope.launch {
@@ -185,23 +178,27 @@ class CameraFragment : Fragment() {
                         byteArray = byteArrayOutputStream.toByteArray()
 
                         cameraViewModel.recognizeTextFromImage(image)
-                }
-            }
-                loadingScreen.visibility = View.VISIBLE
-                cameraViewModel.beerResult.observe(viewLifecycleOwner) { beer ->
-                    if (beer.isNotEmpty()) {
-                        loadingScreen.visibility = View.GONE
-                    }
-                    val bundle = Bundle().apply {
-                        putSerializable("beer_object", ArrayList(beer))
-                        putByteArray("bitmap", byteArray)
-                    }
-                    if (beer.isNotEmpty()) {
-                        findNavController().navigate(R.id.navigation_camera_result, bundle)
                     }
                 }
+                handleQueryResult(byteArray)
             }
         }
+    }
+
+    private fun openPhotoLibrary() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, 1)
+    }
+
+    private fun bindPreview(cameraProvider: ProcessCameraProvider) {
+        var preview: Preview = Preview.Builder().build()
+
+        preview.setSurfaceProvider(previewView.getSurfaceProvider())
+
+        try {
+            cameraProvider.unbindAll()
+            cameraProvider.bindToLifecycle(viewLifecycleOwner, cameraSelector, preview, imageCapture)
+        } catch (e: Exception) { }
     }
 
     private fun checkPermissions() {
