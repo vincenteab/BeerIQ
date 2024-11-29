@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_200">#3C3F40</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#2FC52F</color>
     <color name="dark_green">#057505</color>
-    <color name="grey">#595252</color>
+    <color name="grey">#6D6A6A</color>
     <color name="red">#BC2929</color>
+    <color name="divider_color">#FF000000</color> <!-- Solid black -->
 </resources>

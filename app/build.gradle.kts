@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     id("kotlin-kapt")
 }
 
@@ -35,6 +36,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         viewBinding = true
     }
@@ -67,5 +69,10 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.0")
     kapt("androidx.room:room-compiler:2.6.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
-
+    implementation ("com.github.timonknispel:KTLoadingButton:1.2.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("org.apache.commons:commons-csv:1.10.0")
+    implementation(libs.play.services.maps)
+    implementation ("com.github.castorflex.smoothprogressbar:library-circular:1.3.0")
+    implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.29")
 }

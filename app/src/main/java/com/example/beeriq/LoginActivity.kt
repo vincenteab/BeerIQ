@@ -3,7 +3,10 @@ package com.example.beeriq
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import com.example.beeriq.databinding.ActivityLoginBinding
@@ -13,6 +16,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
@@ -26,13 +34,18 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         firebaseRef = FirebaseDatabase.getInstance().getReference("users")
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Disable back button
+            }
+        })
 
 
-        //when user hits create button it will create an account
+        //when user hits create postButton it will create an account
         binding.createAccountButton.setOnClickListener{
             //get the username and password from the edit text
-            username = binding.usernameEditText.text.toString()
-            password = binding.passwordEditText.text.toString()
+            username = binding.usernameTextField.editText?.text.toString()
+            password = binding.passwordTextField.editText?.text.toString()
             val tempUser = User(username, password)
 
             //check if the user has entered a username and password
@@ -40,8 +53,8 @@ class LoginActivity : AppCompatActivity() {
                 //check if the username is unique
                 checkUniqueUsername(tempUser){ exists ->
                     if (exists){
-                        binding.usernameEditText.error = "Username already exists"
-                        binding.passwordEditText.error = null
+                        binding.usernameTextField.error = "Username already exists"
+                        binding.passwordTextField.error = null
                     }else{
                         //create a unique id for the user
                         val uniqueID = firebaseRef.push().key!!
@@ -52,6 +65,8 @@ class LoginActivity : AppCompatActivity() {
                             }
                         //continue to the main activity
                         storeUserDataLocally(username, password, null, null, null)
+                        binding.usernameTextField.error = null
+                        binding.passwordTextField.error = null
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     }
@@ -59,49 +74,61 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        //when user hits login button it will check if the user exists
-        binding.loginButton.setOnClickListener{
-            username = binding.usernameEditText.text.toString()
-            password = binding.passwordEditText.text.toString()
-            val tempLoggedUser = User(username, password)
-            //check if the user has entered a username and password
-            if (checkCredentials(tempLoggedUser) == 0){
-                checkUserExists(tempLoggedUser){ exists ->
-                    //if the user exists, continue to the main activity
-                    if (exists){
+        //when user hits login postButton it will check if the user exists
+        binding.loginButton.setOnClickListener {
+            binding.loginButton.startLoading()
 
-                        fetchUserData(username){ userData ->
-                            if (userData != null) {
-                                val email = userData.email
-                                val phone = userData.phone
-                                val friends = userData.friends as List<String>?
-                                storeUserDataLocally(username, password, email, phone, friends)
+            Handler(Looper.getMainLooper()).postDelayed({
+                username = binding.usernameTextField.editText?.text.toString()
+                password = binding.passwordTextField.editText?.text.toString()
+                val tempLoggedUser = User(username, password)
+                //check if the user has entered a username and password
+                if (checkCredentials(tempLoggedUser) == 0){
+                    checkUserExists(tempLoggedUser){ exists ->
+                        //if the user exists, continue to the main activity
+                        if (exists){
+
+                            fetchUserData(username){ userData ->
+                                if (userData != null) {
+                                    val email = userData.email
+                                    val phone = userData.phone
+                                    val friends = userData.friends as List<String>?
+                                    storeUserDataLocally(username, password, email, phone, friends)
+                                }
+
+
                             }
-
+                            binding.usernameTextField.error = null
+                            binding.passwordTextField.error = null
+                            binding.loginButton.doResult(true)
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+                        }else{
+                            binding.loginButton.doResult(false)
                         }
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
                     }
+                }else{
+                    binding.loginButton.doResult(false)
                 }
-            }
 
 
+            }, 2000) // 3 seconds delay
         }
     }
 
     //check if the user has entered a username and password
     private fun checkCredentials(user: User) : Int{
         if (user.username?.isEmpty() != false && user.password?.isEmpty() != false){
-            binding.usernameEditText.error = "Please enter a username"
-            binding.passwordEditText.error = "Please enter a password"
+            binding.usernameTextField.error = "Please enter a username"
+            binding.passwordTextField.error = "Please enter a password"
             return 1
         }else if(user.username?.isEmpty() != false){
-            binding.usernameEditText.error = "Please enter a username"
-            binding.passwordEditText.error = null
+            binding.usernameTextField.error = "Please enter a username"
+            binding.passwordTextField.error = null
             return 1
         }else if (user.password?.isEmpty() != false){
-            binding.passwordEditText.error = "Please enter a password"
-            binding.usernameEditText.error = null
+            binding.passwordTextField.error = "Please enter a password"
+            binding.usernameTextField.error = null
             return 1
         }
 
@@ -143,15 +170,15 @@ class LoginActivity : AppCompatActivity() {
                                 callback(true)
                             //if the password does not match the user's password, error message is displayed
                             } else {
-                                binding.usernameEditText.error = "Incorrect username or password"
-                                binding.passwordEditText.error = "Incorrect username or password"
+                                binding.usernameTextField.error = "Incorrect username or password"
+                                binding.passwordTextField.error = "Incorrect username or password"
                                 callback(false)
                             }
                         }
                     //if username does not exist in db, error message is displayed
                     }else{
-                        binding.usernameEditText.error = "Account does not exist"
-                        binding.passwordEditText.error = null
+                        binding.usernameTextField.error = "Account does not exist"
+                        binding.passwordTextField.error = null
                         callback(false)
                     }
                 }

@@ -1,58 +1,54 @@
 package com.example.beeriq.ui.FriendsList
 
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ListView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.beeriq.R
+import com.example.beeriq.FirebaseRepo
+import com.example.beeriq.SharedViewModel
+import com.example.beeriq.databinding.DialogAddFriendBinding
 import com.example.beeriq.databinding.FragmentFriendsListBinding
 import com.example.beeriq.ui.activity.ActivityActivity
 import com.example.beeriq.ui.activity.AddActivityActivity
 
-class FriendsList : Fragment() {
-
+class FriendsListActivity : AppCompatActivity() {
     private lateinit var binding: FragmentFriendsListBinding
     private lateinit var listView: ListView
-    private lateinit var viewModel: FriendListViewModel
+    private lateinit var viewModel: SharedViewModel
     private lateinit var friendsListAdapter: FriendListAdapter
     private lateinit var friendsList: MutableList<String>
     private lateinit var outgoingFriendsList: MutableList<String>
     private lateinit var incomingFriendsList: MutableList<String>
-    private lateinit var factory: FriendListViewModel.FriendListViewModelFactory
+    private lateinit var factory: SharedViewModel.SharedViewModelFactory
     private lateinit var repo: FirebaseRepo
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        binding = FragmentFriendsListBinding.inflate(inflater, container, false)
-        val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
+        binding = FragmentFriendsListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val sharedPreferences = this.getSharedPreferences("UserData", MODE_PRIVATE)
 
 
         listView = binding.friendsList
 
         repo = FirebaseRepo(sharedPreferences)
-        factory = FriendListViewModel.FriendListViewModelFactory(repo)
-        viewModel = ViewModelProvider(requireActivity(), factory).get(FriendListViewModel::class.java)
+        factory = SharedViewModel.SharedViewModelFactory(repo)
+        viewModel = ViewModelProvider(this, factory).get(SharedViewModel::class.java)
 
         friendsList = mutableListOf()
         outgoingFriendsList = mutableListOf()
         incomingFriendsList = mutableListOf()
 
-        friendsListAdapter = FriendListAdapter(requireContext(), friendsList)
+        friendsListAdapter = FriendListAdapter(this, friendsList)
 
         listView.adapter = friendsListAdapter
 
 
-        viewModel.friendsListData.observe(viewLifecycleOwner) {data ->
+        viewModel.friendsListData.observe(this) {data ->
             if (data != null){
                 friendsList.clear()
                 friendsList.addAll(data)
@@ -60,12 +56,12 @@ class FriendsList : Fragment() {
                 listView.invalidateViews()
             }
         }
-        viewModel.outgoingFriendsListData.observe(viewLifecycleOwner) {data ->
+        viewModel.outgoingFriendsListData.observe(this) {data ->
             if (data != null){
                 outgoingFriendsList = data
             }
         }
-        viewModel.incomingFriendsListData.observe(viewLifecycleOwner) {data ->
+        viewModel.incomingFriendsListData.observe(this) {data ->
             if (data != null){
                 incomingFriendsList = data
             }
@@ -76,7 +72,7 @@ class FriendsList : Fragment() {
         }
 
         binding.friendRequestButton.setOnClickListener{
-            val intent = Intent(requireContext(), FriendRequestActivity::class.java)
+            val intent = Intent(this, FriendRequestActivity::class.java)
             startActivity(intent)
         }
         binding.friendActivityButton.setOnClickListener({
@@ -88,54 +84,58 @@ class FriendsList : Fragment() {
             startActivity(intent)
         })
 
+        binding.backButton.setOnClickListener{
+            finish()
+        }
 
 
-        return binding.root
     }
 
     //show custom dialog to add a friend
     private fun showCustomDialog(){
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_add_friend)
-        val userNameTextEdit = dialog.findViewById<EditText>(R.id.addFriendInput)
-        val addButton = dialog.findViewById<Button>(R.id.addFriendDialogButton)
+        val dialog = Dialog(this)
+        val bindingDialog = DialogAddFriendBinding.inflate(layoutInflater)
+        dialog.setContentView(bindingDialog.root)
 
-        //listener for when user hits add button
-        addButton.setOnClickListener{
-            val username = userNameTextEdit.text.toString()
-            val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
+        //listener for when user hits add postButton
+        bindingDialog.addFriendDialogButton.setOnClickListener{
+            val username = bindingDialog.addFriendInput.editText?.text.toString()
+            val sharedPreferences = this.getSharedPreferences("UserData", MODE_PRIVATE)
             val localUser = sharedPreferences.getString("username", null)
             println("debug: friends list $friendsList in FriendsList.kt")
 
             if(username == localUser){
-                Toast.makeText(requireContext(), "Cannot add yourself as a friend", Toast.LENGTH_SHORT).show()
+                bindingDialog.addFriendInput.error = "Cannot add yourself as a friend"
                 return@setOnClickListener
             }
 
             if (friendsList.contains(username)){
-                Toast.makeText(requireContext(), "User is already a friend", Toast.LENGTH_SHORT).show()
+                bindingDialog.addFriendInput.error = "User is already a friend"
                 return@setOnClickListener
             }
             println("debug: incoming friends list $incomingFriendsList in FriendsList.kt")
             if (incomingFriendsList.contains(username)){
-                Toast.makeText(requireContext(), "Check friend requests", Toast.LENGTH_SHORT).show()
+                bindingDialog.addFriendInput.error = "Friend request already received"
                 return@setOnClickListener
             }
 
             println("debug: outgoing friends list $outgoingFriendsList in FriendsList.kt")
             if (outgoingFriendsList.contains(username)){
-                Toast.makeText(requireContext(), "Friend request already sent", Toast.LENGTH_SHORT).show()
+                bindingDialog.addFriendInput.error = "Friend request already sent"
                 return@setOnClickListener
             }
 
             //calls function to check if the username exists
-            //TODO
+
             repo.checkIfUserExists(username){
                 if (it){
                     repo.sendFriendRequest(username)
-                    Toast.makeText(requireContext(), "Friend request sent to ${username}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Friend request sent to ${username}", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
                 }
             }
+
 
 
 

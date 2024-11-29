@@ -5,28 +5,33 @@ import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.beeriq.R
+import com.example.beeriq.FirebaseRepo
+import com.example.beeriq.SharedViewModel
+import com.example.beeriq.databinding.ActivityFriendRequestBinding
 
 
 class FriendRequestActivity : AppCompatActivity() {
     private lateinit var repo: FirebaseRepo
     private lateinit var listView: ListView
-    private lateinit var viewModel: FriendListViewModel
-    private lateinit var factory: FriendListViewModel.FriendRequestFactory
+    private lateinit var viewModel: SharedViewModel
+    private lateinit var factory: SharedViewModel.SharedViewModelFactory
     private lateinit var friendRequestAdapter: FriendRequestAdapter
     private lateinit var friendRequestList: MutableList<String>
+    private lateinit var binding: ActivityFriendRequestBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_friend_request)
+        binding = ActivityFriendRequestBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         val sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE)
 
-        listView = findViewById(R.id.friendRequestList)
+        listView = binding.friendRequestList
 
         repo = FirebaseRepo(sharedPreferences)
-        factory = FriendListViewModel.FriendRequestFactory(repo)
-        viewModel = ViewModelProvider(this, factory).get(FriendListViewModel::class.java)
+        factory = SharedViewModel.SharedViewModelFactory(repo)
+        viewModel = ViewModelProvider(this, factory).get(SharedViewModel::class.java)
 
         friendRequestList = mutableListOf()
 
@@ -41,9 +46,10 @@ class FriendRequestActivity : AppCompatActivity() {
                 listView.invalidateViews()
             }
         }
-        val backButton: Button = findViewById(R.id.btnBack)
-        backButton.setOnClickListener {
+
+        binding.backButtonFriendRequests.setOnClickListener {
             finish()
         }
+
     }
 }

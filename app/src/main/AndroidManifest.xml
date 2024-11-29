@@ -5,6 +5,8 @@
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28"
@@ -19,7 +21,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BeerIQ"
+        android:largeHeap="true"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}"/>
+        <activity
+            android:name=".data.local.breweryDatabase.ImportBreweries"
+            android:exported="true" />
+        <activity
+            android:name=".data.local.beerDatabase.ImportCsv"
+            android:exported="true" />
         <activity
             android:name=".ui.activity.AddActivityActivity"
             android:exported="false" />
@@ -32,11 +44,20 @@
             android:theme="@style/Theme.BeerIQ" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name" />
-        <activity
-            android:name=".ui.FriendsList.FriendRequestActivity"
-            android:exported="true" />
+            android:exported="true">
+        </activity>
+        <activity android:name=".ui.FriendsList.FriendRequestActivity"
+            android:exported="true">
+
+        </activity>
+        <activity android:name=".ui.FriendsList.FriendsListActivity"
+            android:exported="true">
+        </activity>
+        <activity android:name=".ui.favorites.FavoritesActivity"
+            android:label="Favorites">
+
+        </activity>
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -46,6 +67,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.editprofile.EditProfileFragment"
+            android:label="Edit Profile" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
