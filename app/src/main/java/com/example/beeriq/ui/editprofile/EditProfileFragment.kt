@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -18,10 +17,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.FileProvider
-import androidx.fragment.app.Fragment
+import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.R
+import com.example.beeriq.User
 import com.example.beeriq.tools.Util
 import java.io.File
 
@@ -40,6 +39,7 @@ class EditProfileFragment : AppCompatActivity() {
     private lateinit var btnSave: Button
     private lateinit var btnCancel: Button
     private lateinit var username: EditText
+    private lateinit var Currentusername: String
     private lateinit var inputEmail: EditText
     private lateinit var inputPhone: EditText
     private lateinit var radioGenres: RadioGroup
@@ -94,11 +94,25 @@ class EditProfileFragment : AppCompatActivity() {
         // Saving functionalities
         btnSave.setOnClickListener{
             if(isValidForm()){
-                saveFormData()
-                finish()
+                if (username.text.toString() != Currentusername){
+                    val firebaseRepo = FirebaseRepo(this.getSharedPreferences("UserDetails", Context.MODE_PRIVATE))
+                    firebaseRepo.checkIfUsernameExists(username.text.toString()) { exists ->
+                        if(!exists){
+                            saveFormData()
+                            finish()
+                        }else{
+                            AlertDialog.Builder(this)
+                                .setTitle("Invalid Input")
+                                .setMessage("Username Already exists. Create another one.")
+                                .setPositiveButton("OK", null)
+                                .show()
+                        }
+                    }
+                }else{
+                    saveFormData()
+                    finish()
+                }
             }
-
-
         }
 
         // Cancellation functionality
@@ -137,71 +151,46 @@ class EditProfileFragment : AppCompatActivity() {
     }
 
     // Check to see if form is valid
-    private fun isValidForm(): Boolean{
+    private fun isValidForm(): Boolean {
+        // Helper function to show popup message
+        fun showPopupMessage(message: String) {
+            AlertDialog.Builder(this)
+                .setTitle("Invalid Input")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show()
+        }
 
-        // check if input fields aren't empty
-        if (getTextVal(username).isEmpty() ||
-            getTextVal(password).isEmpty()){
-//            snackBarMessage("All fields must be complete", R.color.red)
+        // Check if input fields are empty
+        if (getTextVal(username).isEmpty() || getTextVal(password).isEmpty()) {
+            showPopupMessage("All fields must be completed.")
             return false
         }
 
-        // check if email is valid
-        //https://chatgpt.com/share/66edf43c-ee40-8002-900a-a93fb6389d72
+        // Check if email is valid
         val TLDs = listOf(
-            ".com",
-            ".org",
-            ".net",
-            ".edu",
-            ".gov",
-            ".mil",
-            ".info",
-            ".biz",
-            ".name",
-            ".pro",
-            ".xyz",
-            ".io",
-            ".tech",
-            ".online",
-            ".app",
-            ".store",
-            ".blog",
-            ".shop",
-            ".club",
-            ".guru",
-            ".design",
-            ".photography",
-            ".music",
-            ".news"
+            ".com", ".org", ".net", ".edu", ".gov", ".mil", ".info", ".biz", ".name",
+            ".pro", ".xyz", ".io", ".tech", ".online", ".app", ".store", ".blog",
+            ".shop", ".club", ".guru", ".design", ".photography", ".music", ".news", ".ca"
         )
 
-
-        if (!getTextVal(inputEmail).contains('@') || !containsValidTLD(getTextVal((inputEmail)) ,TLDs)){
-//            snackBarMessage("Invalid email", R.color.red)
+        val email = getTextVal(inputEmail)
+        if (!email.contains('@') || !containsValidTLD(email, TLDs)) {
+            showPopupMessage("Invalid email address. Please provide a valid email.")
             return false
         }
 
+        // Check if a gender radio button is selected
         val selectedRadioButtonId = radioGenres.checkedRadioButtonId
-
-        // Check if a radio postButton has been selected
-        if (selectedRadioButtonId != -1) {
-            // Find the selected RadioButton by id
-            val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
-
-            // Ensure the selectedRadioButton is not null before accessing its text property
-            if (selectedRadioButton != null) {
-                val selectedRadioText = selectedRadioButton.text.toString() // Get the text of the selected radio postButton
-                // Do something with the selected radio postButton value
-                println("Selected Gender: $selectedRadioText")
-            }
-        } else {
-            // No radio postButton is selected
-            println("No gender selected")
-//            snackBarMessage("Gender not selected", R.color.red)
+        if (selectedRadioButtonId == -1) {
+            showPopupMessage("Please select a gender.")
             return false
         }
+
+        // If all validations pass
         return true
     }
+
 
     private fun openCamera() {
         val imageFile = File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), tempImgFileName)
@@ -223,43 +212,79 @@ class EditProfileFragment : AppCompatActivity() {
         return inputField.text.toString()
     }
 
-    // Save form data to SharedPreferences
     private fun saveFormData() {
-        val sharedPref = this.getSharedPreferences("UserDetails", Context.MODE_PRIVATE)
-        val editor = sharedPref.edit()
+        val firebaseRepo = FirebaseRepo(this.getSharedPreferences("UserDetails", Context.MODE_PRIVATE))
 
-        // Save the text input data
-        editor.putString("name", username.text.toString())
-        editor.putString("email", inputEmail.text.toString())
-        editor.putString("phone", inputPhone.text.toString())
-        editor.putString("password", password.text.toString())
-
-        // Save the selected gender
-        val gender = when {
+        // Determine selected gender
+        val selectedGender = when {
             findViewById<RadioButton>(R.id.Radio_Male)?.isChecked == true -> "Male"
             findViewById<RadioButton>(R.id.Radio_Female)?.isChecked == true -> "Female"
             else -> ""
         }
-        editor.putString("gender", gender)
 
-        editor.apply() // Commit the changes
+        // Create a User object with updated information
+        val updatedUser = User(
+            username = username.text.toString(),
+            password = password.text.toString(),
+            email = inputEmail.text.toString(),
+            phone = inputPhone.text.toString(),
+            gender = selectedGender, // Include gender
+            friends = mutableListOf(),
+            outgoingFriends = mutableListOf(),
+            incomingFriends = mutableListOf(),
+            posts = mutableListOf()
+        )
+
+        // Call FirebaseRepo to update user data
+        firebaseRepo.updateUser(updatedUser, Currentusername) { success ->
+            if (success) {
+                println("Debug: Profile saved successfully in Firebase.")
+            } else {
+                println("Debug: Failed to save profile in Firebase.")
+            }
+        }
+        val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putString("username", updatedUser.username).apply()
     }
 
     // Load saved form data from SharedPreferences
     private fun loadFormData() {
-        val sharedPref = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val firebaseRepo = FirebaseRepo(sharedPreferences)
 
-        username.setText(sharedPref.getString("username", ""))
-        inputEmail.setText(sharedPref.getString("email", ""))
-        inputPhone.setText(sharedPref.getString("phone", ""))
-        password.setText(sharedPref.getString("password", ""))
+        val usernameKey = sharedPreferences.getString("username", "")
 
-        val gender = sharedPref.getString("gender", "")
-        when (gender) {
-            "Male" -> findViewById<RadioButton>(R.id.Radio_Male)?.isChecked = true
-            "Female" -> findViewById<RadioButton>(R.id.Radio_Female)?.isChecked = true
+        println(usernameKey.toString())
+        if (usernameKey.toString().isEmpty()) {
+            println("Debug: Username field is empty. Please enter your username to load data.")
+            return
+        }
+
+        firebaseRepo.fetchUserData(usernameKey.toString()) { user ->
+            if (user != null) {
+                username.setText(user.username)
+                Currentusername = user.username
+                inputEmail.setText(user.email)
+                inputPhone.setText(user.phone)
+                password.setText(user.password)
+
+                println("${user.username}, ${user.email}")
+
+                when (user.gender) {
+                    "Male" -> findViewById<RadioButton>(R.id.Radio_Male)?.isChecked = true
+                    "Female" -> findViewById<RadioButton>(R.id.Radio_Female)?.isChecked = true
+                    else -> println("Debug: Gender not set.")
+                }
+
+                println("Debug: User data loaded successfully.")
+            } else {
+                println("Debug: Failed to load user data for username: $usernameKey")
+            }
         }
     }
+
+
+
 
 
     // Load profile image from external storage
@@ -270,21 +295,6 @@ class EditProfileFragment : AppCompatActivity() {
         }
     }
 
-
-
-    // Display a snackbar message with custom color
-    // Reference: https://medium.com/@somiaantony/customising-android-snackbar-d76f7b111a81
-//    private fun snackBarMessage(message:String, color:Int){
-//        val snackbar = Snackbar.make(findViewById(R.id.main), message, Snackbar.LENGTH_SHORT).setBackgroundTint(ContextCompat.getColor(this, color))
-//        val view = snackbar.view
-//
-//        val params =layoutParams as FrameLayout.LayoutParams
-//
-//        params.gravity = Gravity.TOP
-//       layoutParams = params
-//
-//        snackbar.show()
-//    }
 
     // Validate if the email has a valid top-level domain (TLD)
     private fun containsValidTLD(email: String, validTLDs: List<String>): Boolean {
