@@ -39,6 +39,7 @@ class EditProfileFragment : AppCompatActivity() {
     private lateinit var btnSave: Button
     private lateinit var btnCancel: Button
     private lateinit var username: EditText
+    private lateinit var Currentusername: String
     private lateinit var inputEmail: EditText
     private lateinit var inputPhone: EditText
     private lateinit var radioGenres: RadioGroup
@@ -93,11 +94,25 @@ class EditProfileFragment : AppCompatActivity() {
         // Saving functionalities
         btnSave.setOnClickListener{
             if(isValidForm()){
-                saveFormData()
-                finish()
+                if (username.text.toString() != Currentusername){
+                    val firebaseRepo = FirebaseRepo(this.getSharedPreferences("UserDetails", Context.MODE_PRIVATE))
+                    firebaseRepo.checkIfUsernameExists(username.text.toString()) { exists ->
+                        if(!exists){
+                            saveFormData()
+                            finish()
+                        }else{
+                            AlertDialog.Builder(this)
+                                .setTitle("Invalid Input")
+                                .setMessage("Username Already exists. Create another one.")
+                                .setPositiveButton("OK", null)
+                                .show()
+                        }
+                    }
+                }else{
+                    saveFormData()
+                    finish()
+                }
             }
-
-
         }
 
         // Cancellation functionality
@@ -156,7 +171,7 @@ class EditProfileFragment : AppCompatActivity() {
         val TLDs = listOf(
             ".com", ".org", ".net", ".edu", ".gov", ".mil", ".info", ".biz", ".name",
             ".pro", ".xyz", ".io", ".tech", ".online", ".app", ".store", ".blog",
-            ".shop", ".club", ".guru", ".design", ".photography", ".music", ".news"
+            ".shop", ".club", ".guru", ".design", ".photography", ".music", ".news", ".ca"
         )
 
         val email = getTextVal(inputEmail)
@@ -221,13 +236,15 @@ class EditProfileFragment : AppCompatActivity() {
         )
 
         // Call FirebaseRepo to update user data
-        firebaseRepo.updateUser(updatedUser) { success ->
+        firebaseRepo.updateUser(updatedUser, Currentusername) { success ->
             if (success) {
                 println("Debug: Profile saved successfully in Firebase.")
             } else {
                 println("Debug: Failed to save profile in Firebase.")
             }
         }
+        val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putString("username", updatedUser.username).apply()
     }
 
     // Load saved form data from SharedPreferences
@@ -237,7 +254,6 @@ class EditProfileFragment : AppCompatActivity() {
 
         val usernameKey = sharedPreferences.getString("username", "")
 
-        println("TEST:")
         println(usernameKey.toString())
         if (usernameKey.toString().isEmpty()) {
             println("Debug: Username field is empty. Please enter your username to load data.")
@@ -247,6 +263,7 @@ class EditProfileFragment : AppCompatActivity() {
         firebaseRepo.fetchUserData(usernameKey.toString()) { user ->
             if (user != null) {
                 username.setText(user.username)
+                Currentusername = user.username
                 inputEmail.setText(user.email)
                 inputPhone.setText(user.phone)
                 password.setText(user.password)
