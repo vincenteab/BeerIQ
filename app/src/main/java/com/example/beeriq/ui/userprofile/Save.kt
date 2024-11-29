@@ -1,0 +1,32 @@
+package com.example.beeriq.ui.userprofile
+
+data class Save (
+    val username: String = "",
+    val image: String = "",
+    val name: String = "",
+    val style: String = "",
+    val brewery: String = "",
+    val beerFullName: String = "",
+    val description: String = "",
+    val abv: Double = 0.0,
+    val minIBU: Int = 0,
+    val maxIBU: Int = 0,
+    val astringency: Int = 0,
+    val body: Int = 0,
+    val alcohol: Int = 0,
+    val bitter: Int = 0,
+    val sweet: Int = 0,
+    val sour: Int = 0,
+    val salty: Int = 0,
+    val fruits: Int = 0,
+    val hoppy: Int = 0,
+    val spices: Int = 0,
+    val malty: Int = 0,
+    val reviewAroma: Double = 0.0,
+    val reviewAppearance: Double = 0.0,
+    val reviewPalate: Double = 0.0,
+    val reviewTaste: Double = 0.0,
+    val reviewOverall: Double = 0.0,
+    val numOfReviews: Int = 0,
+    val date: String = ""
+)
