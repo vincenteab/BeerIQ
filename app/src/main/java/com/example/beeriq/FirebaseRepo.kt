@@ -474,4 +474,104 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             }
         })
     }
+
+    // Update users profile
+    fun updateUser(user: User, currentUser: String, onComplete: (Boolean) -> Unit) {
+        if (user.username.isEmpty()) {
+            println("Debug: Username cannot be empty for updating user data.")
+            onComplete(false)
+            return
+        }
+
+        // Locate the user record by username
+        databaseReference.orderByChild("username").equalTo(currentUser)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            // Get the Firebase key for the user
+                            val userKey = child.key
+                            if (userKey != null) {
+                                // Update the user's data in Firebase
+                                databaseReference.child(userKey).setValue(user)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            println("Debug: User $currentUser updated successfully.")
+                                            onComplete(true)
+                                        } else {
+                                            println("Debug: Failed to update user $currentUser: ${task.exception?.message}")
+                                            onComplete(false)
+                                        }
+                                    }
+                                return // Exit after the first match
+                            }
+                        }
+                    } else {
+                        println("Debug: No user found with username: $currentUser")
+                        onComplete(false)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to locate user $currentUser: ${error.message}")
+                    onComplete(false)
+                }
+            })
+    }
+
+
+    // Get users data
+    fun fetchUserData(user: String, onComplete: (User?) -> Unit) {
+        databaseReference.orderByChild("username").equalTo(user)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            val userData = child.getValue(User::class.java)
+                            onComplete(userData)
+                            return // Exit after finding the first matching user
+                        }
+                    } else {
+                        println("Debug: No user found with username: $user")
+                        onComplete(null)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Query cancelled: ${error.message}")
+                    onComplete(null)
+                }
+            })
+    }
+
+    fun checkIfUsernameExists(username: String, onComplete: (Boolean) -> Unit) {
+        if (username.isEmpty()) {
+            println("Debug: Username cannot be empty for existence check.")
+            onComplete(false)
+            return
+        }
+
+        databaseReference.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        println("Debug: Username $username exists.")
+                        onComplete(true)
+                    } else {
+                        println("Debug: Username $username does not exist.")
+                        onComplete(false)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to check username existence: ${error.message}")
+                    onComplete(false)
+                }
+            })
+    }
+
+
+
+
 }
