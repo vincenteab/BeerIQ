@@ -80,6 +80,7 @@ class ActivitiesFragment : Fragment() {
     private fun showLoadingScreen(){
         binding.progressBar.visibility = View.VISIBLE
         binding.activitiesList.visibility = View.GONE
+        binding.noActivitesText.visibility = View.GONE
     }
 
     private fun loadData(){
@@ -88,7 +89,12 @@ class ActivitiesFragment : Fragment() {
             Thread.sleep(2000)
             requireActivity().runOnUiThread{
                 binding.progressBar.visibility = View.GONE
-                binding.activitiesList.visibility = View.VISIBLE
+                if (activitiesList.isEmpty()){
+                    binding.noActivitesText.visibility = View.VISIBLE
+                }else{
+                    binding.activitiesList.visibility = View.VISIBLE
+                }
+
             }
         }.start()
     }
