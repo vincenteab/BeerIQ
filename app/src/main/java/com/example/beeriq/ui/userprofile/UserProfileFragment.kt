@@ -15,6 +15,7 @@ import com.example.beeriq.R
 import com.example.beeriq.ui.FriendsList.FriendsListActivity
 import com.example.beeriq.ui.editprofile.EditProfileFragment
 import com.example.beeriq.ui.favorites.FavoritesActivity
+import com.example.beeriq.ui.showMyBeers.ShowMyBeersFragment
 
 
 class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
@@ -26,6 +27,12 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
 
         username = view.findViewById(R.id.textView_username)
         loadData()
+
+        // Handle click for "My Beers"
+        view.findViewById<View>(R.id.option_my_beers).setOnClickListener{
+            val intent = Intent(requireContext(), ShowMyBeersFragment::class.java)
+            startActivity(intent)
+        }
 
         // Handle click for "Account Details"
         view.findViewById<View>(R.id.option_account_details).setOnClickListener {
@@ -50,7 +57,6 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
             val intent = Intent(requireContext(), LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
-
         }
 
 
