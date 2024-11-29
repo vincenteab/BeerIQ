@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.beeriq.ui.activities.Post
+import com.example.beeriq.ui.userprofile.Save
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -34,6 +35,9 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
 
     private val _activitiesList = MutableLiveData<MutableList<Post>>()
     val activitiesList: LiveData<MutableList<Post>> get() = _activitiesList
+
+    private val _savedBeersList = MutableLiveData<MutableList<Save>>()
+    val savedBeersList: LiveData<MutableList<Save>> get() = _savedBeersList
 
     fun fetchAllLists() {
         startRealTimeListeners()
@@ -453,6 +457,70 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                                 val currentList = currentData.getValue(object : GenericTypeIndicator<MutableList<Post>>() {}) ?: mutableListOf()
 
                                 currentList.add(post)
+                                currentData.value = currentList
+                                return Transaction.success(currentData)
+                            }
+
+                            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                                if (committed) {
+                                    println("debug: post added")
+                                } else {
+                                    println("debug: post not added")
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("debug: error - ${error.message}")
+            }
+        })
+    }
+
+    fun fetchSaves(username: String) {
+        databaseReference.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val dataList = mutableListOf<Save>()
+                    for (saveSnapshot in snapshot.children) {
+                        val savesPath = saveSnapshot.child("saves")
+                        if (savesPath.exists()){
+                            for (save in savesPath.children){
+                                val saveObject = save.getValue(Save::class.java)
+                                if (saveObject != null) {
+                                    if (!_savedBeersList.value.orEmpty().contains(saveObject)) { // Ensure uniqueness
+                                        dataList.add(saveObject)
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    val currentActivities = _savedBeersList.value?.toMutableList() ?: mutableListOf()
+                    currentActivities.addAll(dataList)
+                    _savedBeersList.postValue(currentActivities)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching activities: ${error.message}")
+                }
+            })
+    }
+
+    fun addSave(save: Save) {
+        databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (saveSnapshot in snapshot.children) {
+                    val userKey = saveSnapshot.key
+                    if (userKey != null) {
+                        val savesRef = databaseReference.child(userKey).child("saves")
+                        savesRef.runTransaction(object : Transaction.Handler {
+                            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                                val currentList = currentData.getValue(object : GenericTypeIndicator<MutableList<Save>>() {}) ?: mutableListOf()
+
+                                currentList.add(save)
                                 currentData.value = currentList
                                 return Transaction.success(currentData)
                             }
