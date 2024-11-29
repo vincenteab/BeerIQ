@@ -476,7 +476,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
     }
 
     // Update users profile
-    fun updateUser(user: User, onComplete: (Boolean) -> Unit) {
+    fun updateUser(user: User, currentUser: String, onComplete: (Boolean) -> Unit) {
         if (user.username.isEmpty()) {
             println("Debug: Username cannot be empty for updating user data.")
             onComplete(false)
@@ -484,7 +484,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         }
 
         // Locate the user record by username
-        databaseReference.orderByChild("username").equalTo(user.username)
+        databaseReference.orderByChild("username").equalTo(currentUser)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
@@ -496,10 +496,10 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                                 databaseReference.child(userKey).setValue(user)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
-                                            println("Debug: User ${user.username} updated successfully.")
+                                            println("Debug: User $currentUser updated successfully.")
                                             onComplete(true)
                                         } else {
-                                            println("Debug: Failed to update user ${user.username}: ${task.exception?.message}")
+                                            println("Debug: Failed to update user $currentUser: ${task.exception?.message}")
                                             onComplete(false)
                                         }
                                     }
@@ -507,13 +507,13 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                             }
                         }
                     } else {
-                        println("Debug: No user found with username: ${user.username}")
+                        println("Debug: No user found with username: $currentUser")
                         onComplete(false)
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    println("Debug: Failed to locate user ${user.username}: ${error.message}")
+                    println("Debug: Failed to locate user $currentUser: ${error.message}")
                     onComplete(false)
                 }
             })
@@ -544,6 +544,33 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                 }
             })
     }
+
+    fun checkIfUsernameExists(username: String, onComplete: (Boolean) -> Unit) {
+        if (username.isEmpty()) {
+            println("Debug: Username cannot be empty for existence check.")
+            onComplete(false)
+            return
+        }
+
+        databaseReference.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        println("Debug: Username $username exists.")
+                        onComplete(true)
+                    } else {
+                        println("Debug: Username $username does not exist.")
+                        onComplete(false)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to check username existence: ${error.message}")
+                    onComplete(false)
+                }
+            })
+    }
+
 
 
 
