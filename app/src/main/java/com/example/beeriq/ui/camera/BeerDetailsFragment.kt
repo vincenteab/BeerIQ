@@ -1,21 +1,131 @@
 package com.example.beeriq.ui.camera
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.Context.MODE_PRIVATE
+import android.content.DialogInterface
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.Beer
+import com.example.beeriq.ui.activities.Post
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.slider.Slider
+import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.math.RoundingMode
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
+
+    class PostDialog : DialogFragment(), DialogInterface.OnClickListener {
+        private lateinit var username: TextView
+        private lateinit var date: TextView
+        private lateinit var beerImage: ImageView
+        private lateinit var beerName: TextView
+        private lateinit var style: TextView
+        private lateinit var descriptionText: EditText
+        private lateinit var cancelButton: Button
+        private lateinit var postButton: Button
+        private lateinit var bitmap: Bitmap
+
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val builder = AlertDialog.Builder(requireActivity())
+            setStyle(STYLE_NO_FRAME, R.style.CustomDialog)
+            val view = requireActivity().layoutInflater.inflate(R.layout.fragment_post_dialog, null)
+            lateinit var dialog: Dialog
+            builder.setView(view)
+            dialog = builder.create()
+
+            val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
+            val calendar = Calendar.getInstance().time
+            val currentDate: String = SimpleDateFormat("MMM d, yyy").format(calendar)
+
+            val beer = arguments?.getSerializable("beer_object") as Beer
+            val byteArray = arguments?.getByteArray("bitmap") as ByteArray
+            lifecycleScope.launch {
+                byteArray.let {
+                    bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    beerImage = view.findViewById(R.id.beer_image)
+                    beerImage.setImageBitmap(bitmap)
+                }
+            }
+            username = view.findViewById(R.id.username)
+            username.text = sharedPreferences.getString("username", "")
+            date = view.findViewById(R.id.date)
+            date.text = currentDate
+            beerImage = view.findViewById(R.id.beer_image)
+            beerName = view.findViewById(R.id.beer_name)
+            beerName.text = beer.beerFullName
+            style = view.findViewById(R.id.style)
+            style.text = beer.style
+            descriptionText = view.findViewById(R.id.description)
+
+            cancelButton = view.findViewById(R.id.cancel_button)
+            cancelButton.setOnClickListener {
+                dismiss()
+            }
+
+            postButton = view.findViewById(R.id.post_button)
+            postButton.setOnClickListener {
+                val description = descriptionText.text.toString()
+
+                lifecycleScope.launch {
+                    val repo = FirebaseRepo(sharedPreferences)
+                    val post = Post(
+                        username = sharedPreferences.getString("username", "").toString(),
+                        date = currentDate,
+                        image = bitmapToBase64(bitmap),
+                        beername = beer.beerFullName,
+                        subtitle = beer.style,
+                        comment = description
+                    )
+                    repo.addPost(post)
+                }
+                Toast.makeText(requireContext(), "Posted", Toast.LENGTH_SHORT).show()
+                dismiss()
+            }
+            return dialog
+        }
+
+        fun bitmapToBase64(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG, quality: Int = 100): String {
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(format, quality, byteArrayOutputStream) // Compress the bitmap
+            val byteArray = byteArrayOutputStream.toByteArray() // Convert to ByteArray
+            return Base64.encodeToString(byteArray, Base64.DEFAULT) // Convert to Base64 string
+        }
+
+        override fun onStart() {
+            super.onStart()
+            dialog?.window?.setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        }
+
+        override fun onClick(dialog: DialogInterface?, which: Int) {
+        }
+    }
+
     private lateinit var imageView: ShapeableImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,6 +158,9 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
         val astringencyText: TextView = view.findViewById(R.id.astringency_text)
         val sourText: TextView = view.findViewById(R.id.sour_text)
 
+        val saveButton: Button = view.findViewById(R.id.save_button)
+        val postButton: Button = view.findViewById(R.id.post_button)
+
         val beer = arguments?.getSerializable("beer_object") as? Beer
         val byteArray = arguments?.getByteArray("bitmap") as ByteArray
         byteArray.let {
@@ -64,6 +177,15 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
             ratingBar.rating = formattedRating
             ratingValue.text = formattedRating.toString()
             ratingNum.text = beer.numOfReviews.toString() + " ratings"
+
+            postButton.setOnClickListener {
+                val postDialog = PostDialog()
+                val bundle = Bundle()
+                bundle.putSerializable("beer_object", beer)
+                bundle.putByteArray("bitmap", byteArray)
+                postDialog.arguments = bundle
+                postDialog.show(requireActivity().supportFragmentManager, "PostTag")
+            }
 
             var notes = beer.description.removePrefix("Notes:").removeSuffix("\\t")
             if (notes.isEmpty()) { notes = "None"}
