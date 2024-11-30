@@ -33,12 +33,6 @@
             android:name=".data.local.beerDatabase.ImportCsv"
             android:exported="true" />
         <activity
-            android:name=".ui.activity.AddActivityActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.ActivityActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.beerList.BeerListActivity"
             android:exported="false"
             android:theme="@style/Theme.BeerIQ" />

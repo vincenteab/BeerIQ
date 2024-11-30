@@ -1,11 +1,15 @@
 package com.example.beeriq.ui.userprofile
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.RadioButton
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.LoginActivity
 import com.example.beeriq.R
 import com.example.beeriq.ui.FriendsList.FriendsListActivity
@@ -21,9 +25,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
         super.onViewCreated(view, savedInstanceState)
 
         username = view.findViewById(R.id.textView_username)
-        val sharedPref = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
-
-        username.setText(sharedPref.getString("username", ""))
+        loadData()
 
         // Handle click for "Account Details"
         view.findViewById<View>(R.id.option_account_details).setOnClickListener {
@@ -52,6 +54,31 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
         }
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadData() // Reload data whenever the fragment becomes visible
+    }
+
+    private fun loadData() {
+        val sharedPreferences =
+            requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+
+        // Fetch the username from SharedPreferences
+        val usernameKey = sharedPreferences.getString("username", "")
+
+        // Debugging: Log the username being retrieved
+        println("Debug: Retrieved username from SharedPreferences: $usernameKey")
+
+        if (usernameKey.isNullOrEmpty()) {
+            println("Debug: Username field is empty. Please enter your username to load data.")
+            return
+        }
+
+        // Update the username TextView dynamically
+        username.text = usernameKey
+        println("Debug: Username displayed in UserProfileFragment: $usernameKey")
     }
 
 }

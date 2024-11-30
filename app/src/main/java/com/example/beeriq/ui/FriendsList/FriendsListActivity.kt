@@ -11,8 +11,6 @@ import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.SharedViewModel
 import com.example.beeriq.databinding.DialogAddFriendBinding
 import com.example.beeriq.databinding.FragmentFriendsListBinding
-import com.example.beeriq.ui.activity.ActivityActivity
-import com.example.beeriq.ui.activity.AddActivityActivity
 
 class FriendsListActivity : AppCompatActivity() {
     private lateinit var binding: FragmentFriendsListBinding
@@ -75,14 +73,6 @@ class FriendsListActivity : AppCompatActivity() {
             val intent = Intent(this, FriendRequestActivity::class.java)
             startActivity(intent)
         }
-        binding.friendActivityButton.setOnClickListener({
-            val intent = Intent(requireContext(), ActivityActivity::class.java)
-            startActivity(intent)
-        })
-        binding.addActivity.setOnClickListener({
-            val intent = Intent(requireContext(), AddActivityActivity::class.java)
-            startActivity(intent)
-        })
 
         binding.backButton.setOnClickListener{
             finish()
