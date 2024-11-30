@@ -74,4 +74,6 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation ("com.github.castorflex.smoothprogressbar:library-circular:1.3.0")
     implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.29")
+    implementation ("com.opencsv:opencsv:5.7.1") // Check for the latest version
+
 }
