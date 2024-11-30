@@ -8,6 +8,7 @@ data class User(
     val password: String = "",
     val email: String = "",
     val phone: String = "",
+    val gender: String = "",
     val friends: MutableList<String> = mutableListOf(),
     val outgoingFriends: MutableList<String> = mutableListOf(),
     val incomingFriends: MutableList<String> = mutableListOf(),

@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.beeriq.ui.activities.Post
+import com.example.beeriq.ui.userprofile.Save
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -34,6 +35,9 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
 
     private val _activitiesList = MutableLiveData<MutableList<Post>>()
     val activitiesList: LiveData<MutableList<Post>> get() = _activitiesList
+
+    private val _savedBeersList = MutableLiveData<MutableList<Save>>()
+    val savedBeersList: LiveData<MutableList<Save>> get() = _savedBeersList
 
     fun fetchAllLists() {
         startRealTimeListeners()
@@ -474,4 +478,168 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             }
         })
     }
+
+    fun fetchSaves(username: String) {
+        databaseReference.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val dataList = mutableListOf<Save>()
+                    for (saveSnapshot in snapshot.children) {
+                        val savesPath = saveSnapshot.child("saves")
+                        if (savesPath.exists()){
+                            for (save in savesPath.children){
+                                val saveObject = save.getValue(Save::class.java)
+                                if (saveObject != null) {
+                                    if (!_savedBeersList.value.orEmpty().contains(saveObject)) { // Ensure uniqueness
+                                        dataList.add(saveObject)
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    val currentActivities = _savedBeersList.value?.toMutableList() ?: mutableListOf()
+                    currentActivities.addAll(dataList)
+                    _savedBeersList.postValue(currentActivities)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching activities: ${error.message}")
+                }
+            })
+    }
+
+    fun addSave(save: Save) {
+        databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (saveSnapshot in snapshot.children) {
+                    val userKey = saveSnapshot.key
+                    if (userKey != null) {
+                        val savesRef = databaseReference.child(userKey).child("saves")
+                        savesRef.runTransaction(object : Transaction.Handler {
+                            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                                val currentList = currentData.getValue(object : GenericTypeIndicator<MutableList<Save>>() {}) ?: mutableListOf()
+
+                                currentList.add(save)
+                                currentData.value = currentList
+                                return Transaction.success(currentData)
+                            }
+
+                            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                                if (committed) {
+                                    println("debug: post added")
+                                } else {
+                                    println("debug: post not added")
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("debug: error - ${error.message}")
+            }
+        })
+    }
+
+    // Update users profile
+    fun updateUser(user: User, currentUser: String, onComplete: (Boolean) -> Unit) {
+        if (user.username.isEmpty()) {
+            println("Debug: Username cannot be empty for updating user data.")
+            onComplete(false)
+            return
+        }
+
+        // Locate the user record by username
+        databaseReference.orderByChild("username").equalTo(currentUser)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            // Get the Firebase key for the user
+                            val userKey = child.key
+                            if (userKey != null) {
+                                // Update the user's data in Firebase
+                                databaseReference.child(userKey).setValue(user)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            println("Debug: User $currentUser updated successfully.")
+                                            onComplete(true)
+                                        } else {
+                                            println("Debug: Failed to update user $currentUser: ${task.exception?.message}")
+                                            onComplete(false)
+                                        }
+                                    }
+                                return // Exit after the first match
+                            }
+                        }
+                    } else {
+                        println("Debug: No user found with username: $currentUser")
+                        onComplete(false)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to locate user $currentUser: ${error.message}")
+                    onComplete(false)
+                }
+            })
+    }
+
+
+    // Get users data
+    fun fetchUserData(user: String, onComplete: (User?) -> Unit) {
+        databaseReference.orderByChild("username").equalTo(user)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            val userData = child.getValue(User::class.java)
+                            onComplete(userData)
+                            return // Exit after finding the first matching user
+                        }
+                    } else {
+                        println("Debug: No user found with username: $user")
+                        onComplete(null)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Query cancelled: ${error.message}")
+                    onComplete(null)
+                }
+            })
+    }
+
+    fun checkIfUsernameExists(username: String, onComplete: (Boolean) -> Unit) {
+        if (username.isEmpty()) {
+            println("Debug: Username cannot be empty for existence check.")
+            onComplete(false)
+            return
+        }
+
+        databaseReference.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        println("Debug: Username $username exists.")
+                        onComplete(true)
+                    } else {
+                        println("Debug: Username $username does not exist.")
+                        onComplete(false)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to check username existence: ${error.message}")
+                    onComplete(false)
+                }
+            })
+    }
+
+
+
+
 }
