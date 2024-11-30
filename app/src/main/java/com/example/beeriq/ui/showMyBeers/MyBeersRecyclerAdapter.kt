@@ -2,6 +2,9 @@ package com.example.beeriq.ui.showMyBeers
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Bundle
+import android.provider.Settings.Global.putInt
+import android.provider.Settings.Global.putString
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +12,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
+import com.example.beeriq.data.local.beerDatabase.Beer
 import com.example.beeriq.ui.userprofile.Save
 
 class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
@@ -26,7 +32,7 @@ class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedBeerViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_saved_beer, parent, false) // Use the provided XML
+            .inflate(R.layout.item_saved_beer, parent, false)
         return SavedBeerViewHolder(view)
     }
 
@@ -44,28 +50,48 @@ class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
             holder.image.setImageBitmap(bitmap)
         }
 
-        // Handle click event to show dialog
+        // Handle click event to navigate to BeerDetailsFragment
         holder.itemView.setOnClickListener {
-            val dialog = BeerDetailsDialogFragment.newInstance(
-                beer.brewery,
-                beer.description,
-                beer.abv,
-                beer.style,
-                beer.minIBU,
-                beer.maxIBU,
-                beer.reviewAroma,
-                beer.reviewAppearance,
-                beer.reviewPalate,
-                beer.reviewTaste,
-                bitmap
-            )
-            dialog.show((holder.itemView.context as AppCompatActivity).supportFragmentManager, "BeerDetailsDialog")
+            val bundle = Bundle().apply {
+                val byteArray = Base64.decode(beer.image, Base64.DEFAULT)
+                putByteArray("bitmap", byteArray)
+                putSerializable("beer_object", Beer(
+                    name = beer.brewery, // If the brewery name corresponds to the beer name
+                    style = beer.style,
+                    brewery = beer.brewery,
+                    beerFullName = beer.beerFullName,
+                    description = beer.description,
+                    abv = beer.abv,
+                    minIBU = beer.minIBU,
+                    maxIBU = beer.maxIBU,
+                    astringency = beer.astringency,
+                    body = beer.body,
+                    alcohol = beer.alcohol,
+                    bitter = beer.bitter,
+                    sweet = beer.sweet,
+                    sour = beer.sour,
+                    salty = beer.salty,
+                    fruits = beer.fruits,
+                    hoppy = beer.hoppy,
+                    spices = beer.spices,
+                    malty = beer.malty,
+                    reviewAroma = beer.reviewAroma,
+                    reviewAppearance = beer.reviewAppearance,
+                    reviewPalate = beer.reviewPalate,
+                    reviewTaste = beer.reviewTaste,
+                    reviewOverall = beer.reviewOverall,
+                    numOfReviews = beer.numOfReviews
+                ))
+            }
+
+            // Use Navigation Component to navigate
+            Navigation.findNavController(holder.itemView)
+                .navigate(R.id.action_showMyBeersFragment_to_navigation_beer_details, bundle)
         }
     }
 
-    override fun getItemCount(): Int {
-        return savedBeers.size
-    }
+
+    override fun getItemCount(): Int = savedBeers.size
 
     // Helper function to decode Base64 string to Bitmap
     private fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
@@ -78,5 +104,3 @@ class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
         }
     }
 }
-
-

@@ -9,6 +9,7 @@ import android.widget.RadioButton
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.LoginActivity
 import com.example.beeriq.R
@@ -29,9 +30,8 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
         loadData()
 
         // Handle click for "My Beers"
-        view.findViewById<View>(R.id.option_my_beers).setOnClickListener{
-            val intent = Intent(requireContext(), ShowMyBeersFragment::class.java)
-            startActivity(intent)
+        view.findViewById<View>(R.id.option_my_beers).setOnClickListener {
+            findNavController().navigate(R.id.showMyBeersFragment)
         }
 
         // Handle click for "Account Details"
