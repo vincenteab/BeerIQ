@@ -19,18 +19,19 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/backButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginLeft="5dp"
                 android:background="@drawable/back_arrow"
                 android:layout_gravity="center_vertical"/>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/friendRequestButton"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="310dp"
+                android:layout_marginStart="290dp"
+                android:layout_marginRight="5dp"
                 android:background="@drawable/friend_request_icon" />
 
         </LinearLayout>
