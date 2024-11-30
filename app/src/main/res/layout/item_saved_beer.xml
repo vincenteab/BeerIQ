@@ -6,13 +6,56 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    android:backgroundTint="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="8dp">
+
+        <!-- Header Section with User Name and Date -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <!-- User Avatar -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_launcher_foreground" />
+
+            <!-- User Info -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical">
+
+                <!-- User Name -->
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Name"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <!-- Date Created -->
+                <TextView
+                    android:id="@+id/dateCreated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nov 22, 2024"
+                    android:textSize="14sp"
+                    android:textColor="#777" />
+            </LinearLayout>
+        </LinearLayout>
 
         <!-- Image -->
         <ImageView
@@ -22,23 +65,30 @@
             android:scaleType="centerCrop"
             android:layout_marginBottom="8dp" />
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/cardTitle"
-            android:layout_width="wrap_content"
+        <!-- Description Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Beer Name"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
+            android:orientation="vertical">
 
-        <!-- Description -->
-        <TextView
-            android:id="@+id/cardDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Notes: Description goes here"
-            android:textSize="14sp" />
+            <!-- Title -->
+            <TextView
+                android:id="@+id/cardTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beer Name"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/cardDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description goes here"
+                android:textSize="14sp"
+                android:textColor="#777" />
+        </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
-

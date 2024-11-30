@@ -17,6 +17,8 @@ class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
     RecyclerView.Adapter<MyBeersRecyclerAdapter.SavedBeerViewHolder>() {
 
     class SavedBeerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val username: TextView = itemView.findViewById(R.id.username)
+        val date: TextView = itemView.findViewById(R.id.dateCreated)
         val title: TextView = itemView.findViewById(R.id.cardTitle)
         val image: ImageView = itemView.findViewById(R.id.cardImage)
         val description: TextView = itemView.findViewById(R.id.cardDescription)
@@ -31,9 +33,10 @@ class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
     override fun onBindViewHolder(holder: SavedBeerViewHolder, position: Int) {
         val beer = savedBeers[position]
 
-        // Set title and description
-        holder.title.text = beer.name
-        holder.description.text = beer.description
+        holder.username.text = beer.username
+        holder.date.text = beer.date
+        holder.title.text = beer.brewery
+        holder.description.text = beer.description.removePrefix("Notes:").trimEnd('\t').trim()
 
         // Decode Base64 and set the image
         val bitmap = decodeBase64ToBitmap(beer.image)

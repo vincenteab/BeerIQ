@@ -2,6 +2,7 @@ package com.example.beeriq.ui.showMyBeers
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,15 +14,22 @@ class ShowMyBeersFragment: AppCompatActivity() {
     private lateinit var username:String
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var backBtn: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.showmybeers)
 
         recyclerView = findViewById(R.id.recyclerView)
+        backBtn = findViewById(R.id.backButton)
+
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         loadData()
+
+        backBtn.setOnClickListener{
+            finish()
+        }
     }
 
     private fun loadData() {
