@@ -15,7 +15,11 @@ import com.example.beeriq.databinding.FragmentActivitiesBinding
 import com.example.beeriq.FirebaseRepo
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import android.widget.ImageButton
 import com.example.beeriq.SharedViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class ActivitiesFragment : Fragment() {
@@ -30,6 +34,14 @@ class ActivitiesFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentActivitiesBinding.inflate(inflater, container, false)
+//        val toolbar = requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+//        val button = ImageButton(requireContext()).apply {
+//            setImageResource(R.drawable.ic_sort) // Replace with your icon
+//            setBackgroundColor(android.graphics.Color.TRANSPARENT)
+//            setOnClickListener { showPopupMenu(it) } // Attach popup menu to this button
+//        }
+//
+//        toolbar.addView(button)
 
 
         showLoadingScreen()
@@ -99,10 +111,8 @@ class ActivitiesFragment : Fragment() {
         }.start()
     }
 
-    fun bitmapToBase64(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG, quality: Int = 100): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(format, quality, byteArrayOutputStream) // Compress the bitmap
-        val byteArray = byteArrayOutputStream.toByteArray() // Convert to ByteArray
-        return Base64.encodeToString(byteArray, Base64.DEFAULT) // Convert to Base64 string
+    fun parseDateString(dateString: String): Date? {
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH)
+        return dateFormat.parse(dateString)
     }
 }
