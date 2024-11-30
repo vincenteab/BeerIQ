@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    android:backgroundTint="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <!-- Header Section with User Name and Date -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <!-- User Avatar -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_launcher_foreground" />
+
+            <!-- User Info -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical">
+
+                <!-- User Name -->
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Name"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <!-- Date Created -->
+                <TextView
+                    android:id="@+id/dateCreated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nov 22, 2024"
+                    android:textSize="14sp"
+                    android:textColor="#777" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Image -->
+        <ImageView
+            android:id="@+id/cardImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Description Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/cardTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beer Name"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/cardDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description goes here"
+                android:textSize="14sp"
+                android:textColor="#777" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
