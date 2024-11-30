@@ -11,5 +11,7 @@
     <color name="dark_green">#057505</color>
     <color name="grey">#6D6A6A</color>
     <color name="red">#BC2929</color>
+    <color name="saved_yellow">#f0c542</color>
+    <color name="background_color">#FCF5FDFF</color>
     <color name="divider_color">#FF000000</color> <!-- Solid black -->
 </resources>

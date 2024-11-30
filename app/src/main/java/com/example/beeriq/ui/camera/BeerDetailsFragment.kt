@@ -161,11 +161,16 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
         val bitmap: Bitmap
 
         val saveButton: Button = view.findViewById(R.id.save_button)
+
+
         val postButton: Button = view.findViewById(R.id.post_button)
 
         val sharedPreferences = requireContext().getSharedPreferences("UserData", MODE_PRIVATE)
+        val repo = FirebaseRepo(sharedPreferences)
+
 
         val beer = arguments?.getSerializable("beer_object") as? Beer
+
         val byteArray = arguments?.getByteArray("bitmap") as ByteArray
         byteArray.let {
             bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
@@ -173,6 +178,23 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
             imageView.setImageBitmap(bitmap)
         }
         if (beer != null) {
+            //check for saved beer and shows button if saved/unsaved
+            var saved = false
+
+            lifecycleScope.launch {
+                repo.checkBeerInSaves(beer.beerFullName){
+                    if (it) {
+                        saveButton.text = "Saved"
+                        saved = true
+                    }
+                }
+            }
+
+
+
+
+
+
             brewery.text = beer.brewery
             beerName.text = beer.name
             abv.text = "ABV: " + beer.abv.toString() + "%"
@@ -183,42 +205,61 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
             ratingNum.text = beer.numOfReviews.toString() + " ratings"
 
             saveButton.setOnClickListener {
-                val calendar = Calendar.getInstance().time
-                val currentDate: String = SimpleDateFormat("MMM d, yyy").format(calendar)
+                if (saved) {
+                    repo.deleteSave(beer.beerFullName){
+                        if (it) {
+                            saveButton.text = "Save"
+                            saved = false
+                            println("Deleted")
+                        } else {
+                            println("Not Deleted")
+                        }
+                    }
 
-                lifecycleScope.launch {
-                    val repo = FirebaseRepo(sharedPreferences)
-                    val save = Save(
-                        username = sharedPreferences.getString("username", "").toString(),
-                        image = bitmapToBase64(bitmap),
-                        style = beer.style,
-                        brewery = beer.brewery,
-                        beerFullName = beer.beerFullName,
-                        description = beer.description,
-                        abv = beer.abv,
-                        minIBU = beer.minIBU,
-                        maxIBU = beer.maxIBU,
-                        astringency = beer.astringency,
-                        body = beer.body,
-                        alcohol = beer.alcohol,
-                        bitter = beer.bitter,
-                        sweet = beer.sweet,
-                        sour = beer.sour,
-                        salty = beer.salty,
-                        fruits = beer.fruits,
-                        hoppy = beer.hoppy,
-                        spices = beer.spices,
-                        malty = beer.malty,
-                        reviewAroma = beer.reviewAroma,
-                        reviewAppearance = beer.reviewAppearance,
-                        reviewPalate = beer.reviewPalate,
-                        reviewTaste = beer.reviewTaste,
-                        reviewOverall = beer.reviewOverall,
-                        numOfReviews = beer.numOfReviews,
-                        date = currentDate
-                    )
-                    repo.addSave(save)
+                } else {
+
+
+
+                    val calendar = Calendar.getInstance().time
+                    val currentDate: String = SimpleDateFormat("MMM d, yyy").format(calendar)
+
+                    lifecycleScope.launch {
+                        val repo = FirebaseRepo(sharedPreferences)
+                        val save = Save(
+                            username = sharedPreferences.getString("username", "").toString(),
+                            image = bitmapToBase64(bitmap),
+                            style = beer.style,
+                            brewery = beer.brewery,
+                            beerFullName = beer.beerFullName,
+                            description = beer.description,
+                            abv = beer.abv,
+                            minIBU = beer.minIBU,
+                            maxIBU = beer.maxIBU,
+                            astringency = beer.astringency,
+                            body = beer.body,
+                            alcohol = beer.alcohol,
+                            bitter = beer.bitter,
+                            sweet = beer.sweet,
+                            sour = beer.sour,
+                            salty = beer.salty,
+                            fruits = beer.fruits,
+                            hoppy = beer.hoppy,
+                            spices = beer.spices,
+                            malty = beer.malty,
+                            reviewAroma = beer.reviewAroma,
+                            reviewAppearance = beer.reviewAppearance,
+                            reviewPalate = beer.reviewPalate,
+                            reviewTaste = beer.reviewTaste,
+                            reviewOverall = beer.reviewOverall,
+                            numOfReviews = beer.numOfReviews,
+                            date = currentDate
+                        )
+                        repo.addSave(save)
+                    }
+                    saveButton.text = "Saved"
+                    saved = true
                 }
+
             }
 
             postButton.setOnClickListener {

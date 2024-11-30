@@ -15,7 +15,11 @@ import com.example.beeriq.databinding.FragmentActivitiesBinding
 import com.example.beeriq.FirebaseRepo
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import android.view.Gravity
 import android.widget.ImageButton
+import android.widget.PopupMenu
+import android.widget.Toolbar
+import androidx.core.view.marginTop
 import com.example.beeriq.SharedViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,14 +38,7 @@ class ActivitiesFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentActivitiesBinding.inflate(inflater, container, false)
-//        val toolbar = requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-//        val button = ImageButton(requireContext()).apply {
-//            setImageResource(R.drawable.ic_sort) // Replace with your icon
-//            setBackgroundColor(android.graphics.Color.TRANSPARENT)
-//            setOnClickListener { showPopupMenu(it) } // Attach popup menu to this button
-//        }
-//
-//        toolbar.addView(button)
+
 
 
         showLoadingScreen()
@@ -111,8 +108,4 @@ class ActivitiesFragment : Fragment() {
         }.start()
     }
 
-    fun parseDateString(dateString: String): Date? {
-        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH)
-        return dateFormat.parse(dateString)
-    }
 }
