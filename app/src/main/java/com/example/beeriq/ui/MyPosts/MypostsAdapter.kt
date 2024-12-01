@@ -1,44 +1,60 @@
 package com.example.beeriq.ui.MyPosts
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
+import com.example.beeriq.ui.activities.Post
+import android.util.Base64
 
-data class Beer(val id: String, val name: String)
 
-class FavoritesAdapter : ListAdapter<Beer, FavoritesAdapter.FavoritesViewHolder>(DiffCallback()) {
+class MypostsAdapter(private val posts: List<Post>): RecyclerView.Adapter<MypostsAdapter.MyPostsViewHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
+    class MyPostsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val username: TextView = itemView.findViewById(R.id.username)
+        val date: TextView = itemView.findViewById(R.id.dateCreated)
+        val image: ImageView = itemView.findViewById(R.id.cardImage)
+        val title: TextView = itemView.findViewById(R.id.cardTitle)
+        val style: TextView = itemView.findViewById(R.id.style)
+        val comment: TextView = itemView.findViewById(R.id.comment)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyPostsViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.my_posts, parent, false)
-        return FavoritesViewHolder(view)
+        return MyPostsViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
-        val beer = getItem(position)
-        holder.bind(beer)
-    }
+    override fun onBindViewHolder(holder: MyPostsViewHolder, position: Int) {
+        val post = posts[position]
 
-    class FavoritesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val favoriteItemName: TextView = itemView.findViewById(R.id.favorite_item_name)
+        holder.username.text = post.username
+        holder.date.text = post.date
+        holder.title.text = post.beername
+        holder.style.text = post.subtitle
+        holder.comment.text = post.comment
 
-        fun bind(beer: Beer) {
-            favoriteItemName.text = beer.name
+        val bitmap = decodeBase64ToBitmap(post.image)
+        if (bitmap != null) {
+            holder.image.setImageBitmap(bitmap)
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<Beer>() {
-        override fun areItemsTheSame(oldItem: Beer, newItem: Beer): Boolean {
-            return oldItem.id == newItem.id
-        }
+    override fun getItemCount(): Int = posts.size
 
-        override fun areContentsTheSame(oldItem: Beer, newItem: Beer): Boolean {
-            return oldItem == newItem
+    private fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
+        return try {
+            val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
+
 }
