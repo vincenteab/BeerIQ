@@ -39,6 +39,9 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
     private val _savedBeersList = MutableLiveData<MutableList<Save>>()
     val savedBeersList: LiveData<MutableList<Save>> get() = _savedBeersList
 
+    private val _myPostsList = MutableLiveData<MutableList<Post>>()
+    val myPostsList: LiveData<MutableList<Post>> get() = _myPostsList
+
     fun fetchAllLists() {
         startRealTimeListeners()
     }
@@ -639,7 +642,39 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             })
     }
 
+    fun fetchMyPosts(username: String) {
+        databaseReference.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        return
+                    }
+                    val dataList = mutableListOf<Post>()
+                    for (userSnapshot in snapshot.children) {
+                        val postPath = userSnapshot.child("posts")
+                        if (postPath.exists()) {
+                            for (postSnapshot in postPath.children) {
+                                println("Debug: Post DataSnapshot -> ${postSnapshot.value}")
+                                // Deserialize the post
+                                val postObject = postSnapshot.getValue(Post::class.java)
+                                if (postObject != null) {
+                                    println("Debug: Post object -> $postObject")
+                                    dataList.add(postObject)
+                                } else {
+                                    println("Debug: Failed to deserialize post: ${postSnapshot.value}")
+                                }
+                            }
+                        } else {
+                            println("Debug: No posts found for user $username.")
+                        }
+                    }
+                    _myPostsList.postValue(dataList) // Post the fetched list to LiveData
+                }
 
-
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching posts: ${error.message}")
+                }
+            })
+    }
 
 }
