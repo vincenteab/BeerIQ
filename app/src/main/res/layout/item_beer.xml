@@ -1,24 +1,51 @@
-<!-- item_beer.xml -->
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:padding="8dp"
-    android:elevation="4dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal">
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:layout_marginVertical="3dp"
+        app:cardElevation="1dp"
+        app:cardBackgroundColor="@color/white">
 
-        <TextView
-            android:id="@+id/beerName"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Beer Name"
-            android:textSize="18sp"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:padding="16dp">
 
-</androidx.cardview.widget.CardView>
+            <!-- Beer Name -->
+            <TextView
+                android:id="@+id/beerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beer Name"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Brewery -->
+            <TextView
+                android:id="@+id/review"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Brewery"
+                android:textSize="16sp"
+                android:textColor="#555" />
+
+            <!-- ABV -->
+            <TextView
+                android:id="@+id/abv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ABV: 5.0%"
+                android:textSize="14sp"
+                android:textColor="#777" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

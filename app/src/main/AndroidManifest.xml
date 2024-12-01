@@ -53,7 +53,7 @@
         </activity>
 
         <activity
-            android:name=".LoginActivity"
+            android:name="com.example.beeriq.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
