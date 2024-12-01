@@ -6,13 +6,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
+import com.example.beeriq.data.local.beerDatabase.Beer // Import the Beer class from the database package
 
-class BeerListAdapter(private val beerList: List<Beer>) : RecyclerView.Adapter<BeerListAdapter.BeerViewHolder>() {
+class BeerListAdapter(private val beerList: List<com.example.beeriq.data.local.beerDatabase.Beer>) : RecyclerView.Adapter<BeerListAdapter.BeerViewHolder>() {
 
     class BeerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val beerName: TextView = itemView.findViewById(R.id.beerName)
 
-        fun bind(beer: Beer) {
+        fun bind(beer: com.example.beeriq.data.local.beerDatabase.Beer) {
             beerName.text = beer.name
         }
     }

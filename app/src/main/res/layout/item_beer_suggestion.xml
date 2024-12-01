@@ -46,6 +46,13 @@
                 android:text="ABV: 5.0%"
                 android:textSize="14sp"
                 android:textColor="#777" />
+            <TextView
+                android:id="@+id/review"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Review: 5/5"
+                android:textSize="14sp"
+                android:textColor="#777" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

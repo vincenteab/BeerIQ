@@ -10,7 +10,12 @@ import kotlinx.coroutines.launch
 
 class BeerViewModel(private val repository: BeerRepository): ViewModel() {
     val beerResult = MutableLiveData<Beer?>()
-
+    fun getBeersByStyle(style: String): LiveData<List<Beer>> {
+        return liveData {
+            val beers = repository.getBeersByStyle(style)
+            emit(beers)
+        }
+    }
     fun insert(beer: Beer) {
         repository.insert(beer)
     }

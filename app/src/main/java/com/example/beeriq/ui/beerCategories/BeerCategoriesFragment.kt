@@ -1,6 +1,7 @@
 package com.example.beeriq.ui.beerCategories
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.example.beeriq.R
 import com.example.beeriq.tools.Util.parseBeerCategories
 import com.example.beeriq.ui.beerCategories.BeerCategoriesAdapter
 import com.example.beeriq.ui.beerCategories.BeerCategory
+import com.example.beeriq.ui.beerList.BeerListActivity
 
 class BeerCategoriesFragment : Fragment() {
 
@@ -95,6 +97,7 @@ class BeerCategoriesFragment : Fragment() {
     }
 
     private fun openBeerListActivity(category: BeerCategory) {
-        // Implement activity navigation logic here
-    }
+        val intent = Intent(requireContext(), BeerListActivity::class.java)
+        intent.putExtra("CATEGORY_NAME", category.name) // Pass the category name
+        startActivity(intent)    }
 }
