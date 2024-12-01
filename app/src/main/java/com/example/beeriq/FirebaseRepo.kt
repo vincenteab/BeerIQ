@@ -563,8 +563,17 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                             // Get the Firebase key for the user
                             val userKey = child.key
                             if (userKey != null) {
-                                // Update the user's data in Firebase
-                                databaseReference.child(userKey).setValue(user)
+                                // Update only specific fields in Firebase
+                                val updates = mapOf(
+                                    "username" to user.username,
+                                    "password" to user.password,
+                                    "email" to user.email,
+                                    "phone" to user.phone,
+                                    "gender" to user.gender,
+                                    "profileImg" to user.profileImg
+                                )
+
+                                databaseReference.child(userKey).updateChildren(updates)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
                                             println("Debug: User $currentUser updated successfully.")
@@ -589,6 +598,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                 }
             })
     }
+
 
 
     // Get users data
