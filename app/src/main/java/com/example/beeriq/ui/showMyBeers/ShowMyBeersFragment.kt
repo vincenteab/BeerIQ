@@ -55,6 +55,12 @@ class ShowMyBeersFragment : Fragment() {
         firebaseRepo.fetchSaves(username)
 
         firebaseRepo.savedBeersList.observe(viewLifecycleOwner) { savedBeers ->
+
+            if (!isAdded) {
+                println("Debug: Fragment is not attached. Skipping UI update.")
+                return@observe
+            }
+
             Handler(Looper.getMainLooper()).postDelayed({
                 if (savedBeers != null) {
                     recyclerView.adapter = MyBeersRecyclerAdapter(savedBeers, requireContext())

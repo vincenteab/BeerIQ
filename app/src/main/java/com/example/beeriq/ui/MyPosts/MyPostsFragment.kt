@@ -61,6 +61,12 @@ class MyPostsFragment : Fragment() {
 
         // Observe posts LiveData
         firebaseRepo.myPostsList.observe(viewLifecycleOwner) { userPosts ->
+
+            if (!isAdded) {
+                println("Debug: Fragment is not attached. Skipping UI update.")
+                return@observe
+            }
+
             Handler(Looper.getMainLooper()).postDelayed({
                 if (userPosts != null && userPosts.isNotEmpty()) {
                     recyclerView.adapter = MypostsAdapter(userPosts, requireContext())
