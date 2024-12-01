@@ -99,7 +99,7 @@ class EditProfileFragment : AppCompatActivity() {
         btnSave.setOnClickListener{
             if(isValidForm()){
                 if (username.text.toString() != Currentusername){
-                    val firebaseRepo = FirebaseRepo(this.getSharedPreferences("UserDetails", Context.MODE_PRIVATE))
+                    val firebaseRepo = FirebaseRepo(this.getSharedPreferences("UserData", Context.MODE_PRIVATE))
                     firebaseRepo.checkIfUsernameExists(username.text.toString()) { exists ->
                         if(!exists){
                             saveFormData()
@@ -179,17 +179,11 @@ class EditProfileFragment : AppCompatActivity() {
         )
 
         val email = getTextVal(inputEmail)
-        if (!email.contains('@') || !containsValidTLD(email, TLDs)) {
+        if (email.isNotEmpty() && (!email.contains('@') || !containsValidTLD(email, TLDs))) {
             showPopupMessage("Invalid email address. Please provide a valid email.")
             return false
         }
 
-        // Check if a gender radio button is selected
-        val selectedRadioButtonId = radioGenres.checkedRadioButtonId
-        if (selectedRadioButtonId == -1) {
-            showPopupMessage("Please select a gender.")
-            return false
-        }
 
         // If all validations pass
         return true
@@ -227,12 +221,12 @@ class EditProfileFragment : AppCompatActivity() {
         }
 
         // Downscale the profile image and convert to Base64
-        val profileImageBase64 = if (imageView.drawable != null) {
+        val profileImageBase64 = if (imageView.drawable is BitmapDrawable) {
             val bitmap = (imageView.drawable as BitmapDrawable).bitmap
             val resizedBitmap = downscaleBitmap(bitmap, 200, 200) // Resize to 200x200 pixels
             bitmapToBase64(resizedBitmap, Bitmap.CompressFormat.JPEG, 80) // Compress to 80% quality
         } else {
-            "" // Default to empty string if no image is selected
+            "" // Default to empty string if no image or if it's not a BitmapDrawable
         }
 
         // Create a User object with updated information
@@ -254,8 +248,11 @@ class EditProfileFragment : AppCompatActivity() {
             }
         }
 
+        println(username.text.toString())
+
         val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("username", updatedUser.username).apply()
+        sharedPreferences.edit().putString("profilePic", profileImageBase64).apply()
     }
 
 

@@ -2,8 +2,12 @@ package com.example.beeriq.ui.userprofile
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -17,11 +21,13 @@ import com.example.beeriq.ui.MyPosts.MyPostsFragment
 class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
 
     private lateinit var username: TextView
+    private lateinit var profilePicImgView: ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         username = view.findViewById(R.id.textView_username)
+        profilePicImgView = view.findViewById(R.id.profile_image)
         loadData()
 
         // Handle click for "My Beers"
@@ -65,11 +71,9 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
         val sharedPreferences =
             requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
 
-        // Fetch the username from SharedPreferences
+        // Fetch the username and profile picture from SharedPreferences
         val usernameKey = sharedPreferences.getString("username", "")
-
-        // Debugging: Log the username being retrieved
-        println("Debug: Retrieved username from SharedPreferences: $usernameKey")
+        val profilePic = sharedPreferences.getString("profilePic", "")
 
         if (usernameKey.isNullOrEmpty()) {
             println("Debug: Username field is empty. Please enter your username to load data.")
@@ -78,7 +82,29 @@ class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {
 
         // Update the username TextView dynamically
         username.text = usernameKey
-        println("Debug: Username displayed in UserProfileFragment: $usernameKey")
+
+        // Decode and set the profile picture if available
+        if (!profilePic.isNullOrEmpty()) {
+            val bitmap = decodeBase64ToBitmap(profilePic)
+            if (bitmap != null) {
+                profilePicImgView.setImageBitmap(bitmap)
+            } else {
+                println("Debug: Failed to decode profile picture from Base64.")
+            }
+        } else {
+            println("Debug: No profile picture found in SharedPreferences.")
+        }
+    }
+
+
+    private fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
+        return try {
+            val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 }
