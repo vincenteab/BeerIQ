@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Beer::class, BeerFts::class], version = 3)
+@Database(entities = [Beer::class, BeerFts::class], version = 5)
 abstract class BeerDatabase: RoomDatabase() {
     abstract val beerDatabaseDao: BeerDatabaseDao
 
@@ -17,11 +17,12 @@ abstract class BeerDatabase: RoomDatabase() {
             synchronized(this) {
                 var instance = INSTANCE
                 if (instance == null) {
-                    instance = Room.databaseBuilder(context.applicationContext,
-                        BeerDatabase::class.java, "db_instance"
+                    instance = Room.databaseBuilder(
+                        context.applicationContext,
+                        BeerDatabase::class.java,
+                        "db_instance"
                     )
-                        .createFromAsset("db_instance")
-                        .fallbackToDestructiveMigration()
+                        .fallbackToDestructiveMigration() // Add this line
                         .build()
                     INSTANCE = instance
                 }
@@ -29,4 +30,5 @@ abstract class BeerDatabase: RoomDatabase() {
             }
         }
     }
+
 }

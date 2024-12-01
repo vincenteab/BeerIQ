@@ -95,6 +95,9 @@ class Beer (
 
     @ColumnInfo(name = "num_of_reviews")
     var numOfReviews: Int = 0,
+
+    @ColumnInfo(name = "general_category")
+    var generalCategory: String = ""
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

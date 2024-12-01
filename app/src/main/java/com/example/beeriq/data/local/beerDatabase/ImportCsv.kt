@@ -23,13 +23,17 @@ class ImportCsv : AppCompatActivity() {
         val viewModelFactory = BeerViewModelFactory(repository)
         beerViewModel = ViewModelProvider(this, viewModelFactory).get(BeerViewModel::class.java)
 
+        Log.d("ImportCsv", "Opening CSV file...")
         val inputStream = assets.open("beer_data.csv")
+        Log.d("ImportCsv", "CSV file opened successfully.")
+
         val beerList = parseCsvFile(inputStream)
         var count = 1
         for (beer in beerList) {
             //Log.d("testing", "${count}, ${beer.name}")
             beerViewModel.insert(beer)
             count++
+            Log.d("InsertBeer", "Inserting beer: ${beer.name}")
         }
     }
 
@@ -68,10 +72,12 @@ class ImportCsv : AppCompatActivity() {
                     reviewTaste = record.get("review_taste").toDouble(),
                     reviewOverall = record.get("review_overall").toDouble(),
                     numOfReviews = record.get("number_of_reviews").toInt(),
+                    generalCategory = record.get("general_category"),
+
                 )
-                //Log.d("testing", "$count, ${beer.name}, ${beer.malty}")
-                count++
+                Log.d("CSVDebug", "Parsed beer: ${beer.name}, generalCategory: ${beer.generalCategory}")
                 beers.add(beer)
+                count++
             } catch (e: Exception) {
                 Log.e("CSVError", "Error parsing record at line $count", e)
             }

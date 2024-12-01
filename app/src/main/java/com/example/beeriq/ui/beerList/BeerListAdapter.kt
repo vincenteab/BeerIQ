@@ -8,12 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.Beer // Import the Beer class from the database package
 
-class BeerListAdapter(private val beerList: List<com.example.beeriq.data.local.beerDatabase.Beer>) : RecyclerView.Adapter<BeerListAdapter.BeerViewHolder>() {
+class BeerListAdapter(private var beerList: List<Beer>) : RecyclerView.Adapter<BeerListAdapter.BeerViewHolder>() {
 
     class BeerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val beerName: TextView = itemView.findViewById(R.id.beerName)
 
-        fun bind(beer: com.example.beeriq.data.local.beerDatabase.Beer) {
+        fun bind(beer: Beer) {
             beerName.text = beer.name
         }
     }
@@ -31,4 +31,11 @@ class BeerListAdapter(private val beerList: List<com.example.beeriq.data.local.b
     override fun getItemCount(): Int {
         return beerList.size
     }
+
+    // New method to update data
+    fun updateData(newBeerList: List<Beer>) {
+        beerList = newBeerList
+        notifyDataSetChanged() // Notify the adapter that the data has changed
+    }
 }
+

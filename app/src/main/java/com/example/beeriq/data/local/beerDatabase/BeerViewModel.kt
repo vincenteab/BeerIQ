@@ -1,5 +1,6 @@
 package com.example.beeriq.data.local.beerDatabase
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ class BeerViewModel(private val repository: BeerRepository): ViewModel() {
     fun getBeersByStyle(style: String): LiveData<List<Beer>> {
         return liveData {
             val beers = repository.getBeersByStyle(style)
+            Log.d("BeerViewModel", "Beers retrieved: ${beers.size}")  // Add this line to log the size of the list
             emit(beers)
         }
     }
@@ -28,4 +30,5 @@ class BeerViewModelFactory(private val repository: BeerRepository): ViewModelPro
         }
         throw IllegalArgumentException("")
     }
+
 }

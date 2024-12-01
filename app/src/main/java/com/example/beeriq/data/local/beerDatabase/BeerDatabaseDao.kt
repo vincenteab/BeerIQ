@@ -10,8 +10,8 @@ interface BeerDatabaseDao {
     @Insert
     suspend fun insertBeer(beer: Beer)
 
-    @Query("SELECT * FROM beer_table WHERE style = :style")
-    suspend fun getBeersByStyle(style: String): List<Beer>
+    @Query("SELECT * FROM beer_table WHERE general_category = :category")
+    suspend fun getBeersByCategory(category: String): List<Beer>
 
     @Query("""
         SELECT * FROM beer_table
