@@ -163,5 +163,12 @@
             app:destination="@id/navigation_beer_details" />
     </fragment>
 
+    <fragment
+        android:id="@+id/ShowMyPostsFragment"
+        android:name="com.example.beeriq.ui.MyPosts.MyPostsFragment"
+        android:label="My Posts"
+        tools:layout="@layout/recycler_my_posts">
+
+    </fragment>
 
 </navigation>

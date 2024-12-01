@@ -64,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
                                 Toast.makeText(this, "Account created", Toast.LENGTH_SHORT).show()
                             }
                         //continue to the main activity
-                        storeUserDataLocally(username, password, null, null, null)
+                        storeUserDataLocally(username, password, null, null, null, null)
                         binding.usernameTextField.error = null
                         binding.passwordTextField.error = null
                         val intent = Intent(this, MainActivity::class.java)
@@ -93,7 +93,8 @@ class LoginActivity : AppCompatActivity() {
                                     val email = userData.email
                                     val phone = userData.phone
                                     val friends = userData.friends as List<String>?
-                                    storeUserDataLocally(username, password, email, phone, friends)
+                                    val profilePic = userData.profileImg
+                                    storeUserDataLocally(username, password, email, phone, friends, profilePic)
                                 }
 
 
@@ -190,7 +191,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     //store user data locally
-    fun storeUserDataLocally(username: String?, password: String?, email: String?, phone: String?, friends: List<String>?) {
+    fun storeUserDataLocally(username: String?, password: String?, email: String?, phone: String?, friends: List<String>?, profilePic: String?) {
         val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("username", username)
@@ -198,6 +199,7 @@ class LoginActivity : AppCompatActivity() {
         editor.putString("email", email)
         editor.putString("phone", phone)
         editor.putStringSet("friends", friends?.toSet())
+        editor.putString("profilePic", profilePic)
         editor.apply()
     }
 

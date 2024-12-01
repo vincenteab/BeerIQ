@@ -47,15 +47,6 @@
         <activity android:name=".ui.FriendsList.FriendsListActivity"
             android:exported="true">
         </activity>
-        <activity android:name=".ui.favorites.FavoritesActivity"
-            android:label="Favorites">
-
-        </activity>
-        <activity android:name=".ui.showMyBeers.ShowMyBeersFragment"
-            android:label="ShowMyBeers"
-            android:launchMode="standard">
-
-        </activity>
 
         <activity
             android:name=".LoginActivity"

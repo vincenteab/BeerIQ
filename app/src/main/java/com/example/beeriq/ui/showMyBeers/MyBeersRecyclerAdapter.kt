@@ -1,5 +1,7 @@
 package com.example.beeriq.ui.showMyBeers
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -18,8 +20,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.Beer
 import com.example.beeriq.ui.userprofile.Save
+import com.google.android.material.imageview.ShapeableImageView
 
-class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
+class MyBeersRecyclerAdapter(private val savedBeers: List<Save>, private val context: Context) :
     RecyclerView.Adapter<MyBeersRecyclerAdapter.SavedBeerViewHolder>() {
 
     class SavedBeerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,6 +31,7 @@ class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
         val title: TextView = itemView.findViewById(R.id.cardTitle)
         val image: ImageView = itemView.findViewById(R.id.cardImage)
         val description: TextView = itemView.findViewById(R.id.cardDescription)
+        val profileImageView: ShapeableImageView = itemView.findViewById(R.id.profile_image_view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedBeerViewHolder {
@@ -37,12 +41,30 @@ class MyBeersRecyclerAdapter(private val savedBeers: List<Save>) :
     }
 
     override fun onBindViewHolder(holder: SavedBeerViewHolder, position: Int) {
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val profilePicBase64 = sharedPreferences.getString("profilePic", "")
         val beer = savedBeers[position]
 
         holder.username.text = beer.username
         holder.date.text = beer.date
         holder.title.text = beer.brewery
         holder.description.text = beer.description.removePrefix("Notes:").trimEnd('\t').trim()
+
+        if (!profilePicBase64.isNullOrEmpty()) {
+            // Decode Base64 string to Bitmap
+            val bitmap = decodeBase64ToBitmap(profilePicBase64)
+
+            if (bitmap != null) {
+                // Set the decoded Bitmap to the ImageView
+                holder.profileImageView.setImageBitmap(bitmap)
+            } else {
+                println("Debug: Failed to decode profile picture.")
+            }
+        } else {
+            println("Debug: No profile picture found. Using default.")
+            // Optionally, set a default image
+            holder.profileImageView.setImageResource(R.drawable.ic_launcher_foreground)
+        }
 
         // Decode Base64 and set the image
         val bitmap = decodeBase64ToBitmap(beer.image)

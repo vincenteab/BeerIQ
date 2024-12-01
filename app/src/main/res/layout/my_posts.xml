@@ -70,7 +70,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <!-- Title -->
             <TextView
@@ -82,14 +83,27 @@
                 android:textSize="16sp"
                 android:layout_marginBottom="4dp" />
 
-            <!-- Description -->
+            <!-- style -->
             <TextView
-                android:id="@+id/cardDescription"
+                android:id="@+id/style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:text="Style"
+                android:textStyle="italic"
+                android:textColor="#777"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+
+            <!-- comment -->
+            <TextView
+                android:id="@+id/comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Description goes here"
-                android:textSize="14sp"
-                android:textColor="#777" />
+                android:textSize="17sp" />
+
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
+

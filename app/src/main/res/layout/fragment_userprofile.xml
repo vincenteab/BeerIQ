@@ -133,13 +133,13 @@
                 android:layout_marginBottom="10dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:id="@+id/option_favorites"
+                android:id="@+id/option_my_posts"
                 android:background="?attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/star"
+                    android:src="@drawable/posts_icon"
                     android:layout_gravity="center_vertical" />
 
                 <TextView
@@ -147,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="10dp"
-                    android:text="Favorites"
+                    android:text="My Posts"
                     android:textSize="18sp"
                     android:layout_gravity="center_vertical" />
 
@@ -223,7 +223,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/baseline_person_24" />
+                        android:src="@drawable/log_out" />
 
                     <TextView
                         android:layout_width="0dp"
