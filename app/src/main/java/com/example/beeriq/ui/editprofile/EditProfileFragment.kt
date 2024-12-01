@@ -4,10 +4,14 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -22,6 +26,7 @@ import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.R
 import com.example.beeriq.User
 import com.example.beeriq.tools.Util
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 class EditProfileFragment : AppCompatActivity() {
@@ -61,13 +66,12 @@ class EditProfileFragment : AppCompatActivity() {
         password = findViewById(R.id.Input_Password)
 
 
+
         radioGenres =findViewById(R.id.Radio_Gender_Option)
 
         // Load saved profile data from SharedPreferences
         loadFormData()
 
-        // Load the profile image from the local directory
-        loadImage()
 
         cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -222,17 +226,23 @@ class EditProfileFragment : AppCompatActivity() {
             else -> ""
         }
 
+        // Downscale the profile image and convert to Base64
+        val profileImageBase64 = if (imageView.drawable != null) {
+            val bitmap = (imageView.drawable as BitmapDrawable).bitmap
+            val resizedBitmap = downscaleBitmap(bitmap, 200, 200) // Resize to 200x200 pixels
+            bitmapToBase64(resizedBitmap, Bitmap.CompressFormat.JPEG, 80) // Compress to 80% quality
+        } else {
+            "" // Default to empty string if no image is selected
+        }
+
         // Create a User object with updated information
         val updatedUser = User(
             username = username.text.toString(),
             password = password.text.toString(),
             email = inputEmail.text.toString(),
             phone = inputPhone.text.toString(),
-            gender = selectedGender, // Include gender
-            friends = mutableListOf(),
-            outgoingFriends = mutableListOf(),
-            incomingFriends = mutableListOf(),
-            posts = mutableListOf()
+            gender = selectedGender,
+            profileImg = profileImageBase64
         )
 
         // Call FirebaseRepo to update user data
@@ -243,9 +253,11 @@ class EditProfileFragment : AppCompatActivity() {
                 println("Debug: Failed to save profile in Firebase.")
             }
         }
+
         val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("username", updatedUser.username).apply()
     }
+
 
     // Load saved form data from SharedPreferences
     private fun loadFormData() {
@@ -268,12 +280,30 @@ class EditProfileFragment : AppCompatActivity() {
                 inputPhone.setText(user.phone)
                 password.setText(user.password)
 
-                println("${user.username}, ${user.email}")
+                if (!user.profileImg.isNullOrEmpty()) {
+                    val bitmap = base64ToBitmap(user.profileImg)
+                    if (bitmap != null) {
+                        imageView.setImageBitmap(bitmap)
+                        println("Debug: loaded image from firebase.")
+                    } else {
+                        println("Debug: Failed to decode profile image.")
+                    }
+                } else {
+                    println("Debug: No profile image found for user.")
+                }
 
                 when (user.gender) {
                     "Male" -> findViewById<RadioButton>(R.id.Radio_Male)?.isChecked = true
                     "Female" -> findViewById<RadioButton>(R.id.Radio_Female)?.isChecked = true
                     else -> println("Debug: Gender not set.")
+                }
+
+                // Load profile image from the User object
+                if (!user.profileImg.isNullOrEmpty()) {
+                    val bitmap = base64ToBitmap(user.profileImg)
+                    imageView.setImageBitmap(bitmap)
+                } else {
+                    println("Debug: No profile image found for user.")
                 }
 
                 println("Debug: User data loaded successfully.")
@@ -284,6 +314,27 @@ class EditProfileFragment : AppCompatActivity() {
     }
 
 
+
+    private fun bitmapToBase64(bitmap: Bitmap, format: Bitmap.CompressFormat, quality: Int): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(format, quality, byteArrayOutputStream) // Compress with given format and quality
+        val byteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
+    private fun base64ToBitmap(base64Str: String): Bitmap? {
+        return try {
+            val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun downscaleBitmap(bitmap: Bitmap, targetWidth: Int, targetHeight: Int): Bitmap {
+        return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
+    }
 
 
 
