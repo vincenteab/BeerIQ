@@ -24,6 +24,7 @@
 
             <!-- User Avatar -->
             <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profile_image_view"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_vertical"

@@ -51,14 +51,13 @@ class ShowMyBeersFragment : Fragment() {
         val firebaseRepo = FirebaseRepo(requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE))
 
         username = sharedPreferences.getString("username", "").toString()
-        println("TEST MY BEERS:  $username")
 
         firebaseRepo.fetchSaves(username)
 
         firebaseRepo.savedBeersList.observe(viewLifecycleOwner) { savedBeers ->
             Handler(Looper.getMainLooper()).postDelayed({
                 if (savedBeers != null) {
-                    recyclerView.adapter = MyBeersRecyclerAdapter(savedBeers)
+                    recyclerView.adapter = MyBeersRecyclerAdapter(savedBeers, requireContext())
                     recyclerView.visibility = View.VISIBLE
                     progressBar.visibility = View.GONE
                 } else {

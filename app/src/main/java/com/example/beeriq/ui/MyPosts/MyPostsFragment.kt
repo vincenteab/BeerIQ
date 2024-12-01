@@ -50,7 +50,6 @@ class MyPostsFragment : Fragment() {
         val firebaseRepo = FirebaseRepo(sharedPreferences)
 
         username = sharedPreferences.getString("username", "").toString()
-        println("Debug: Current username -> $username")
 
         if (username.isEmpty()) {
             println("Debug: Username is empty. Cannot fetch posts.")
@@ -64,7 +63,7 @@ class MyPostsFragment : Fragment() {
         firebaseRepo.myPostsList.observe(viewLifecycleOwner) { userPosts ->
             Handler(Looper.getMainLooper()).postDelayed({
                 if (userPosts != null && userPosts.isNotEmpty()) {
-                    recyclerView.adapter = MypostsAdapter(userPosts)
+                    recyclerView.adapter = MypostsAdapter(userPosts, requireContext())
                     recyclerView.visibility = View.VISIBLE
                     progressBar.visibility = View.GONE
                 } else {
