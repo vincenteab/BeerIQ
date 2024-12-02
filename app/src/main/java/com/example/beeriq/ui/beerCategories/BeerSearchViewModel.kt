@@ -14,12 +14,26 @@ class BeerCategoriesViewModel(private val repository: BeerRepository) : ViewMode
     private val _searchResults = MutableLiveData<List<Beer>>()
     val searchResults: LiveData<List<Beer>> get() = _searchResults
 
+    private val _styleResults = MutableLiveData<List<Beer>>()
+    val styleResults: LiveData<List<Beer>> get() = _styleResults
+
     // Method to search beers
     fun searchBeers(query: String) {
         viewModelScope.launch {
             try {
                 val results = repository.searchBeers(query) // Query database
                 _searchResults.postValue(results) // Post results to LiveData
+            } catch (e: Exception) {
+                Log.d("testing", "Error searching beers: ${e.message}")
+            }
+        }
+    }
+
+    fun searchStyle(style: String) {
+        viewModelScope.launch {
+            try {
+                val results = repository.searchStyle("%$style%") // Query database
+                _styleResults.postValue(results) // Post results to LiveData
             } catch (e: Exception) {
                 Log.d("testing", "Error searching beers: ${e.message}")
             }

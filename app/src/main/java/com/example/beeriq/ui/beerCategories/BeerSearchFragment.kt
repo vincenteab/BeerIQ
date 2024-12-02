@@ -3,6 +3,7 @@ package com.example.beeriq.ui.beerCategories
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.BeerDatabase
 import com.example.beeriq.data.local.beerDatabase.BeerRepository
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
 
@@ -26,6 +28,8 @@ class BeerSearchFragment : Fragment() {
     private lateinit var searchButton: Button
     private lateinit var beerAdapter: BeerSearchAdapter
     private lateinit var repository: BeerRepository
+
+    private lateinit var lagerCard: MaterialCardView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +49,8 @@ class BeerSearchFragment : Fragment() {
         searchButton = view.findViewById(R.id.searchButton)
         beerRecyclerView = view.findViewById(R.id.beerRecyclerView)
 
+        lagerCard = view.findViewById(R.id.lager_card)
+
         // Set up ViewModel
         val dao = BeerDatabase.getInstance(requireContext()).beerDatabaseDao
         repository = BeerRepository(dao)
@@ -59,6 +65,14 @@ class BeerSearchFragment : Fragment() {
         // Observe search results
         viewModel.searchResults.observe(viewLifecycleOwner) { results ->
             beerAdapter.updateData(results)
+        }
+
+        viewModel.styleResults.observe(viewLifecycleOwner) { results ->
+            Log.d("testing", "${results}")
+        }
+
+        lagerCard.setOnClickListener {
+            viewModel.searchStyle("Lager")
         }
 
         searchView.editText.addTextChangedListener(object : TextWatcher {

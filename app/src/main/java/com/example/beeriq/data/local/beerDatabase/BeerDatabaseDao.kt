@@ -23,4 +23,10 @@ interface BeerDatabaseDao {
         WHERE beer_table_fts.beer_full_name MATCH :query
     """)
     suspend fun searchBeer(query: String): List<Beer>
+
+    @Query("""
+        SELECT * FROM beer_table
+        WHERE style LIKE :style
+    """)
+    suspend fun searchStyle(style: String): List<Beer>
 }
