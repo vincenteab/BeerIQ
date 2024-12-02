@@ -15,7 +15,15 @@ import com.example.beeriq.databinding.FragmentActivitiesBinding
 import com.example.beeriq.FirebaseRepo
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import android.view.Gravity
+import android.widget.ImageButton
+import android.widget.PopupMenu
+import android.widget.Toolbar
+import androidx.core.view.marginTop
 import com.example.beeriq.SharedViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class ActivitiesFragment : Fragment() {
@@ -30,6 +38,7 @@ class ActivitiesFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentActivitiesBinding.inflate(inflater, container, false)
+
 
 
         showLoadingScreen()
@@ -80,6 +89,7 @@ class ActivitiesFragment : Fragment() {
     private fun showLoadingScreen(){
         binding.progressBar.visibility = View.VISIBLE
         binding.activitiesList.visibility = View.GONE
+        binding.noActivitesText.visibility = View.GONE
     }
 
     private fun loadData(){
@@ -88,15 +98,14 @@ class ActivitiesFragment : Fragment() {
             Thread.sleep(2000)
             requireActivity().runOnUiThread{
                 binding.progressBar.visibility = View.GONE
-                binding.activitiesList.visibility = View.VISIBLE
+                if (activitiesList.isEmpty()){
+                    binding.noActivitesText.visibility = View.VISIBLE
+                }else{
+                    binding.activitiesList.visibility = View.VISIBLE
+                }
+
             }
         }.start()
     }
 
-    fun bitmapToBase64(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG, quality: Int = 100): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(format, quality, byteArrayOutputStream) // Compress the bitmap
-        val byteArray = byteArrayOutputStream.toByteArray() // Convert to ByteArray
-        return Base64.encodeToString(byteArray, Base64.DEFAULT) // Convert to Base64 string
-    }
 }

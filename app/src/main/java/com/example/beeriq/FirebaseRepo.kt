@@ -546,6 +546,74 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         })
     }
 
+    fun checkBeerInSaves(beerId: String, onComplete: (Boolean) -> Unit) {
+        databaseReference.orderByChild("username").equalTo(localUser)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (saveSnapshot in snapshot.children) {
+                        val savesPath = saveSnapshot.child("saves")
+                        if (savesPath.exists()){
+                            for (save in savesPath.children){
+                                val saveObject = save.getValue(Save::class.java)?.beerFullName
+                                if (saveObject != null && saveObject == beerId) {
+                                    onComplete(true)
+                                    return
+                                }
+                            }
+                        }
+                        onComplete(false)
+                        return
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching saves: ${error.message}")
+                }
+            })
+    }
+
+    fun deleteSave(beerId: String, onComplete: (Boolean) -> Unit) {
+        databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (postSnapshot in snapshot.children) {
+                    val userKey = postSnapshot.key
+                    if (userKey != null) {
+                        val savesRef = databaseReference.child(userKey).child("saves")
+                        savesRef.runTransaction(object : Transaction.Handler{
+                            override fun doTransaction(currentData: MutableData): Transaction.Result{
+
+                                val savesList = currentData.getValue(object : GenericTypeIndicator<MutableList<Save>>() {})
+                                    ?.toMutableList() ?: mutableListOf()
+                                for (save in savesList){
+                                    if (save.beerFullName == beerId){
+                                        currentData.value = savesList.filter { it.beerFullName != beerId }
+                                        return Transaction.success(currentData)
+                                    }
+                                }
+                                return Transaction.success(currentData)
+
+                            }
+                            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                                if (committed){
+                                    println("debug: saved beer ${beerId} removed from saves list")
+                                    onComplete(true)
+                                }else{
+                                    println("debug: saved beer ${beerId} not removed from saves list")
+                                    onComplete(false)
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                println("debug: error - ${error.message}")
+                onComplete(false)
+            }
+        })
+    }
+
     // Update users profile
     fun updateUser(user: User, currentUser: String, onComplete: (Boolean) -> Unit) {
         if (user.username.isEmpty()) {
