@@ -11,16 +11,25 @@ import kotlinx.coroutines.launch
 
 class BeerViewModel(private val repository: BeerRepository): ViewModel() {
     val beerResult = MutableLiveData<Beer?>()
+    private val _beerCategories = MutableLiveData<List<String>>()
+    val beerCategories: LiveData<List<String>> get() = _beerCategories
+
     fun getBeersByStyle(style: String): LiveData<List<Beer>> {
         return liveData {
             val beers = repository.getBeersByStyle(style)
-            Log.d("BeerViewModel", "Beers retrieved: ${beers.size}")  // Add this line to log the size of the list
             emit(beers)
         }
     }
     fun insert(beer: Beer) {
         repository.insert(beer)
     }
+    fun fetchCategories() {
+        viewModelScope.launch {
+            val categories = repository.getDistinctCategories()
+            _beerCategories.postValue(categories)
+        }
+    }
+
 }
 
 class BeerViewModelFactory(private val repository: BeerRepository): ViewModelProvider.Factory {

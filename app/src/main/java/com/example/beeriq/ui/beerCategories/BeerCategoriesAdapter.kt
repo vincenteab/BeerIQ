@@ -8,15 +8,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
 
 class BeerCategoriesAdapter(
-    private val beerCategories: List<BeerCategory>,
-    private val itemClickListener: (BeerCategory) -> Unit
+    private val beerCategories: List<String>,
+    private val itemClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<BeerCategoriesAdapter.BeerCategoryViewHolder>() {
 
     inner class BeerCategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val categoryName: TextView = itemView.findViewById(R.id.categoryName)
 
-        fun bind(category: BeerCategory) {
-            categoryName.text = category.name
+        fun bind(category: String) {
+            categoryName.text = category
             itemView.setOnClickListener {
                 itemClickListener(category)
             }
@@ -36,3 +36,4 @@ class BeerCategoriesAdapter(
         return beerCategories.size
     }
 }
+

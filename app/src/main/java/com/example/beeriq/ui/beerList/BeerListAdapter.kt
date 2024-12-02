@@ -12,9 +12,15 @@ class BeerListAdapter(private var beerList: List<Beer>) : RecyclerView.Adapter<B
 
     class BeerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val beerName: TextView = itemView.findViewById(R.id.beerName)
+        val breweryName: TextView = itemView.findViewById((R.id.brewery))
+        val abv: TextView = itemView.findViewById((R.id.abv))
+        val review: TextView = itemView.findViewById((R.id.review))
 
         fun bind(beer: Beer) {
             beerName.text = beer.name
+            breweryName.text = beer.brewery
+            abv.text = "ABV: ${beer.abv}%"  // Example: Show ABV with a '%' sign
+            review.text = String.format("Review: %.1f / 5",beer.reviewOverall)  // Displaying review overall score
         }
     }
 

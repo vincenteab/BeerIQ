@@ -20,5 +20,7 @@ class BeerRepository(private val beerDatabaseDao: BeerDatabaseDao) {
     suspend fun getBeersByStyle(style: String): List<Beer> {
         return beerDatabaseDao.getBeersByCategory(style)
     }
-
+    suspend fun getDistinctCategories(): List<String> {
+        return beerDatabaseDao.getDistinctCategories()
+    }
 }

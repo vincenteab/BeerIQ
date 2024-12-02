@@ -9,9 +9,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.R
+import com.example.beeriq.data.local.beerDatabase.BeerDatabase
+import com.example.beeriq.data.local.beerDatabase.BeerRepository
+import com.example.beeriq.data.local.beerDatabase.BeerViewModel
+import com.example.beeriq.data.local.beerDatabase.BeerViewModelFactory
 import com.example.beeriq.tools.Util.parseBeerCategories
 import com.example.beeriq.ui.beerCategories.BeerCategoriesAdapter
 import com.example.beeriq.ui.beerCategories.BeerCategory
@@ -22,8 +28,9 @@ class BeerCategoriesFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var beerCategoriesAdapter: BeerCategoriesAdapter
     private lateinit var searchView: SearchView
-    private var beerCategories: List<BeerCategory> = emptyList()
-    private var filteredBeerCategories: List<BeerCategory> = emptyList()
+    private lateinit var beerViewModel: BeerViewModel
+    private var beerCategories: List<String> = emptyList()
+    private var filteredBeerCategories: List<String> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,17 +38,30 @@ class BeerCategoriesFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_search, container, false)
 
-        // Parse beer categories
-        beerCategories = parseBeerCategories(requireContext())
-        filteredBeerCategories = beerCategories
+        // Get the BeerDatabase instance and create the BeerRepository
+        val beerDatabase = BeerDatabase.getInstance(requireContext())
+        val beerRepository = BeerRepository(beerDatabase.beerDatabaseDao)
+
+        // Create the ViewModel using the BeerViewModelFactory
+        val factory = BeerViewModelFactory(beerRepository)
+        beerViewModel = ViewModelProvider(this, factory).get(BeerViewModel::class.java)
+
+        // Observe the beer categories LiveData
+        beerViewModel.beerCategories.observe(viewLifecycleOwner, Observer { categories ->
+            beerCategories = categories
+            filteredBeerCategories = beerCategories
+            beerCategoriesAdapter = BeerCategoriesAdapter(filteredBeerCategories) { selectedCategory ->
+                openBeerListActivity(selectedCategory)
+            }
+            recyclerView.adapter = beerCategoriesAdapter
+        })
+
+        // Fetch beer categories from the database
+        beerViewModel.fetchCategories()
 
         // RecyclerView setup
         recyclerView = view.findViewById(R.id.beerGridView)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        beerCategoriesAdapter = BeerCategoriesAdapter(filteredBeerCategories) { selectedCategory ->
-            openBeerListActivity(selectedCategory)
-        }
-        recyclerView.adapter = beerCategoriesAdapter
 
         // Setup SearchView
         searchView = view.findViewById(R.id.searchView)
@@ -59,33 +79,10 @@ class BeerCategoriesFragment : Fragment() {
         return view
     }
 
-
-    private fun toggleSearchViewVisibility(view: View) {
-        if (!::searchView.isInitialized) {
-            searchView = SearchView(requireContext())
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return false
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    filterCategories(newText)
-                    return true
-                }
-            })
-
-            // Optionally, add SearchView to a layout dynamically
-            val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-            toolbar.addView(searchView)
-        }
-        searchView.visibility =
-            if (searchView.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-    }
-
     private fun filterCategories(query: String?) {
         val filteredList = query?.let {
             beerCategories.filter { category ->
-                category.name.contains(it, ignoreCase = true)
+                category.contains(it, ignoreCase = true)
             }
         } ?: beerCategories
 
@@ -96,8 +93,11 @@ class BeerCategoriesFragment : Fragment() {
         recyclerView.adapter = beerCategoriesAdapter
     }
 
-    private fun openBeerListActivity(category: BeerCategory) {
+    private fun openBeerListActivity(category: String) {
         val intent = Intent(requireContext(), BeerListActivity::class.java)
-        intent.putExtra("CATEGORY_NAME", category.name) // Pass the category name
-        startActivity(intent)    }
+        intent.putExtra("CATEGORY_NAME", category) // Pass the category name
+        startActivity(intent)
+    }
 }
+
+
