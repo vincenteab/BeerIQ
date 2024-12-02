@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:layout_marginVertical="3dp"
+        app:cardElevation="1dp"
+        app:cardBackgroundColor="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Beer Name -->
+            <TextView
+                android:id="@+id/beer_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beer Name"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Brewery -->
+            <TextView
+                android:id="@+id/brewery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Brewery"
+                android:textSize="16sp"
+                android:textColor="#555" />
+
+            <!-- ABV -->
+            <TextView
+                android:id="@+id/abv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ABV: 5.0%"
+                android:textSize="14sp"
+                android:textColor="#777" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

@@ -16,4 +16,8 @@ class BeerRepository(private val beerDatabaseDao: BeerDatabaseDao) {
     suspend fun getBeerFullName(fullName: String): List<Beer> {
         return beerDatabaseDao.getBeerFullName(fullName)
     }
+
+    suspend fun searchBeers(query: String): List<Beer> {
+        return beerDatabaseDao.searchBeer(query)
+    }
 }

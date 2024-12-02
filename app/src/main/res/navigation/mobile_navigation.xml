@@ -63,7 +63,7 @@
 
     <fragment
         android:id="@+id/navigation_search"
-        android:name="com.example.beeriq.ui.beerCategories.BeerCategoriesFragment"
+        android:name="com.example.beeriq.ui.beerCategories.BeerSearchFragment"
         android:label="@string/title_search"
         tools:layout="@layout/fragment_search" >
         <action
