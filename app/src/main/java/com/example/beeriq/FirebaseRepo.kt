@@ -546,6 +546,33 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         })
     }
 
+    fun checkBeerInSaves(beerId: String, onComplete: (Boolean) -> Unit) {
+        databaseReference.orderByChild("username").equalTo(localUser)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (saveSnapshot in snapshot.children) {
+                        val savesPath = saveSnapshot.child("saves")
+                        if (savesPath.exists()){
+                            for (save in savesPath.children){
+                                val saveObject = save.getValue(Save::class.java)?.beerFullName
+                                if (saveObject != null && saveObject == beerId) {
+                                    onComplete(true)
+                                    return
+                                }
+                            }
+                        }
+                        onComplete(false)
+                        return
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching saves: ${error.message}")
+                }
+            })
+    }
+
     fun deleteSave(beerId: String, onComplete: (Boolean) -> Unit) {
         databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
