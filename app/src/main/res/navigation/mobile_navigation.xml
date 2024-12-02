@@ -151,4 +151,24 @@
             app:launchSingleTop="true"
             app:destination="@id/navigation_activities" />
     </fragment>
+
+
+    <fragment
+        android:id="@+id/showMyBeersFragment"
+        android:name="com.example.beeriq.ui.showMyBeers.ShowMyBeersFragment"
+        android:label="My Beers"
+        tools:layout="@layout/showmybeers">
+        <action
+            android:id="@+id/action_showMyBeersFragment_to_navigation_beer_details"
+            app:destination="@id/navigation_beer_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ShowMyPostsFragment"
+        android:name="com.example.beeriq.ui.MyPosts.MyPostsFragment"
+        android:label="My Posts"
+        tools:layout="@layout/recycler_my_posts">
+
+    </fragment>
+
 </navigation>

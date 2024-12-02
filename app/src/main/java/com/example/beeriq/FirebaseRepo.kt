@@ -39,6 +39,9 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
     private val _savedBeersList = MutableLiveData<MutableList<Save>>()
     val savedBeersList: LiveData<MutableList<Save>> get() = _savedBeersList
 
+    private val _myPostsList = MutableLiveData<MutableList<Post>>()
+    val myPostsList: LiveData<MutableList<Post>> get() = _myPostsList
+
     fun fetchAllLists() {
         startRealTimeListeners()
     }
@@ -509,33 +512,6 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             })
     }
 
-    fun checkBeerInSaves(beerId: String, onComplete: (Boolean) -> Unit) {
-        databaseReference.orderByChild("username").equalTo(localUser)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (saveSnapshot in snapshot.children) {
-                        val savesPath = saveSnapshot.child("saves")
-                        if (savesPath.exists()){
-                            for (save in savesPath.children){
-                                val saveObject = save.getValue(Save::class.java)?.beerFullName
-                                if (saveObject != null && saveObject == beerId) {
-                                    onComplete(true)
-                                    return
-                                }
-                            }
-                        }
-                        onComplete(false)
-                        return
-
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    println("Error fetching saves: ${error.message}")
-                }
-            })
-    }
-
     fun addSave(save: Save) {
         databaseReference.orderByChild("username").equalTo(localUser).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -628,8 +604,17 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                             // Get the Firebase key for the user
                             val userKey = child.key
                             if (userKey != null) {
-                                // Update the user's data in Firebase
-                                databaseReference.child(userKey).setValue(user)
+                                // Update only specific fields in Firebase
+                                val updates = mapOf(
+                                    "username" to user.username,
+                                    "password" to user.password,
+                                    "email" to user.email,
+                                    "phone" to user.phone,
+                                    "gender" to user.gender,
+                                    "profileImg" to user.profileImg
+                                )
+
+                                databaseReference.child(userKey).updateChildren(updates)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
                                             println("Debug: User $currentUser updated successfully.")
@@ -654,6 +639,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                 }
             })
     }
+
 
 
     // Get users data
@@ -707,6 +693,39 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             })
     }
 
+    fun fetchMyPosts(username: String) {
+        databaseReference.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        return
+                    }
+                    val dataList = mutableListOf<Post>()
+                    for (userSnapshot in snapshot.children) {
+                        val postPath = userSnapshot.child("posts")
+                        if (postPath.exists()) {
+                            for (postSnapshot in postPath.children) {
+                                println("Debug: Post DataSnapshot -> ${postSnapshot.value}")
+                                // Deserialize the post
+                                val postObject = postSnapshot.getValue(Post::class.java)
+                                if (postObject != null) {
+                                    println("Debug: Post object -> $postObject")
+                                    dataList.add(postObject)
+                                } else {
+                                    println("Debug: Failed to deserialize post: ${postSnapshot.value}")
+                                }
+                            }
+                        } else {
+                            println("Debug: No posts found for user $username.")
+                        }
+                    }
+                    _myPostsList.postValue(dataList) // Post the fetched list to LiveData
+                }
 
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error fetching posts: ${error.message}")
+                }
+            })
+    }
 
 }
