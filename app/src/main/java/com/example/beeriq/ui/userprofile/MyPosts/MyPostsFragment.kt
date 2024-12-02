@@ -1,9 +1,9 @@
-package com.example.beeriq.ui.showMyBeers
+package com.example.beeriq.ui.userprofile.MyPosts
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.os.Looper
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,18 +14,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.R
 
-class ShowMyBeersFragment : Fragment() {
+class MyPostsFragment : Fragment() {
 
     private lateinit var username: String
     private lateinit var recyclerView: RecyclerView
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.showmybeers, container, false)
+        return inflater.inflate(R.layout.recycler_my_posts, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,7 +33,7 @@ class ShowMyBeersFragment : Fragment() {
         val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
 
         // Initialize UI components
-        recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView = view.findViewById(R.id.my_posts_recyclerView)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -48,13 +47,20 @@ class ShowMyBeersFragment : Fragment() {
 
     private fun loadData(progressBar: ProgressBar) {
         val sharedPreferences = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
-        val firebaseRepo = FirebaseRepo(requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE))
+        val firebaseRepo = FirebaseRepo(sharedPreferences)
 
         username = sharedPreferences.getString("username", "").toString()
 
-        firebaseRepo.fetchSaves(username)
+        if (username.isEmpty()) {
+            println("Debug: Username is empty. Cannot fetch posts.")
+            return
+        }
 
-        firebaseRepo.savedBeersList.observe(viewLifecycleOwner) { savedBeers ->
+        // Fetch posts for the user
+        firebaseRepo.fetchMyPosts(username)
+
+        // Observe posts LiveData
+        firebaseRepo.myPostsList.observe(viewLifecycleOwner) { userPosts ->
 
             if (!isAdded) {
                 println("Debug: Fragment is not attached. Skipping UI update.")
@@ -62,15 +68,18 @@ class ShowMyBeersFragment : Fragment() {
             }
 
             Handler(Looper.getMainLooper()).postDelayed({
-                if (savedBeers != null) {
-                    recyclerView.adapter = MyBeersRecyclerAdapter(savedBeers, requireContext())
+                if (userPosts != null && userPosts.isNotEmpty()) {
+                    recyclerView.adapter = MypostsAdapter(userPosts, requireContext())
                     recyclerView.visibility = View.VISIBLE
                     progressBar.visibility = View.GONE
                 } else {
-                    println("No saved beers found")
+                    println("Debug: No posts found or userPosts is null.")
                     progressBar.visibility = View.GONE
                 }
-            }, 1500) // 500ms delay for smooth transition
+            }, 1000)
         }
     }
+
+
+
 }

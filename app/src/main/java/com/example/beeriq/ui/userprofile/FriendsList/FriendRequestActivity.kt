@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.FriendsList
+package com.example.beeriq.ui.userprofile.FriendsList
 
 import android.os.Bundle
 import android.widget.ListView

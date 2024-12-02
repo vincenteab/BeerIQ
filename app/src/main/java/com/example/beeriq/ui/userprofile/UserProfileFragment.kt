@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.beeriq.LoginActivity
 import com.example.beeriq.R
-import com.example.beeriq.ui.FriendsList.FriendsListActivity
-import com.example.beeriq.ui.editprofile.EditProfileFragment
+import com.example.beeriq.ui.userprofile.FriendsList.FriendsListActivity
+import com.example.beeriq.ui.userprofile.editprofile.EditProfileFragment
 
 
 class UserProfileFragment : Fragment(R.layout.fragment_userprofile) {

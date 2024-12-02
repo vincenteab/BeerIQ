@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.MyPosts
+package com.example.beeriq.ui.userprofile.MyPosts
 
 import android.content.Context
 import android.content.SharedPreferences
