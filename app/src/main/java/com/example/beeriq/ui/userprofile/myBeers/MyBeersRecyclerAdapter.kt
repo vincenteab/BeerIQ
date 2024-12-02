@@ -1,10 +1,11 @@
-package com.example.beeriq.ui.userprofile.showMyBeers
+package com.example.beeriq.ui.userprofile.myBeers
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,7 @@ class MyBeersRecyclerAdapter(private val savedBeers: List<Save>, private val con
         holder.date.text = beer.date
         holder.title.text = beer.brewery
         holder.name.text = beer.name
+        Log.d("testing", "${beer.name}")
         holder.rating.text = beer.reviewOverall.toBigDecimal().setScale(1, RoundingMode.HALF_UP).toFloat().toString()
 
         // Decode Base64 and set the image

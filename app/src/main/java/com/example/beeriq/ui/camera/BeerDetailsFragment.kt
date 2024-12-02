@@ -191,6 +191,7 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
                     val save = Save(
                         username = sharedPreferences.getString("username", "").toString(),
                         image = bitmapToBase64(bitmap),
+                        name = beer.name,
                         style = beer.style,
                         brewery = beer.brewery,
                         beerFullName = beer.beerFullName,

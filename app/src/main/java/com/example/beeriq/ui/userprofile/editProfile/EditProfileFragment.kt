@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.userprofile.editprofile
+package com.example.beeriq.ui.userprofile.editProfile
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -21,6 +22,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.FileProvider
 import com.example.beeriq.FirebaseRepo
 import com.example.beeriq.R
@@ -75,14 +77,16 @@ class EditProfileFragment : AppCompatActivity() {
 
         cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                imageView.setImageURI(imgUri)
+                val bitmap = Util.getBitmap(this, imgUri)
+                imageView.setImageBitmap(bitmap)
             }
         }
 
         galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val imageUri: Uri? = result.data?.data
-                imageView.setImageURI(imageUri)
+                val rotatedBitmap = Util.getBitmap(this, imageUri)
+                imageView.setImageBitmap(rotatedBitmap)
             }
         }
 
@@ -131,9 +135,8 @@ class EditProfileFragment : AppCompatActivity() {
                 result:ActivityResult ->
 
             if (result.resultCode == Activity.RESULT_OK){
-                val bitmap = Util.getBitmap(this, imgUri)
+                val bitmap = Util.getBitmap(this, result.data?.data)
                 imageView.setImageBitmap(bitmap)
-               findViewById<ImageView>(R.id.profile_image).setImageURI(imgUri)
                 val imageFile = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), tempImgFileName)
 
             }
@@ -339,10 +342,11 @@ class EditProfileFragment : AppCompatActivity() {
     private fun loadImage() {
         val imageFile = File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), tempImgFileName)
         if (imageFile.exists()) {
-            imageView.setImageURI(Uri.fromFile(imageFile))
+            val imgUri = Uri.fromFile(imageFile)
+            val rotatedBitmap = Util.getBitmap(this, imgUri)
+            imageView.setImageBitmap(rotatedBitmap)
         }
     }
-
 
     // Validate if the email has a valid top-level domain (TLD)
     private fun containsValidTLD(email: String, validTLDs: List<String>): Boolean {

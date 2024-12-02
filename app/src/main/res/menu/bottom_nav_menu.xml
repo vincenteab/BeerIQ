@@ -9,7 +9,7 @@
 
     <item
         android:id="@+id/navigation_search"
-        android:icon="@drawable/beer_icon"
+        android:icon="@drawable/search_24px"
         android:menuCategory="secondary"
         android:title="@string/title_search" />
 
