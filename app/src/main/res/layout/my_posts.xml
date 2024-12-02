@@ -63,7 +63,7 @@
         <ImageView
             android:id="@+id/cardImage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="350dp"
             android:scaleType="centerCrop"
             android:layout_marginBottom="8dp" />
 
