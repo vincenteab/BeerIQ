@@ -5,8 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Beer::class, BeerFts::class], version = 5)
-abstract class BeerDatabase: RoomDatabase() {
+@Database(entities = [Beer::class, BeerFts::class], version = 5) // Ensure version matches your schema
+abstract class BeerDatabase : RoomDatabase() {
     abstract val beerDatabaseDao: BeerDatabaseDao
 
     companion object {
@@ -22,7 +22,9 @@ abstract class BeerDatabase: RoomDatabase() {
                         BeerDatabase::class.java,
                         "db_instance"
                     )
-                        .fallbackToDestructiveMigration() // Add this line
+                        // Ensures that the database is pre-populated from an asset file
+                        .createFromAsset("db_instance")
+                        .fallbackToDestructiveMigration() // Allows version changes
                         .build()
                     INSTANCE = instance
                 }
@@ -30,5 +32,4 @@ abstract class BeerDatabase: RoomDatabase() {
             }
         }
     }
-
 }
