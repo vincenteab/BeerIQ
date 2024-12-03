@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.beerCategories
+package com.example.beeriq.ui.beerSearch
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -39,6 +39,11 @@ class BeerCategoriesViewModel(private val repository: BeerRepository) : ViewMode
             }
         }
     }
+
+    fun clear() {
+        _styleResults.value = emptyList()
+    }
+
 }
 
 class BeerCategoriesViewModelFactory(

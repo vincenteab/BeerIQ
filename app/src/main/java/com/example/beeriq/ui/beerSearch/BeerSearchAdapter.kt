@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.beerCategories
+package com.example.beeriq.ui.beerSearch
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +10,7 @@ import com.example.beeriq.data.local.beerDatabase.Beer
 
 class BeerSearchAdapter(
     private var beerList: List<Beer>,
+    private val onBeerClick: (Beer) -> Unit
 ) : RecyclerView.Adapter<BeerSearchAdapter.BeerViewHolder>() {
 
     // ViewHolder to hold item views
@@ -32,6 +33,10 @@ class BeerSearchAdapter(
         holder.beerName.text = beer.name
         holder.brewery.text = beer.brewery
         holder.abv.text = beer.abv.toString()
+
+        holder.itemView.setOnClickListener {
+            onBeerClick(beer)
+        }
     }
 
     // Return the total number of items in the list
