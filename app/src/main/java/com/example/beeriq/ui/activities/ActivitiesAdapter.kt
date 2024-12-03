@@ -46,7 +46,7 @@ class ActivitiesAdapter (private val context: Context, private var postsList: Mu
         binding.datePost.text = post.date
 
         binding.commentPost.text = post.comment
-        binding.subtitlePost.text = post.subtitle
+        binding.stylePost.text = post.subtitle
         binding.beernamePost.text = post.beername
 
         var image: Bitmap? = base64ToBitmap(post.image)

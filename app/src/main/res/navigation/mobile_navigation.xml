@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_map">
+    app:startDestination="@+id/navigation_search">
 
 
     <fragment
@@ -164,7 +164,7 @@
 
     <fragment
         android:id="@+id/showMyBeersFragment"
-        android:name="com.example.beeriq.ui.showMyBeers.ShowMyBeersFragment"
+        android:name="com.example.beeriq.ui.userprofile.myBeers.ShowMyBeersFragment"
         android:label="My Beers"
         tools:layout="@layout/showmybeers">
         <action
@@ -174,7 +174,7 @@
 
     <fragment
         android:id="@+id/ShowMyPostsFragment"
-        android:name="com.example.beeriq.ui.MyPosts.MyPostsFragment"
+        android:name="com.example.beeriq.ui.userprofile.myPosts.MyPostsFragment"
         android:label="My Posts"
         tools:layout="@layout/recycler_my_posts">
 

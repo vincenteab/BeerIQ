@@ -18,13 +18,15 @@
             android:orientation="vertical"
             android:padding="15dp">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profile_image"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
                 android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                app:shapeAppearanceOverlay="@style/CircularImageView"
                 android:contentDescription="@string/ProfileImage"
-                android:src="@drawable/ic_launcher_foreground" />
+                android:src="@drawable/blank_pfp" />
 
             <!-- Change Button -->
             <Button
@@ -34,23 +36,22 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="Change"
-                android:textColor="@color/black"
-                app:backgroundTint="#AEB0B2" />
+                android:textColor="#8f6e22" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/Textview_username" />
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="3dp"-->
+<!--                android:text="@string/Textview_username" />-->
 
-            <EditText
-                android:id="@+id/Input_Username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:autofillHints="username"
-                android:inputType="text" />
+<!--            <EditText-->
+<!--                android:id="@+id/Input_Username"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="3dp"-->
+<!--                android:autofillHints="username"-->
+<!--                android:inputType="text" />-->
 
 
             <TextView
@@ -137,8 +138,8 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="3dp"
                 android:text="Save"
-                android:textColor="@color/white"
-                app:backgroundTint="#539058" />
+                android:backgroundTint="#f0c542"
+                android:textColor="#8f6e22" />
 
             <Button
                 android:id="@+id/btn_cancel"
@@ -148,7 +149,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="3dp"
                 android:text="Cancel"
-                android:textColor="@color/black"
+                android:textColor="#8f6e22"
                 app:backgroundTint="#FCF5FD"
                 app:strokeWidth="1dp" />
 

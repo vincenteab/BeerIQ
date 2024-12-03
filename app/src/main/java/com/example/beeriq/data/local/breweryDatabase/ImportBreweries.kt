@@ -46,7 +46,9 @@ class ImportBreweries : AppCompatActivity() {
                     name = record.get("Name"),
                     address = record.get("Address"),
                     latitude = record.get("Latitude").toDouble(),
-                    longitude = record.get("Longitude").toDouble()
+                    longitude = record.get("Longitude").toDouble(),
+                    descriptionTitle = record.get("DescriptionTitle"),
+                    descriptionBody = record.get("DescriptionBody")
                 )
                 count++
                 breweries.add(brewery)

@@ -1,6 +1,7 @@
-package com.example.beeriq.ui.FriendsList
+package com.example.beeriq.ui.userprofile.friendsList
 
 import android.os.Bundle
+import android.view.View
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider

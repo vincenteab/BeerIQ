@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"/>
+
+    <TextView
+        android:id="@+id/bName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Brewery Name"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/bAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Brewery Address"
+        android:textSize="16sp"
+        android:layout_marginTop="2dp" />
+
+    <TextView
+        android:id="@+id/bDescriptionTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Description Title"
+        android:textSize="22sp"
+        android:layout_marginTop="24dp"
+        android:textStyle="italic"/>
+
+    <TextView
+        android:id="@+id/bDescriptionBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Description Body"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>
