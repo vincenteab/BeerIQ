@@ -40,11 +40,11 @@
             android:name=".MainActivity"
             android:exported="true">
         </activity>
-        <activity android:name=".ui.FriendsList.FriendRequestActivity"
+        <activity android:name=".ui.userprofile.friendsList.FriendRequestActivity"
             android:exported="true">
 
         </activity>
-        <activity android:name=".ui.FriendsList.FriendsListActivity"
+        <activity android:name=".ui.userprofile.friendsList.FriendsListActivity"
             android:exported="true">
         </activity>
 
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.editprofile.EditProfileFragment"
+            android:name=".ui.userprofile.editProfile.EditProfileFragment"
             android:label="Edit Profile" />
 
 

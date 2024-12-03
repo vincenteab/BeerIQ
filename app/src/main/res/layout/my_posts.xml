@@ -29,7 +29,8 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_launcher_foreground" />
+                app:shapeAppearanceOverlay="@style/CircularImageView"
+                android:src="@drawable/blank_pfp" />
 
             <!-- User Info -->
             <LinearLayout
@@ -62,7 +63,7 @@
         <ImageView
             android:id="@+id/cardImage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="350dp"
             android:scaleType="centerCrop"
             android:layout_marginBottom="8dp" />
 
@@ -94,6 +95,11 @@
                 android:textColor="#777"
                 android:textAppearance="?attr/textAppearanceBodyMedium" />
 
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                app:dividerColor="#e0e0e0"/>
 
             <!-- comment -->
             <TextView

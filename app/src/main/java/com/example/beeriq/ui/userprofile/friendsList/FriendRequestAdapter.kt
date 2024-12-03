@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.FriendsList
+package com.example.beeriq.ui.userprofile.friendsList
 
 import android.content.Context
 import android.view.View
