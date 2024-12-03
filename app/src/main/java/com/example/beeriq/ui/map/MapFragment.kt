@@ -14,10 +14,15 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.os.Build
 import android.util.Log
+import android.widget.ArrayAdapter
+import androidx.appcompat.widget.SearchView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -29,12 +34,15 @@ import com.example.beeriq.data.local.breweryDatabase.BreweryRepository
 import com.example.beeriq.data.local.breweryDatabase.BreweryViewModel
 import com.example.beeriq.data.local.breweryDatabase.BreweryViewModelFactory
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 
 class MapFragment : Fragment(), OnMapReadyCallback, LocationListener {
     private lateinit var mMap: GoogleMap
     private lateinit var locationManager: LocationManager
     private lateinit var markerOptions: MarkerOptions
+    private val markersMap = mutableMapOf<String, Marker>()
 
     private lateinit var database: BreweryDatabase
     private lateinit var dao: BreweryDatabaseDao
@@ -54,6 +62,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationListener {
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -67,11 +76,40 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationListener {
             breweries = it
             Log.d("DEBUG: Number of breweries", (it.size).toString())
 
+            val breweryNames = breweries.map { it.name }
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, breweryNames)
+            val searchView = view.findViewById<SearchView>(R.id.searchView)
+            val searchAutoComplete = searchView.findViewById<androidx.appcompat.widget.SearchView.SearchAutoComplete>(androidx.appcompat.R.id.search_src_text)
+            searchAutoComplete.setAdapter(adapter)
+
+            // Handle search query text submission
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    query?.let { searchForBrewery(it) }
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+            })
+
+            // Set the suggestion adapter
+            searchAutoComplete.setAdapter(adapter)
+
+            // Set a listener for autocomplete selection
+            searchAutoComplete.setOnItemClickListener { parent, _, position, _ ->
+                val selectedBreweryName = parent.getItemAtPosition(position) as String
+                searchForBrewery(selectedBreweryName)
+                searchView.setQuery(selectedBreweryName, false)  // Update the search query with the selected item
+            }
+
             generateMarkers()
         })
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -95,16 +133,18 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationListener {
             locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                Toast.makeText(requireContext(), "Enable GPS to show location", Toast.LENGTH_SHORT).show()
                 return
             }
 
             val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
             if (location != null) {
                 onLocationChanged(location)
             }
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
-
         }
         catch (e: SecurityException) {
             Log.e("SecurityException", "", e)
@@ -117,10 +157,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationListener {
         val lng = location.longitude
         val latLng = LatLng(lat, lng)
         if (!mapCentered) {
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17f)
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 13f)
             mMap.animateCamera(cameraUpdate)
-            markerOptions.position(latLng)
-            mMap.addMarker(markerOptions)
+            mMap.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title("You are here!")
+            )
             mapCentered = true
         }
     }
@@ -128,12 +171,46 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationListener {
     private fun generateMarkers() {
         for (brewery in breweries) {
             val position = LatLng(brewery.latitude, brewery.longitude)
-            val markerOptions = MarkerOptions()
-                .position(position)
-                .title(brewery.name)
-                .snippet(brewery.address)
+            val marker = mMap.addMarker(
+                MarkerOptions()
+                    .position(position)
+                    .title(brewery.name)
+                    .snippet(brewery.address)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            )
+            // Store marker by name so it can be indexed by the search bar
+            marker?.let {
+                markersMap[brewery.name] = it
+            }
+        }
 
-            mMap.addMarker(markerOptions)
+        mMap.setOnMarkerClickListener { clickedMarker ->
+            val clickedBrewery = breweries.find { it.name.equals(clickedMarker.title, ignoreCase = true) }
+            clickedBrewery?.let {
+                val intent = Intent(requireContext(), BreweryDetails::class.java).apply {
+                    putExtra("brewery_name", it.name)
+                    putExtra("brewery_address", it.address)
+                    putExtra("brewery_description_title", it.descriptionTitle)
+                    putExtra("brewery_description_body", it.descriptionBody)
+                }
+                startActivity(intent)
+            }
+            false // Return false to allow the info window to appear
+        }
+    }
+
+    private fun searchForBrewery(query: String) {
+        // Find matching brewery by name
+        val brewery = breweries.find { it.name.contains(query, ignoreCase = true) }
+
+        // If a match is found, center the map on the brewery's marker
+        brewery?.let {
+            val position = LatLng(it.latitude, it.longitude)
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 15f))
+            markersMap[it.name]?.showInfoWindow()
+        } ?: run {
+            // If no match, show a message or clear existing markers
+            Toast.makeText(requireContext(), "Brewery not found", Toast.LENGTH_SHORT).show()
         }
     }
 

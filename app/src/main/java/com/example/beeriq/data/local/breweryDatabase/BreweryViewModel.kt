@@ -16,6 +16,7 @@ class BreweryViewModel(private val repository: BreweryRepository): ViewModel() {
 
     fun insert(brewery: Brewery) {
         Log.d("BREWERY NAME: ", brewery.name)
+        Log.d("DESCRIPTION TITLE: ", brewery.descriptionTitle)
         repository.insert(brewery)
     }
 

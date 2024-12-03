@@ -22,4 +22,10 @@ class Brewery (
     @ColumnInfo(name = "longitude")
     var longitude: Double = 0.0,
 
+    @ColumnInfo(name = "descriptionTitle")
+    var descriptionTitle: String = "",
+
+    @ColumnInfo(name = "descriptionBody")
+    var descriptionBody: String = "",
+
 ) : Serializable
