@@ -223,10 +223,10 @@ class EditProfileFragment : AppCompatActivity() {
         // Downscale the profile image and convert to Base64
         val profileImageBase64 = if (imageView.drawable is BitmapDrawable) {
             val bitmap = (imageView.drawable as BitmapDrawable).bitmap
-            val resizedBitmap = downscaleBitmap(bitmap, 200, 200) // Resize to 200x200 pixels
-            bitmapToBase64(resizedBitmap, Bitmap.CompressFormat.JPEG, 80) // Compress to 80% quality
+            val resizedBitmap = downscaleBitmap(bitmap, 200, 200)
+            bitmapToBase64(resizedBitmap, Bitmap.CompressFormat.JPEG, 80)
         } else {
-            "" // Default to empty string if no image or if it's not a BitmapDrawable
+            ""
         }
 
         // Create a User object with updated information
@@ -239,7 +239,7 @@ class EditProfileFragment : AppCompatActivity() {
             profileImg = profileImageBase64
         )
 
-        // Call FirebaseRepo to update user data
+        // Update user data
         firebaseRepo.updateUser(updatedUser, Currentusername) { success ->
             if (success) {
                 println("Debug: Profile saved successfully in Firebase.")
@@ -248,12 +248,29 @@ class EditProfileFragment : AppCompatActivity() {
             }
         }
 
-        println(username.text.toString())
+        // Update saves and posts
+        firebaseRepo.updateSavesUsername(Currentusername, updatedUser.username) { savesUpdated ->
+            if (savesUpdated) {
+                println("Debug: Saves updated successfully.")
+            } else {
+                println("Debug: Failed to update saves.")
+            }
+        }
 
+        firebaseRepo.updatePostsUsername(Currentusername, updatedUser.username) { postsUpdated ->
+            if (postsUpdated) {
+                println("Debug: Posts updated successfully.")
+            } else {
+                println("Debug: Failed to update posts.")
+            }
+        }
+
+        // Update SharedPreferences
         val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("username", updatedUser.username).apply()
         sharedPreferences.edit().putString("profilePic", profileImageBase64).apply()
     }
+
 
 
     // Load saved form data from SharedPreferences
