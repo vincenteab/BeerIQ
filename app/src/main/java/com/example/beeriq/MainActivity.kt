@@ -1,5 +1,6 @@
 package com.example.beeriq
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
@@ -10,6 +11,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.beeriq.data.local.breweryDatabase.ImportBreweries
 import com.example.beeriq.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -60,7 +62,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
