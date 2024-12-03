@@ -623,7 +623,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         }
 
         // Locate the user record by username
-        databaseReference.orderByChild("username").equalTo(currentUser)
+        databaseReference.orderByChild("username").equalTo(user.username)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
@@ -633,7 +633,7 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
                             if (userKey != null) {
                                 // Update only specific fields in Firebase
                                 val updates = mapOf(
-                                    "username" to user.username,
+//                                    "username" to user.username,
                                     "password" to user.password,
                                     "email" to user.email,
                                     "phone" to user.phone,

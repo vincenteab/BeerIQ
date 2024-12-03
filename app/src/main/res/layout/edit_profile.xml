@@ -39,19 +39,19 @@
                 android:textColor="#8f6e22" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/Textview_username" />
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="3dp"-->
+<!--                android:text="@string/Textview_username" />-->
 
-            <EditText
-                android:id="@+id/Input_Username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:autofillHints="username"
-                android:inputType="text" />
+<!--            <EditText-->
+<!--                android:id="@+id/Input_Username"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="3dp"-->
+<!--                android:autofillHints="username"-->
+<!--                android:inputType="text" />-->
 
 
             <TextView
