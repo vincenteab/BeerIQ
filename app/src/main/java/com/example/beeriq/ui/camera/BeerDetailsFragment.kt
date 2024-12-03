@@ -4,8 +4,10 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.content.DialogInterface
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -27,6 +29,7 @@ import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.Beer
 import com.example.beeriq.ui.activities.Post
 import com.example.beeriq.ui.userprofile.Save
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.launch
