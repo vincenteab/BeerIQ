@@ -62,7 +62,7 @@ class EditProfileFragment : AppCompatActivity() {
         btnSave =findViewById(R.id.btn_save)
         btnCancel =findViewById(R.id.btn_cancel)
 
-        username = findViewById(R.id.Input_Username)
+//        username = findViewById(R.id.Input_Username)
         inputEmail =findViewById(R.id.Input_Email)
         inputPhone =findViewById(R.id.Input_Phone)
         password = findViewById(R.id.Input_Password)
@@ -102,24 +102,26 @@ class EditProfileFragment : AppCompatActivity() {
         // Saving functionalities
         btnSave.setOnClickListener{
             if(isValidForm()){
-                if (username.text.toString() != Currentusername){
-                    val firebaseRepo = FirebaseRepo(this.getSharedPreferences("UserData", Context.MODE_PRIVATE))
-                    firebaseRepo.checkIfUsernameExists(username.text.toString()) { exists ->
-                        if(!exists){
-                            saveFormData()
-                            finish()
-                        }else{
-                            AlertDialog.Builder(this)
-                                .setTitle("Invalid Input")
-                                .setMessage("Username Already exists. Create another one.")
-                                .setPositiveButton("OK", null)
-                                .show()
-                        }
-                    }
-                }else{
-                    saveFormData()
-                    finish()
-                }
+                saveFormData()
+                finish()
+//                if (username.text.toString() != Currentusername){
+//                    val firebaseRepo = FirebaseRepo(this.getSharedPreferences("UserData", Context.MODE_PRIVATE))
+//                    firebaseRepo.checkIfUsernameExists(username.text.toString()) { exists ->
+//                        if(!exists){
+//                            saveFormData()
+//                            finish()
+//                        }else{
+//                            AlertDialog.Builder(this)
+//                                .setTitle("Invalid Input")
+//                                .setMessage("Username Already exists. Create another one.")
+//                                .setPositiveButton("OK", null)
+//                                .show()
+//                        }
+//                    }
+//                }else{
+//                    saveFormData()
+//                    finish()
+//                }
             }
         }
 
@@ -169,10 +171,10 @@ class EditProfileFragment : AppCompatActivity() {
         }
 
         // Check if input fields are empty
-        if (getTextVal(username).isEmpty() || getTextVal(password).isEmpty()) {
-            showPopupMessage("All fields must be completed.")
-            return false
-        }
+//        if (getTextVal(username).isEmpty() || getTextVal(password).isEmpty()) {
+//            showPopupMessage("All fields must be completed.")
+//            return false
+//        }
 
         // Check if email is valid
         val TLDs = listOf(
@@ -234,7 +236,7 @@ class EditProfileFragment : AppCompatActivity() {
 
         // Create a User object with updated information
         val updatedUser = User(
-            username = username.text.toString(),
+            username = Currentusername  ,
             password = password.text.toString(),
             email = inputEmail.text.toString(),
             phone = inputPhone.text.toString(),
@@ -251,10 +253,10 @@ class EditProfileFragment : AppCompatActivity() {
             }
         }
 
-        println(username.text.toString())
+//        println(username.text.toString())
 
         val sharedPreferences = this.getSharedPreferences("UserData", Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString("username", updatedUser.username).apply()
+//        sharedPreferences.edit().putString("username", updatedUser.username).apply()
         sharedPreferences.edit().putString("profilePic", profileImageBase64).apply()
     }
 
@@ -274,7 +276,7 @@ class EditProfileFragment : AppCompatActivity() {
 
         firebaseRepo.fetchUserData(usernameKey.toString()) { user ->
             if (user != null) {
-                username.setText(user.username)
+//                username.setText(user.username)
                 Currentusername = user.username
                 inputEmail.setText(user.email)
                 inputPhone.setText(user.phone)
