@@ -1,4 +1,4 @@
-package com.example.beeriq.ui.showMyBeers
+package com.example.beeriq.ui.userprofile.myBeers
 
 import android.graphics.Bitmap
 import android.os.Bundle

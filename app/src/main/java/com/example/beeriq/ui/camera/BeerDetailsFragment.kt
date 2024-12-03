@@ -4,8 +4,10 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.content.DialogInterface
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -27,6 +29,7 @@ import com.example.beeriq.R
 import com.example.beeriq.data.local.beerDatabase.Beer
 import com.example.beeriq.ui.activities.Post
 import com.example.beeriq.ui.userprofile.Save
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.launch
@@ -191,10 +194,6 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
             }
 
 
-
-
-
-
             brewery.text = beer.brewery
             beerName.text = beer.name
             abv.text = "ABV: " + beer.abv.toString() + "%"
@@ -218,8 +217,6 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
 
                 } else {
 
-
-
                     val calendar = Calendar.getInstance().time
                     val currentDate: String = SimpleDateFormat("MMM d, yyy").format(calendar)
 
@@ -228,6 +225,7 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
                         val save = Save(
                             username = sharedPreferences.getString("username", "").toString(),
                             image = bitmapToBase64(bitmap),
+                            name = beer.name,
                             style = beer.style,
                             brewery = beer.brewery,
                             beerFullName = beer.beerFullName,
