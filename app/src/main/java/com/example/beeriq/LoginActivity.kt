@@ -8,6 +8,7 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.example.beeriq.databinding.ActivityLoginBinding
 import com.example.beeriq.databinding.ActivityMainBinding
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
@@ -51,24 +53,17 @@ class LoginActivity : AppCompatActivity() {
             //check if the user has entered a username and password
             if (checkCredentials(tempUser) == 0){
                 //check if the username is unique
-                checkUniqueUsername(tempUser){ exists ->
-                    if (exists){
+
+
+                lifecycleScope.launch {
+                    val usernameExists = withContext(Dispatchers.IO) {
+                        checkUniqueUsername(tempUser)
+                    }
+                    if (usernameExists) {
                         binding.usernameTextField.error = "Username already exists"
                         binding.passwordTextField.error = null
-                    }else{
-                        //create a unique id for the user
-                        val uniqueID = firebaseRef.push().key!!
-                        //store the user in the database and let user know account was created
-                        firebaseRef.child(uniqueID).setValue(tempUser)
-                            .addOnCompleteListener{
-                                Toast.makeText(this, "Account created", Toast.LENGTH_SHORT).show()
-                            }
-                        //continue to the main activity
-                        storeUserDataLocally(username, password, null, null, null, null)
-                        binding.usernameTextField.error = null
-                        binding.passwordTextField.error = null
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
+                    } else {
+                        createAccount(tempUser)
                     }
                 }
             }
@@ -84,30 +79,30 @@ class LoginActivity : AppCompatActivity() {
                 val tempLoggedUser = User(username, password)
                 //check if the user has entered a username and password
                 if (checkCredentials(tempLoggedUser) == 0){
-                    checkUserExists(tempLoggedUser){ exists ->
-                        //if the user exists, continue to the main activity
-                        if (exists){
 
-                            fetchUserData(username){ userData ->
-                                if (userData != null) {
-                                    val email = userData.email
-                                    val phone = userData.phone
-                                    val friends = userData.friends as List<String>?
-                                    val profilePic = userData.profileImg
-                                    storeUserDataLocally(username, password, email, phone, friends, profilePic)
-                                }
-
-
+                    lifecycleScope.launch {
+                        val userExists = withContext(Dispatchers.IO){
+                            checkUserExists(tempLoggedUser)
+                        }
+                        if (userExists){
+                            val userData = withContext(Dispatchers.IO){
+                                fetchUserData(username)
                             }
+                            userData?.let{
+                                storeUserDataLocally(it.username, it.password, it.email, it.phone, it.friends, it.profileImg)
+                            }
+                            binding.loginButton.doResult(true)
                             binding.usernameTextField.error = null
                             binding.passwordTextField.error = null
-                            binding.loginButton.doResult(true)
-                            val intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
+                            Toast.makeText(this@LoginActivity, "Welcome $username", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                         }else{
+                            binding.usernameTextField.error = "Incorrect username or password"
+                            binding.passwordTextField.error = "Incorrect username or password"
                             binding.loginButton.doResult(false)
                         }
                     }
+
                 }else{
                     binding.loginButton.doResult(false)
                 }
@@ -137,57 +132,30 @@ class LoginActivity : AppCompatActivity() {
     }
 
     //check if the username is unique
-    private fun checkUniqueUsername(user: User, callback:(exists: Boolean) -> Unit): Unit{
+    private suspend fun checkUniqueUsername(user: User) : Boolean{
         //check if the username is unique
-        firebaseRef.orderByChild("username").equalTo(user.username)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    callback(snapshot.exists())
-                }
+        return withContext(Dispatchers.IO){
+            val result = firebaseRef.orderByChild("username").equalTo(user.username).get().await()
+            result.exists()
+        }
 
-                override fun onCancelled(error: DatabaseError) {
-                    callback(false)
-                }
-            })
     }
 
     //check if the user exists in the database
-    private fun checkUserExists(user: User, callback:(exists: Boolean) -> Unit): Unit{
+    private suspend fun checkUserExists(user: User) :Boolean{
         //goes through different usernames in the database and checks if the password matches
-        firebaseRef.orderByChild("username").equalTo(user.username)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
 
-                //function that is called when the data is changed
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    //if username exists in db
-                    if (snapshot.exists()) {
-                        //go through each user in the database and check their password
-                        for (userSnapshot in snapshot.children) {
-                            val userPass = userSnapshot.getValue(User::class.java)?.password
-                            //if the password matches the user's password, data goes through
-                            if (userPass == user.password) {
-                                val text = userSnapshot.getValue(User::class.java)?.username
-                                Toast.makeText(this@LoginActivity, "Welcome $text", Toast.LENGTH_SHORT).show()
-                                callback(true)
-                            //if the password does not match the user's password, error message is displayed
-                            } else {
-                                binding.usernameTextField.error = "Incorrect username or password"
-                                binding.passwordTextField.error = "Incorrect username or password"
-                                callback(false)
-                            }
-                        }
-                    //if username does not exist in db, error message is displayed
-                    }else{
-                        binding.usernameTextField.error = "Account does not exist"
-                        binding.passwordTextField.error = null
-                        callback(false)
-                    }
-                }
+        return withContext(Dispatchers.IO){
+            val result = firebaseRef.orderByChild("username").equalTo(user.username).get().await()
+            result.children.any { it.getValue(User::class.java)?.password == user.password }
+        }
+    }
 
-                override fun onCancelled(error: DatabaseError) {
-                    callback(false)
-                }
-            })
+    private suspend fun fetchUserData(username: String): User? {
+        return withContext(Dispatchers.IO) {
+            val result = firebaseRef.orderByChild("username").equalTo(username).get().await()
+            result.children.firstOrNull()?.getValue(User::class.java)
+        }
     }
 
     //store user data locally
@@ -203,30 +171,18 @@ class LoginActivity : AppCompatActivity() {
         editor.apply()
     }
 
-    //fetch user data from the database
-    //Pass through username as string and get back User object
-    fun fetchUserData(user: String, onComplete: (User?) -> Unit) {
-        firebaseRef.orderByChild("username").equalTo(user)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
 
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        for (child in snapshot.children) {
-                            val userData = child.getValue(User::class.java) // Convert to User class
+    private suspend fun createAccount(user: User){
+        withContext(Dispatchers.IO){
+            val uniqueID = firebaseRef.push().key!!
+            firebaseRef.child(uniqueID).setValue(user).await()
+        }
+        withContext(Dispatchers.Main){
+            Toast.makeText(this@LoginActivity, "Account created", Toast.LENGTH_SHORT).show()
+            storeUserDataLocally(user.username, user.password, null, null, null, null)
+            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+        }
 
-
-                            onComplete(userData) // Pass the fetched data to the callback
-
-                        }
-                    } else {
-                        println("debug: No user found with username: $user")
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    println("Query cancelled: ${error.message}")
-                }
-            })
     }
 
 }
