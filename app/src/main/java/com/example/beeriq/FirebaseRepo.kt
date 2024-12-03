@@ -505,24 +505,30 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
         databaseReference.orderByChild("username").equalTo(username)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val dataList = mutableListOf<Save>()
-                    for (saveSnapshot in snapshot.children) {
-                        val savesPath = saveSnapshot.child("saves")
-                        if (savesPath.exists()){
-                            for (save in savesPath.children){
-                                val saveObject = save.getValue(Save::class.java)
-                                if (saveObject != null) {
-                                    if (!_savedBeersList.value.orEmpty().contains(saveObject)) { // Ensure uniqueness
-                                        dataList.add(saveObject)
+                    fetchScope.launch {
+                        val dataList = mutableListOf<Save>()
+                        for (saveSnapshot in snapshot.children) {
+                            val savesPath = saveSnapshot.child("saves")
+                            if (savesPath.exists()){
+                                for (save in savesPath.children){
+                                    val saveObject = save.getValue(Save::class.java)
+                                    if (saveObject != null) {
+                                        if (!_savedBeersList.value.orEmpty().contains(saveObject)) { // Ensure uniqueness
+                                            dataList.add(saveObject)
+                                        }
                                     }
                                 }
                             }
+
+                        }
+                        withContext(Dispatchers.Main) {
+                            val currentActivities = _savedBeersList.value?.toMutableList() ?: mutableListOf()
+                            currentActivities.addAll(dataList)
+                            _savedBeersList.postValue(currentActivities)
                         }
 
                     }
-                    val currentActivities = _savedBeersList.value?.toMutableList() ?: mutableListOf()
-                    currentActivities.addAll(dataList)
-                    _savedBeersList.postValue(currentActivities)
+
                 }
 
                 override fun onCancelled(error: DatabaseError) {
