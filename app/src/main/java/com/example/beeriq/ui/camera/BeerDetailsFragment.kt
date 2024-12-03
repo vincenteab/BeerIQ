@@ -161,7 +161,7 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
         val saltyText: TextView = view.findViewById(R.id.salty_text)
         val astringencyText: TextView = view.findViewById(R.id.astringency_text)
         val sourText: TextView = view.findViewById(R.id.sour_text)
-        val bitmap: Bitmap
+        var bitmap: Bitmap? = null
 
         val saveButton: Button = view.findViewById(R.id.save_button)
 
@@ -175,11 +175,17 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
         val beer = arguments?.getSerializable("beer_object") as? Beer
 
         val byteArray = arguments?.getByteArray("bitmap") as ByteArray
-        byteArray.let {
-            bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
-            imageView = view.findViewById(R.id.beer_image)
-            imageView.setImageBitmap(bitmap)
+        if (byteArray != null && byteArray.isNotEmpty()) {
+            byteArray.let {
+                bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                imageView = view.findViewById(R.id.beer_image)
+                imageView.setImageBitmap(bitmap)
+            }
+        } else {
+            saveButton.visibility = View.GONE
+            postButton.visibility = View.GONE
         }
+
         if (beer != null) {
             //check for saved beer and shows button if saved/unsaved
             var saved = false
@@ -224,7 +230,7 @@ class BeerDetailsFragment : Fragment(R.layout.fragment_beer_details) {
                         val repo = FirebaseRepo(sharedPreferences)
                         val save = Save(
                             username = sharedPreferences.getString("username", "").toString(),
-                            image = bitmapToBase64(bitmap),
+                            image = bitmapToBase64(bitmap!!),
                             name = beer.name,
                             style = beer.style,
                             brewery = beer.brewery,
