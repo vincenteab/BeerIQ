@@ -755,4 +755,121 @@ class FirebaseRepo(private val sharedPreferences: SharedPreferences) {
             })
     }
 
+    fun updatePostsUsername(currentUsername: String, newUsername: String, onComplete: (Boolean) -> Unit) {
+        databaseReference.orderByChild("username").equalTo(currentUsername)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        println("Debug: No user found with username: $currentUsername.")
+                        onComplete(false)
+                        return
+                    }
+
+                    for (child in snapshot.children) {
+                        val userKey = child.key
+                        if (userKey != null) {
+                            val postsRef = databaseReference.child(userKey).child("posts")
+
+                            postsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(postsSnapshot: DataSnapshot) {
+                                    val updates = mutableMapOf<String, Any>()
+                                    for (postChild in postsSnapshot.children) {
+                                        val postKey = postChild.key
+                                        if (postKey != null) {
+                                            updates["$postKey/username"] = newUsername
+                                        }
+                                    }
+
+                                    if (updates.isNotEmpty()) {
+                                        postsRef.updateChildren(updates)
+                                            .addOnCompleteListener { task ->
+                                                if (task.isSuccessful) {
+                                                    println("Debug: Posts username updated successfully.")
+                                                    onComplete(true)
+                                                } else {
+                                                    println("Debug: Failed to update posts username: ${task.exception?.message}")
+                                                    onComplete(false)
+                                                }
+                                            }
+                                    } else {
+                                        println("Debug: No posts to update.")
+                                        onComplete(false)
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    println("Debug: Error while fetching posts: ${error.message}")
+                                    onComplete(false)
+                                }
+                            })
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to locate user $currentUsername: ${error.message}")
+                    onComplete(false)
+                }
+            })
+    }
+
+    fun updateSavesUsername(currentUsername: String, newUsername: String, onComplete: (Boolean) -> Unit) {
+        // Locate the user record by username
+        databaseReference.orderByChild("username").equalTo(currentUsername)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        println("Debug: No user found with username: $currentUsername.")
+                        onComplete(false)
+                        return
+                    }
+
+                    for (child in snapshot.children) {
+                        val userKey = child.key
+                        if (userKey != null) {
+                            val savesRef = databaseReference.child(userKey).child("saves")
+
+                            savesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(savesSnapshot: DataSnapshot) {
+                                    for (saveChild in savesSnapshot.children) {
+                                        val saveKey = saveChild.key
+                                        if (saveKey != null) {
+                                            // Only update the username field for each save
+                                            val updates = mapOf(
+                                                "username" to newUsername
+                                            )
+
+                                            savesRef.child(saveKey).updateChildren(updates)
+                                                .addOnCompleteListener { task ->
+                                                    if (task.isSuccessful) {
+                                                        println("Debug: Save $saveKey updated successfully.")
+                                                        onComplete(true)
+                                                    } else {
+                                                        println("Debug: Failed to update save $saveKey: ${task.exception?.message}")
+                                                        onComplete(false)
+                                                    }
+                                                }
+                                        }
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    println("Debug: Error while fetching saves: ${error.message}")
+                                    onComplete(false)
+                                }
+                            })
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Debug: Failed to locate user $currentUsername: ${error.message}")
+                    onComplete(false)
+                }
+            })
+    }
+
+
+
+
 }
